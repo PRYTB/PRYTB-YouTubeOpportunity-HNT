@@ -61,16 +61,14 @@ class InsForgeClient:
         if not self.api_key and not self.anon_key:
             raise InsForgeClientError("Neither INSFORGE_API_KEY nor INSFORGE_ANON_KEY is configured.")
 
-        # Non-destructive health/ping endpoint or API root check
-        health_url = f"{self.url}/rest/v1/"
+        # Health endpoint check according to official InsForge API
+        health_url = f"{self.url}/health"
         
         try:
             with httpx.Client(timeout=self.timeout) as client:
                 response = client.get(health_url, headers=self._get_headers())
                 
-                # Check status code (200, 204, or standard REST root response)
-                if response.status_code in [200, 204, 404]:
-                    # Even a 404 on API root indicates reachability of the HTTP service
+                if response.status_code == 200:
                     return {
                         "status": "connected",
                         "status_code": response.status_code,
