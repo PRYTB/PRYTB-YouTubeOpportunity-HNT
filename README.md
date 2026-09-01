@@ -11,7 +11,8 @@ Sprint 0: Environment / Infrastructure (READY)
 Sprint 1: YouTube Data Collector (COMPLETE)
 Sprint 2: InsForge Persistence (COMPLETE)
 Sprint 3: Historical Metrics (COMPLETE)
-Next: Sprint 4 — Outlier Engine
+Sprint 4: Outlier Engine (COMPLETE)
+Next: Sprint 5 — Niche Miner
 ```
 
 Ruta raíz oficial y definitiva: `I:\PRYTB`
@@ -134,4 +135,5 @@ I:\PRYTB
 * **Sprint 1:** YouTube Data Collector (COMPLETADO)
 * **Sprint 2:** InsForge Persistence (COMPLETADO)
 * **Sprint 3:** Historical Metrics & Velocity (COMPLETADO)
-* **Sprint 4:** Outlier Engine (SIGUIENTE)
+* **Sprint 4:** Outlier Engine (COMPLETADO)
+* **Sprint 5:** Niche Miner (SIGUIENTE)

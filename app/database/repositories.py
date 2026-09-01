@@ -116,6 +116,18 @@ class YouTubeRepository:
         records = self._get_records("channels", params=params)
         return records[0] if records else None
 
+    def get_all_videos(self) -> List[Dict[str, Any]]:
+        return self._get_records("videos")
+
+    def get_all_channels(self) -> List[Dict[str, Any]]:
+        return self._get_records("channels")
+
+    def get_all_video_metrics(self) -> List[Dict[str, Any]]:
+        return self._get_records("video_metrics")
+
+    def get_all_channel_metrics(self) -> List[Dict[str, Any]]:
+        return self._get_records("channel_metrics")
+
     def get_all_video_ids(self) -> List[str]:
         records = self._get_records("videos")
         return [r["video_id"] for r in records if "video_id" in r]

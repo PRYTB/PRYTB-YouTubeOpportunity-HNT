@@ -1,0 +1,51 @@
+"""
+Outlier Engine Configuration for PRYTB Sprint 4.
+Contains baseline, ratio thresholds, noise controls, small channel limits, and ranking weights.
+"""
+from typing import Dict, Any
+
+# Thresholds for Outlier Ratios
+OUTLIER_STRONG_MIN: float = 5.0
+OUTLIER_MAJOR_MIN: float = 10.0
+OUTLIER_EXTREME_MIN: float = 25.0
+
+# Small Channel Thresholds
+SMALL_CHANNEL_SUBSCRIBERS_MAX: int = 50000
+
+# Baseline Confidence Thresholds (minimum video counts)
+BASELINE_VERY_LOW_MAX: int = 2
+BASELINE_LOW_MAX: int = 4
+BASELINE_MEDIUM_MAX: int = 9
+
+# Noise Control for Velocity and Acceleration
+MIN_ACCELERATION_INTERVAL_HOURS: float = 1.0
+MIN_ACCELERATION_SNAPSHOT_COUNT: int = 3
+MIN_VIDEO_AGE_HOURS: float = 1.0
+
+# Outlier Ranking Weights
+RANK_WEIGHT_OUTLIER_RATIO: float = 0.35
+RANK_WEIGHT_AGE_NORMALIZED_RATIO: float = 0.30
+RANK_WEIGHT_SMALL_CHANNEL: float = 0.15
+RANK_WEIGHT_VELOCITY: float = 0.10
+RANK_WEIGHT_CONFIDENCE: float = 0.10
+
+
+def get_outlier_config() -> Dict[str, Any]:
+    """Returns configuration dictionary for Outlier Engine."""
+    return {
+        "OUTLIER_STRONG_MIN": OUTLIER_STRONG_MIN,
+        "OUTLIER_MAJOR_MIN": OUTLIER_MAJOR_MIN,
+        "OUTLIER_EXTREME_MIN": OUTLIER_EXTREME_MIN,
+        "SMALL_CHANNEL_SUBSCRIBERS_MAX": SMALL_CHANNEL_SUBSCRIBERS_MAX,
+        "BASELINE_VERY_LOW_MAX": BASELINE_VERY_LOW_MAX,
+        "BASELINE_LOW_MAX": BASELINE_LOW_MAX,
+        "BASELINE_MEDIUM_MAX": BASELINE_MEDIUM_MAX,
+        "MIN_ACCELERATION_INTERVAL_HOURS": MIN_ACCELERATION_INTERVAL_HOURS,
+        "MIN_ACCELERATION_SNAPSHOT_COUNT": MIN_ACCELERATION_SNAPSHOT_COUNT,
+        "MIN_VIDEO_AGE_HOURS": MIN_VIDEO_AGE_HOURS,
+        "RANK_WEIGHT_OUTLIER_RATIO": RANK_WEIGHT_OUTLIER_RATIO,
+        "RANK_WEIGHT_AGE_NORMALIZED_RATIO": RANK_WEIGHT_AGE_NORMALIZED_RATIO,
+        "RANK_WEIGHT_SMALL_CHANNEL": RANK_WEIGHT_SMALL_CHANNEL,
+        "RANK_WEIGHT_VELOCITY": RANK_WEIGHT_VELOCITY,
+        "RANK_WEIGHT_CONFIDENCE": RANK_WEIGHT_CONFIDENCE,
+    }
