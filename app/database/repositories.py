@@ -29,6 +29,101 @@ class YouTubeRepository:
     def __init__(self, client: Optional[InsForgeClient] = None):
         self.client = client or InsForgeClient()
 
+    def _get_records(
+        self,
+        endpoint_table: str,
+        params: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
+        if not self.client.url:
+            raise InsForgeClientError("INSFORGE_URL is not configured.")
+
+        url = f"{self.client.url}/api/database/records/{endpoint_table}"
+        headers = self.client._get_headers()
+
+        try:
+            with httpx.Client(timeout=self.client.timeout) as http_client:
+                response = http_client.get(url, headers=headers, params=params)
+                if response.status_code == 200:
+                    data = response.json()
+                    if isinstance(data, list):
+                        return data
+                    elif isinstance(data, dict) and "data" in data and isinstance(data["data"], list):
+                        return data["data"]
+                    return []
+                elif response.status_code in [401, 403]:
+                    raise InsForgeClientError(f"InsForge authentication failure (HTTP {response.status_code}).")
+                else:
+                    err_msg = f"InsForge GET request to {endpoint_table} failed (HTTP {response.status_code}): {response.text}"
+                    logger.error(err_msg)
+                    raise InsForgeClientError(err_msg)
+        except httpx.RequestError as exc:
+            err_msg = f"Network error reading from InsForge {endpoint_table}: {exc}"
+            logger.error(err_msg)
+            raise InsForgeClientError(err_msg)
+
+    def get_video_metrics_history(
+        self,
+        video_id: str,
+        start_time: Optional[str] = None,
+        end_time: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        params = {"video_id": f"eq.{video_id}", "order": "collected_at.asc"}
+        if start_time:
+            params["collected_at"] = f"gte.{start_time}"
+        if end_time:
+            if "collected_at" in params:
+                params["collected_at"] = f"and(gte.{start_time},lte.{end_time})"
+            else:
+                params["collected_at"] = f"lte.{end_time}"
+        records = self._get_records("video_metrics", params=params)
+        # Fallback python sort in case backend doesn't respect order param
+        records.sort(key=lambda x: str(x.get("collected_at", "")))
+        return records
+
+    def get_channel_metrics_history(
+        self,
+        channel_id: str,
+        start_time: Optional[str] = None,
+        end_time: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        params = {"channel_id": f"eq.{channel_id}", "order": "collected_at.asc"}
+        if start_time:
+            params["collected_at"] = f"gte.{start_time}"
+        if end_time:
+            if "collected_at" in params:
+                params["collected_at"] = f"and(gte.{start_time},lte.{end_time})"
+            else:
+                params["collected_at"] = f"lte.{end_time}"
+        records = self._get_records("channel_metrics", params=params)
+        records.sort(key=lambda x: str(x.get("collected_at", "")))
+        return records
+
+    def get_latest_video_metrics(self, video_id: str) -> Optional[Dict[str, Any]]:
+        history = self.get_video_metrics_history(video_id)
+        return history[-1] if history else None
+
+    def get_latest_channel_metrics(self, channel_id: str) -> Optional[Dict[str, Any]]:
+        history = self.get_channel_metrics_history(channel_id)
+        return history[-1] if history else None
+
+    def get_video_by_id(self, video_id: str) -> Optional[Dict[str, Any]]:
+        params = {"video_id": f"eq.{video_id}"}
+        records = self._get_records("videos", params=params)
+        return records[0] if records else None
+
+    def get_channel_by_id(self, channel_id: str) -> Optional[Dict[str, Any]]:
+        params = {"channel_id": f"eq.{channel_id}"}
+        records = self._get_records("channels", params=params)
+        return records[0] if records else None
+
+    def get_all_video_ids(self) -> List[str]:
+        records = self._get_records("videos")
+        return [r["video_id"] for r in records if "video_id" in r]
+
+    def get_all_channel_ids(self) -> List[str]:
+        records = self._get_records("channels")
+        return [r["channel_id"] for r in records if "channel_id" in r]
+
     def _post_records(
         self,
         endpoint_table: str,
