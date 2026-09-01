@@ -9,9 +9,10 @@ def test_youtube_connection():
 
     client = YouTubeClient()
     try:
-        results = client.search_videos(query="artificial intelligence", max_results=3)
+        results, page_count = client.search_videos(query="artificial intelligence", max_results=3)
         assert isinstance(results, list)
         assert len(results) > 0
+        assert page_count >= 1
         
         first = results[0]
         assert "video_id" in first and first["video_id"]

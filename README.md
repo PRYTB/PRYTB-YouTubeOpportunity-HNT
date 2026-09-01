@@ -8,7 +8,8 @@ Motor privado de inteligencia para descubrir, analizar y validar oportunidades r
 
 ```text
 Sprint 0: Environment / Infrastructure (READY)
-Sprint 1: YouTube Data Collector (NEXT)
+Sprint 1: YouTube Data Collector (COMPLETE)
+Next: Sprint 2 — InsForge Persistence
 ```
 
 Ruta raíz oficial y definitiva: `I:\PRYTB`
@@ -128,4 +129,5 @@ I:\PRYTB
 
 ## Siguiente Sprint
 
-* **Sprint 1:** YouTube Data Collector
+* **Sprint 1:** YouTube Data Collector (COMPLETADO)
+* **Sprint 2:** InsForge Persistence
