@@ -1,0 +1,15 @@
+pandas
+numpy
+requests
+httpx
+python-dotenv
+pydantic
+pydantic-settings
+sqlalchemy
+scikit-learn
+openai
+streamlit
+pytest
+pytest-cov
+tenacity
+rich
