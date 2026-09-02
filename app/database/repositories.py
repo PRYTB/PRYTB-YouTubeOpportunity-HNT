@@ -1,4 +1,5 @@
 import time
+import json
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
@@ -135,6 +136,58 @@ class YouTubeRepository:
     def get_all_channel_ids(self) -> List[str]:
         records = self._get_records("channels")
         return [r["channel_id"] for r in records if "channel_id" in r]
+
+    def insert_clusters(self, result: Any) -> int:
+        """
+        Persists NicheMiningResult clusters and subniches to InsForge backend DB tables.
+        Gracefully handles backend table absence if database schema has not been migrated yet.
+        """
+        if not result or not result.clusters:
+            return 0
+
+        cluster_records = []
+        subniche_records = []
+
+        for c in result.clusters:
+            c_rec = {
+                "cluster_id": c.cluster_id,
+                "run_id": result.run_id,
+                "algorithm": result.algorithm,
+                "parameters": json.dumps(result.parameters),
+                "video_count": c.video_count,
+                "unique_channels": c.unique_channels,
+                "dominant_channel_share": c.dominant_channel_share,
+                "semantic_quality": c.semantic_quality,
+                "confidence": c.confidence,
+                "created_at": result.created_at
+            }
+            cluster_records.append(c_rec)
+
+            sn_rec = {
+                "cluster_id": c.cluster_id,
+                "run_id": result.run_id,
+                "niche": c.niche,
+                "subniche": c.subniche,
+                "microniche": c.microniche,
+                "summary": c.summary,
+                "label_confidence": c.label_confidence
+            }
+            subniche_records.append(sn_rec)
+
+        inserted_count = 0
+        try:
+            if self._post_records("clusters", cluster_records, upsert=False):
+                inserted_count += len(cluster_records)
+        except InsForgeClientError as exc:
+            logger.warning(f"Could not persist to 'clusters' table (table may not exist yet in InsForge): {exc}")
+
+        try:
+            if self._post_records("subniches", subniche_records, upsert=False):
+                pass
+        except InsForgeClientError as exc:
+            logger.warning(f"Could not persist to 'subniches' table (table may not exist yet in InsForge): {exc}")
+
+        return inserted_count
 
     def _post_records(
         self,
