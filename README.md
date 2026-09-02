@@ -7,12 +7,12 @@ Motor privado de inteligencia para descubrir, analizar y validar oportunidades r
 ## Estado Actual
 
 ```text
-Sprint 0: Environment / Infrastructure (READY)
+Sprint 0: Environment / Infrastructure (COMPLETE)
 Sprint 1: YouTube Data Collector (COMPLETE)
 Sprint 2: InsForge Persistence (COMPLETE)
 Sprint 3: Historical Metrics (COMPLETE)
 Sprint 4: Outlier Engine (COMPLETE)
-Sprint 5: Niche Miner (COMPLETE)
+Sprint 5: Niche Miner (FIX REQUIRED / QUALITY CORRECTION IN PROGRESS)
 Next: Sprint 6 — Revenue + Geography
 ```
 
@@ -137,5 +137,5 @@ I:\PRYTB
 * **Sprint 2:** InsForge Persistence (COMPLETADO)
 * **Sprint 3:** Historical Metrics & Velocity (COMPLETADO)
 * **Sprint 4:** Outlier Engine (COMPLETADO)
-* **Sprint 5:** Niche Miner (COMPLETADO)
-* **Sprint 6:** Revenue + Geography (SIGUIENTE)
+* **Sprint 5:** Niche Miner (FIX REQUIRED / QUALITY CORRECTION IN PROGRESS)
+* **Sprint 6:** Revenue + Geography (PENDIENTE)
