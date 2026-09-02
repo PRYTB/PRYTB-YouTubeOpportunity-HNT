@@ -96,3 +96,79 @@ Run the main mining CLI script:
 ```
 
 Outputs summary statistics, top clusters, and runs the Sprint 4 Top Outlier Dominance Test.
+
+---
+
+## 6. Approved Production Reproducibility Contract (Sprint 5 Final)
+
+The following values are the **approved, frozen, reproducible production contract** for Sprint 5 niche mining. They must not be changed without a new approved preflight.
+
+### Approved Configuration
+- **Semantic Text Version**: `sprint5-v1`
+- **Representation**: `title_only_unigrams`
+- **Algorithm**: `kmeans`
+- **K**: `10`
+- **Random State**: `42`
+- **TF-IDF Parameters**:
+  ```json
+  {
+    "max_features": 500,
+    "ngram_range": [1, 1],
+    "min_df": 2,
+    "max_df": 0.9,
+    "sublinear_tf": false
+  }
+  ```
+
+### Approved Reproducibility Values
+- **Dataset Hash (SHA-256)**: `4d81c80e8da54b371c7eb969957ea347fc632d82abd737719141c866f4bfe9ad`
+- **Assignments Hash (SHA-256)**: `6c0e7bb6aeec75985664becb05f7c61cbfec874c15a6ec7395d60c2996436288`
+- **Silhouette Score**: `0.2468982051367785` (tolerance: `1e-12`)
+- **Production Videos**: `83`
+- **Clusters**: `10`
+
+### Production Persistence Result
+- **Run ID**: `sprint5_prod_6c0e7bb6aeec_20260902_231144`
+- **Persisted**:
+  - `clusters`: 10 rows
+  - `subniches`: 10 rows
+  - `cluster_videos`: 83 rows
+- **Read-back Verification**:
+  - Unique videos: 83
+  - Unique cluster IDs: 10
+  - Duplicates: 0
+  - Orphans: 0
+  - Missing associations: 0
+  - Payload mismatches: 0
+  - Verified: `true`
+- **Test Record Exclusion**: `VID_TEST_INTEGRATION_99` correctly excluded from production associations
+
+### Label Quality (Deterministic Fallback)
+Labels persisted as-is with warnings flagged:
+- Cluster 0: Subniche generic + weak grounding
+- Cluster 3: Subniche generic
+- Cluster 6: Weak grounding
+- Cluster 7: Subniche generic
+
+---
+
+## 7. Invalid / Non-Reproducible Configuration (DO NOT USE)
+
+The following configuration was used in earlier experimental runs and is **invalid / non-reproducible**:
+
+| Parameter | Invalid Value |
+|-----------|--------------|
+| K | 5 |
+| Silhouette | 0.2868 |
+| Production Videos | 84 (included test record) |
+| Representation | title_only_unigrams |
+| Algorithm | KMeans |
+
+**Reason**: The K=5 configuration included a test record (`VID_TEST_INTEGRATION_99`), used a different clustering parameter, and its silhouette score does not match the approved reproducible contract. It must not be referenced or reused.
+
+---
+
+## 8. Files Created / Modified for Sprint 5 Final Persistence
+- `scripts/sprint5_final_persist.py` — Dedicated production persistence entrypoint (new)
+- `scripts/sprint5_reproducibility_runner.py` — Updated with approved constants and hash validation
+- `tests/unit/test_sprint5_reproducibility_runner.py` — Rewritten to validate approved 83-video contract
