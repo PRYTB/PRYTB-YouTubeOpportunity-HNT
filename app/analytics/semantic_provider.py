@@ -1,5 +1,5 @@
 import re
-from typing import List
+from typing import List, Tuple
 import numpy as np
 
 
@@ -22,16 +22,40 @@ class SemanticProvider:
 class TFIDFLocalSemanticProvider(SemanticProvider):
     """
     Deterministic local semantic embedding provider based on TF-IDF representation.
-    Used when OmniRoute embeddings are not exposed to runtime Python environment.
+    Supports unigrams & bigrams, stopword filtering, min_df/max_df tuning, sublinear TF scaling, and L2 normalization.
     """
-    def __init__(self, max_features: int = 500, ngram_range=(1, 2)):
+    def __init__(
+        self,
+        max_features: int = 500,
+        ngram_range: Tuple[int, int] = (1, 2),
+        min_df: int = 1,
+        max_df: float = 0.95,
+        sublinear_tf: bool = True
+    ):
         from sklearn.feature_extraction.text import TfidfVectorizer
+        from app.analytics.text_normalizer import GENERIC_STOP_WORDS
+
         self._max_features = max_features
         self._ngram_range = ngram_range
+        
+        # Combine standard english stopwords + domain noisy structural terms
+        custom_stopwords = list(GENERIC_STOP_WORDS) + [
+            "the", "a", "an", "is", "are", "and", "or", "in", "on", "at", "to", "for", "with",
+            "by", "about", "against", "between", "into", "through", "during", "before", "after",
+            "above", "below", "from", "up", "down", "in", "out", "on", "off", "over", "under",
+            "again", "further", "then", "once", "here", "there", "when", "where", "why", "how",
+            "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no",
+            "nor", "not", "only", "own", "same", "so", "than", "too", "very", "can", "will",
+            "just", "should", "now"
+        ]
+
         self._vectorizer = TfidfVectorizer(
             max_features=max_features,
             ngram_range=ngram_range,
-            sublinear_tf=True
+            min_df=min_df,
+            max_df=max_df,
+            sublinear_tf=sublinear_tf,
+            stop_words=custom_stopwords
         )
         self._fitted = False
         self._dim = max_features
@@ -68,6 +92,7 @@ class TFIDFLocalSemanticProvider(SemanticProvider):
     @property
     def embedding_dimension(self) -> int:
         return self._dim
+
 
 
 class OmniRouteEmbeddingProvider(SemanticProvider):

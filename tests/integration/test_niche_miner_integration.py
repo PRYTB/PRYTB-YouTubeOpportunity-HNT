@@ -32,3 +32,12 @@ def test_niche_miner_integration():
     assert first_cluster.niche != ""
     assert first_cluster.subniche != ""
     assert first_cluster.microniche != ""
+
+    # Verify cluster persistence and readback if DB connected
+    repo = YouTubeRepository()
+    inserted = repo.insert_clusters(result)
+    assert inserted >= 0
+
+    readback = repo.verify_clusters_readback(result.run_id)
+    assert "clusters_exist" in readback
+

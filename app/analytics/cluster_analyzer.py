@@ -111,39 +111,43 @@ def calculate_cluster_confidence(
     video_count: int,
     unique_channels: int,
     dominant_channel_share: float,
-    outlier_count: int
+    outlier_count: int,
+    label_quality_score: float = 100.0
 ) -> float:
     """
-    Calculates ClusterConfidence (0-100) based on cohesion, size, channel diversity, and evidence.
+    Calculates ClusterConfidence (0-100) based on cohesion, size, channel diversity, label quality, and evidence.
     """
     score = 0.0
 
-    # 1. Semantic quality (max 30 pts)
-    # Cosine silhouette score range roughly 0..1
+    # 1. Semantic quality (max 25 pts)
     quality_clamped = max(0.0, min(1.0, semantic_quality))
-    score += quality_clamped * 30.0
+    score += quality_clamped * 25.0
 
-    # 2. Cluster Size (max 25 pts)
+    # 2. Cluster Size (max 20 pts)
     if video_count >= 10:
-        score += 25.0
+        score += 20.0
     elif video_count >= 5:
-        score += 20.0
-    elif video_count >= 3:
         score += 15.0
+    elif video_count >= 3:
+        score += 10.0
     else:
-        score += 8.0
+        score += 5.0
 
-    # 3. Diversity / Concentration (max 30 pts)
+    # 3. Diversity / Concentration (max 25 pts)
     if dominant_channel_share <= 0.30 and unique_channels >= 3:
-        score += 30.0
+        score += 25.0
     elif dominant_channel_share <= 0.50:
-        score += 20.0
+        score += 18.0
     elif dominant_channel_share <= 0.75:
         score += 10.0
     else:
-        score += 5.0  # Dominant single channel penalty
+        score += 3.0  # Dominant single channel penalty
 
-    # 4. Outlier evidence (max 15 pts)
+    # 4. Label quality (max 15 pts)
+    l_score = max(0.0, min(100.0, label_quality_score))
+    score += (l_score / 100.0) * 15.0
+
+    # 5. Outlier evidence (max 15 pts)
     if outlier_count >= 3:
         score += 15.0
     elif outlier_count >= 1:
@@ -152,6 +156,7 @@ def calculate_cluster_confidence(
         score += 5.0
 
     return round(min(100.0, score), 2)
+
 
 
 def calculate_cluster_signal_score(

@@ -7,7 +7,7 @@ import numpy as np
 
 from app.analytics.semantic_provider import SemanticProvider, TFIDFLocalSemanticProvider, OmniRouteEmbeddingProvider
 from app.analytics.text_normalizer import clean_text_for_embedding
-from app.analytics.clustering_engine import ClusterOptimizer
+from app.analytics.clustering_engine import ClusterOptimizer, detect_near_duplicates
 from app.analytics.cluster_analyzer import (
     analyze_channel_diversity,
     cross_reference_outliers,
@@ -15,7 +15,7 @@ from app.analytics.cluster_analyzer import (
     calculate_cluster_confidence,
     calculate_cluster_signal_score
 )
-from app.analytics.labeler import ClusterLabeler
+from app.analytics.labeler import ClusterLabeler, validate_label_quality
 from app.analytics.outlier_engine import OutlierEngine
 from app.database.repositories import YouTubeRepository
 from app.models.niche import NicheCluster, NicheMiningResult, ClusterHierarchy
@@ -166,13 +166,23 @@ class NicheMiner:
             # Structured labeling (Niche -> Subniche -> Microniche)
             hierarchy: ClusterHierarchy = self.labeler.label_cluster(rep_titles)
 
+            # Validate label quality
+            l_quality_score, l_warnings = validate_label_quality(
+                niche=hierarchy.niche,
+                subniche=hierarchy.subniche,
+                microniche=hierarchy.microniche,
+                representative_titles=rep_titles
+            )
+            warnings.extend(l_warnings)
+
             # Calculate confidence
             confidence = calculate_cluster_confidence(
                 semantic_quality=quality_score,
                 video_count=v_count,
                 unique_channels=uniq_chans,
                 dominant_channel_share=dom_share,
-                outlier_count=outlier_stats["outlier_count"]
+                outlier_count=outlier_stats["outlier_count"],
+                label_quality_score=l_quality_score
             )
 
             # Calculate ClusterSignalScore
@@ -197,6 +207,8 @@ class NicheMiner:
                 microniche=hierarchy.microniche,
                 summary=hierarchy.summary,
                 label_confidence=hierarchy.confidence,
+                label_quality_score=l_quality_score,
+                label_warnings=l_warnings,
                 outlier_count=outlier_stats["outlier_count"],
                 strong_outlier_count=outlier_stats["strong_outlier_count"],
                 major_outlier_count=outlier_stats["major_outlier_count"],
@@ -208,6 +220,7 @@ class NicheMiner:
                 warnings=warnings
             )
             clusters.append(cluster_obj)
+
 
         # Sort clusters by ClusterSignalScore
         clusters.sort(key=lambda c: c.cluster_signal_score, reverse=True)

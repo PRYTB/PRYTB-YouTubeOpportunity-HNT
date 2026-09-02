@@ -139,26 +139,28 @@ class YouTubeRepository:
 
     def insert_clusters(self, result: Any) -> int:
         """
-        Persists NicheMiningResult clusters and subniches to InsForge backend DB tables.
-        Gracefully handles backend table absence if database schema has not been migrated yet.
+        Persists NicheMiningResult clusters, subniches, and cluster_videos to InsForge backend DB tables.
         """
         if not result or not result.clusters:
             return 0
 
         cluster_records = []
         subniche_records = []
+        cluster_video_records = []
 
         for c in result.clusters:
             c_rec = {
                 "cluster_id": c.cluster_id,
                 "run_id": result.run_id,
                 "algorithm": result.algorithm,
+                "semantic_provider": result.semantic_provider,
                 "parameters": json.dumps(result.parameters),
                 "video_count": c.video_count,
                 "unique_channels": c.unique_channels,
                 "dominant_channel_share": c.dominant_channel_share,
                 "semantic_quality": c.semantic_quality,
                 "confidence": c.confidence,
+                "signal_score": c.cluster_signal_score,
                 "created_at": result.created_at
             }
             cluster_records.append(c_rec)
@@ -170,24 +172,71 @@ class YouTubeRepository:
                 "subniche": c.subniche,
                 "microniche": c.microniche,
                 "summary": c.summary,
-                "label_confidence": c.label_confidence
+                "label_confidence": c.label_confidence,
+                "created_at": result.created_at
             }
             subniche_records.append(sn_rec)
+
+            for v_id in c.video_ids:
+                cv_rec = {
+                    "cluster_id": c.cluster_id,
+                    "run_id": result.run_id,
+                    "video_id": v_id,
+                    "distance_to_centroid": 0.0
+                }
+                cluster_video_records.append(cv_rec)
 
         inserted_count = 0
         try:
             if self._post_records("clusters", cluster_records, upsert=False):
                 inserted_count += len(cluster_records)
         except InsForgeClientError as exc:
-            logger.warning(f"Could not persist to 'clusters' table (table may not exist yet in InsForge): {exc}")
+            logger.warning(f"Could not persist to 'clusters' table: {exc}")
 
         try:
             if self._post_records("subniches", subniche_records, upsert=False):
                 pass
         except InsForgeClientError as exc:
-            logger.warning(f"Could not persist to 'subniches' table (table may not exist yet in InsForge): {exc}")
+            logger.warning(f"Could not persist to 'subniches' table: {exc}")
+
+        try:
+            if self._post_records("cluster_videos", cluster_video_records, upsert=False):
+                pass
+        except InsForgeClientError as exc:
+            logger.warning(f"Could not persist to 'cluster_videos' table: {exc}")
 
         return inserted_count
+
+    def verify_clusters_readback(self, run_id: str) -> Dict[str, Any]:
+        """
+        Queries InsForge to verify persisted clusters, subniches, and cluster_videos for run_id.
+        Returns detailed readback verification dictionary.
+        """
+        try:
+            c_records = self._get_records("clusters", params={"run_id": f"eq.{run_id}"})
+        except InsForgeClientError:
+            c_records = []
+
+        try:
+            sn_records = self._get_records("subniches", params={"run_id": f"eq.{run_id}"})
+        except InsForgeClientError:
+            sn_records = []
+
+        try:
+            cv_records = self._get_records("cluster_videos", params={"run_id": f"eq.{run_id}"})
+        except InsForgeClientError:
+            cv_records = []
+
+        return {
+            "clusters_count": len(c_records),
+            "subniches_count": len(sn_records),
+            "cluster_videos_count": len(cv_records),
+            "clusters_exist": len(c_records) > 0,
+            "subniches_exist": len(sn_records) > 0,
+            "cluster_videos_exist": len(cv_records) > 0,
+            "run_id_matches": all(r.get("run_id") == run_id for r in c_records + sn_records + cv_records) if (c_records or sn_records or cv_records) else False
+        }
+
 
     def _post_records(
         self,

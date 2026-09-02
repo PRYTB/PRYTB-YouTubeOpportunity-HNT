@@ -29,6 +29,8 @@ class NicheCluster(BaseModel):
     microniche: str = ""
     summary: str = ""
     label_confidence: float = 0.0
+    label_quality_score: float = 100.0
+    label_warnings: List[str] = Field(default_factory=list)
 
     # Outlier crossover evidence
     outlier_count: int = 0
@@ -43,6 +45,7 @@ class NicheCluster(BaseModel):
     cluster_signal_score: float = 0.0
 
     warnings: List[str] = Field(default_factory=list)
+
 
 
 class NicheMiningResult(BaseModel):
