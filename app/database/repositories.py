@@ -1,11 +1,12 @@
 import time
-import json
+from collections import Counter
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 import httpx
 
 from app.database.insforge_client import InsForgeClient, InsForgeClientError
+from app.models.niche import NicheMiningResult
 from app.models.youtube import CollectionResult, YouTubeChannel, YouTubeVideo
 from app.utils.logger import logger
 
@@ -20,6 +21,31 @@ class PersistenceResult(BaseModel):
     db_operations: int = 0
     warnings: List[str] = Field(default_factory=list)
     elapsed_seconds: float = 0.0
+
+
+class ClusterPersistenceResult(BaseModel):
+    run_id: str
+    clusters_written: int
+    subniches_written: int
+    cluster_videos_written: int
+
+
+class ClusterReadbackResult(BaseModel):
+    run_id: str
+    expected_clusters: int
+    actual_clusters: int
+    expected_subniches: int
+    actual_subniches: int
+    expected_cluster_videos: int
+    actual_cluster_videos: int
+    unique_videos: int
+    unique_cluster_ids: int
+    duplicate_clusters: int
+    duplicate_videos: int
+    orphan_cluster_videos: int
+    orphan_subniches: int
+    missing_videos: int
+    verified: bool
 
 
 class YouTubeRepository:
@@ -137,105 +163,169 @@ class YouTubeRepository:
         records = self._get_records("channels")
         return [r["channel_id"] for r in records if "channel_id" in r]
 
-    def insert_clusters(self, result: Any) -> int:
-        """
-        Persists NicheMiningResult clusters, subniches, and cluster_videos to InsForge backend DB tables.
-        """
-        if not result or not result.clusters:
-            return 0
+    def verify_niche_schema(self) -> None:
+        for table in ("clusters", "subniches", "cluster_videos"):
+            self._get_records(table, params={"limit": 1})
+
+    def insert_clusters(self, result: NicheMiningResult) -> ClusterPersistenceResult:
+        if not result.clusters:
+            raise ValueError("Niche mining result has no clusters to persist.")
+
+        cluster_ids = [c.cluster_id for c in result.clusters]
+        video_ids = [video_id for c in result.clusters for video_id in c.video_ids]
+        if len(cluster_ids) != len(set(cluster_ids)):
+            raise ValueError("Duplicate cluster IDs in niche mining result.")
+        if len(video_ids) != len(set(video_ids)):
+            raise ValueError("A video belongs to more than one cluster in this run.")
+        if any(c.video_count != len(c.video_ids) for c in result.clusters):
+            raise ValueError("Cluster video_count does not match its video_ids.")
 
         cluster_records = []
         subniche_records = []
         cluster_video_records = []
-
-        for c in result.clusters:
-            c_rec = {
-                "cluster_id": c.cluster_id,
+        for cluster in result.clusters:
+            cluster_records.append({
+                "cluster_id": cluster.cluster_id,
                 "run_id": result.run_id,
                 "algorithm": result.algorithm,
                 "semantic_provider": result.semantic_provider,
-                "parameters": json.dumps(result.parameters),
-                "video_count": c.video_count,
-                "unique_channels": c.unique_channels,
-                "dominant_channel_share": c.dominant_channel_share,
-                "semantic_quality": c.semantic_quality,
-                "confidence": c.confidence,
-                "signal_score": c.cluster_signal_score,
+                "parameters": result.parameters,
+                "video_count": cluster.video_count,
+                "unique_channels": cluster.unique_channels,
+                "dominant_channel_share": cluster.dominant_channel_share,
+                "semantic_quality": cluster.semantic_quality,
+                "confidence": cluster.confidence,
+                "signal_score": cluster.cluster_signal_score,
                 "created_at": result.created_at
-            }
-            cluster_records.append(c_rec)
-
-            sn_rec = {
-                "cluster_id": c.cluster_id,
+            })
+            subniche_records.append({
+                "cluster_id": cluster.cluster_id,
                 "run_id": result.run_id,
-                "niche": c.niche,
-                "subniche": c.subniche,
-                "microniche": c.microniche,
-                "summary": c.summary,
-                "label_confidence": c.label_confidence,
+                "niche": cluster.niche,
+                "subniche": cluster.subniche,
+                "microniche": cluster.microniche,
+                "summary": cluster.summary,
+                "label_confidence": cluster.label_confidence,
                 "created_at": result.created_at
-            }
-            subniche_records.append(sn_rec)
+            })
+            cluster_video_records.extend({
+                "cluster_id": cluster.cluster_id,
+                "run_id": result.run_id,
+                "video_id": video_id,
+                "distance_to_centroid": None
+            } for video_id in cluster.video_ids)
 
-            for v_id in c.video_ids:
-                cv_rec = {
-                    "cluster_id": c.cluster_id,
-                    "run_id": result.run_id,
-                    "video_id": v_id,
-                    "distance_to_centroid": 0.0
-                }
-                cluster_video_records.append(cv_rec)
+        self.verify_niche_schema()
+        self._post_records("clusters", cluster_records, upsert=False)
+        self._post_records("subniches", subniche_records, upsert=False)
+        self._post_records("cluster_videos", cluster_video_records, upsert=False)
+        return ClusterPersistenceResult(
+            run_id=result.run_id,
+            clusters_written=len(cluster_records),
+            subniches_written=len(subniche_records),
+            cluster_videos_written=len(cluster_video_records)
+        )
 
-        inserted_count = 0
-        try:
-            if self._post_records("clusters", cluster_records, upsert=False):
-                inserted_count += len(cluster_records)
-        except InsForgeClientError as exc:
-            logger.warning(f"Could not persist to 'clusters' table: {exc}")
+    def verify_clusters_readback(self, expected: NicheMiningResult) -> ClusterReadbackResult:
+        run_id = expected.run_id
+        c_records = self._get_records("clusters", params={"run_id": f"eq.{run_id}"})
+        sn_records = self._get_records("subniches", params={"run_id": f"eq.{run_id}"})
+        cv_records = self._get_records("cluster_videos", params={"run_id": f"eq.{run_id}"})
 
-        try:
-            if self._post_records("subniches", subniche_records, upsert=False):
-                pass
-        except InsForgeClientError as exc:
-            logger.warning(f"Could not persist to 'subniches' table: {exc}")
-
-        try:
-            if self._post_records("cluster_videos", cluster_video_records, upsert=False):
-                pass
-        except InsForgeClientError as exc:
-            logger.warning(f"Could not persist to 'cluster_videos' table: {exc}")
-
-        return inserted_count
-
-    def verify_clusters_readback(self, run_id: str) -> Dict[str, Any]:
-        """
-        Queries InsForge to verify persisted clusters, subniches, and cluster_videos for run_id.
-        Returns detailed readback verification dictionary.
-        """
-        try:
-            c_records = self._get_records("clusters", params={"run_id": f"eq.{run_id}"})
-        except InsForgeClientError:
-            c_records = []
-
-        try:
-            sn_records = self._get_records("subniches", params={"run_id": f"eq.{run_id}"})
-        except InsForgeClientError:
-            sn_records = []
-
-        try:
-            cv_records = self._get_records("cluster_videos", params={"run_id": f"eq.{run_id}"})
-        except InsForgeClientError:
-            cv_records = []
-
-        return {
-            "clusters_count": len(c_records),
-            "subniches_count": len(sn_records),
-            "cluster_videos_count": len(cv_records),
-            "clusters_exist": len(c_records) > 0,
-            "subniches_exist": len(sn_records) > 0,
-            "cluster_videos_exist": len(cv_records) > 0,
-            "run_id_matches": all(r.get("run_id") == run_id for r in c_records + sn_records + cv_records) if (c_records or sn_records or cv_records) else False
+        expected_clusters = len(expected.clusters)
+        expected_video_assignments = {
+            (run_id, cluster.cluster_id, video_id)
+            for cluster in expected.clusters
+            for video_id in cluster.video_ids
         }
+        expected_videos = {
+            video_id
+            for _, _, video_id in expected_video_assignments
+        }
+        cluster_keys = [
+            (r.get("run_id"), r.get("cluster_id"))
+            for r in c_records
+        ]
+        subniche_keys = [
+            (r.get("run_id"), r.get("cluster_id"))
+            for r in sn_records
+        ]
+        cluster_video_keys = [
+            (r.get("run_id"), r.get("video_id"))
+            for r in cv_records
+        ]
+        cluster_video_assignments = {
+            (r.get("run_id"), r.get("cluster_id"), r.get("video_id"))
+            for r in cv_records
+        }
+        persisted_video_ids = {
+            r.get("video_id") for r in cv_records
+        }
+        persisted_cluster_ids = {
+            r.get("cluster_id") for r in cv_records
+        }
+        duplicate_clusters = sum(
+            count - 1
+            for count in Counter(cluster_keys).values()
+            if count > 1
+        )
+        duplicate_videos = sum(
+            count - 1
+            for count in Counter(cluster_video_keys).values()
+            if count > 1
+        )
+        stored_cluster_keys = set(cluster_keys)
+        orphan_subniches = sum(
+            key not in stored_cluster_keys
+            for key in subniche_keys
+        )
+        orphan_cluster_videos = sum(
+            (r.get("run_id"), r.get("cluster_id"))
+            not in stored_cluster_keys
+            for r in cv_records
+        )
+        missing_videos = sum(
+            not self._get_records(
+                "videos",
+                params={"video_id": f"eq.{video_id}"}
+            )
+            for video_id in persisted_video_ids
+        )
+        expected_cluster_keys = {
+            (run_id, cluster.cluster_id)
+            for cluster in expected.clusters
+        }
+        verified = (
+            len(c_records) == expected_clusters
+            and len(sn_records) == expected_clusters
+            and len(cv_records) == len(expected_video_assignments)
+            and set(cluster_keys) == expected_cluster_keys
+            and set(subniche_keys) == expected_cluster_keys
+            and cluster_video_assignments
+                == expected_video_assignments
+            and duplicate_clusters == duplicate_videos == 0
+            and orphan_cluster_videos
+                == orphan_subniches
+                == missing_videos
+                == 0
+        )
+        return ClusterReadbackResult(
+            run_id=run_id,
+            expected_clusters=expected_clusters,
+            actual_clusters=len(c_records),
+            expected_subniches=expected_clusters,
+            actual_subniches=len(sn_records),
+            expected_cluster_videos=len(expected_videos),
+            actual_cluster_videos=len(cv_records),
+            unique_videos=len(persisted_video_ids),
+            unique_cluster_ids=len(persisted_cluster_ids),
+            duplicate_clusters=duplicate_clusters,
+            duplicate_videos=duplicate_videos,
+            orphan_cluster_videos=orphan_cluster_videos,
+            orphan_subniches=orphan_subniches,
+            missing_videos=missing_videos,
+            verified=verified
+        )
 
 
     def _post_records(

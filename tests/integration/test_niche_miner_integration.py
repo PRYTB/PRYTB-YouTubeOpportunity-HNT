@@ -33,11 +33,26 @@ def test_niche_miner_integration():
     assert first_cluster.subniche != ""
     assert first_cluster.microniche != ""
 
-    # Verify cluster persistence and readback if DB connected
+    # Verify schema, exact writes, and real read-back.
     repo = YouTubeRepository()
-    inserted = repo.insert_clusters(result)
-    assert inserted >= 0
+    repo.verify_niche_schema()
+    written = repo.insert_clusters(result)
+    expected_videos = sum(len(cluster.video_ids) for cluster in result.clusters)
 
-    readback = repo.verify_clusters_readback(result.run_id)
-    assert "clusters_exist" in readback
+    assert written.clusters_written == len(result.clusters)
+    assert written.subniches_written == len(result.clusters)
+    assert written.cluster_videos_written == expected_videos
+
+    readback = repo.verify_clusters_readback(result)
+    assert readback.actual_clusters == len(result.clusters)
+    assert readback.actual_subniches == len(result.clusters)
+    assert readback.actual_cluster_videos == expected_videos
+    assert readback.unique_videos == expected_videos
+    assert readback.unique_cluster_ids == len(result.clusters)
+    assert readback.duplicate_clusters == 0
+    assert readback.duplicate_videos == 0
+    assert readback.orphan_cluster_videos == 0
+    assert readback.orphan_subniches == 0
+    assert readback.missing_videos == 0
+    assert readback.verified is True
 

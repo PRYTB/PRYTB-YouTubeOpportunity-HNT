@@ -174,23 +174,29 @@ def main():
     # Persist if flag provided
     if args.persist:
         print("Persisting clusters, subniches, and cluster_videos to InsForge backend DB...")
-        inserted = repo.insert_clusters(result)
-        print(f"[OK] Persisted {inserted} cluster records into InsForge.")
-
-        print("Executing InsForge Read-Back verification...")
-        readback = repo.verify_clusters_readback(result.run_id)
-        print(f"  clusters exist:       {readback['clusters_exist']} ({readback['clusters_count']} records)")
-        print(f"  subniches exist:      {readback['subniches_exist']} ({readback['subniches_count']} records)")
-        print(f"  cluster_videos exist: {readback['cluster_videos_exist']} ({readback['cluster_videos_count']} records)")
-        print(f"  run_id matches:       {readback['run_id_matches']}")
-        if readback['clusters_exist'] and readback['subniches_exist'] and readback['cluster_videos_exist'] and readback['run_id_matches']:
-            print("[OK] READ-BACK VERIFICATION PASSED PERFECTLY.")
-        else:
-            print("[FAIL] READ-BACK VERIFICATION FAILED.")
+        try:
+            write_result = repo.insert_clusters(result)
+            print("Executing InsForge Read-Back verification...")
+            readback = repo.verify_clusters_readback(result)
+            print(f"  clusters:       {readback.actual_clusters}/{readback.expected_clusters}")
+            print(f"  subniches:      {readback.actual_subniches}/{readback.expected_subniches}")
+            print(f"  cluster_videos: {readback.actual_cluster_videos}/{readback.expected_cluster_videos}")
+            if not readback.verified:
+                raise RuntimeError(f"Persistence read-back mismatch: {readback.model_dump()}")
+            print(
+                f"[OK] Persistence verified: {write_result.clusters_written} clusters, "
+                f"{write_result.subniches_written} subniches, "
+                f"{write_result.cluster_videos_written} cluster videos."
+            )
+        except Exception as exc:
+            logger.error(f"Persistence failed: {exc}")
+            print(f"[FAIL] Persistence: {exc}", file=sys.stderr)
+            return 1
 
     print(f"\nNiche Mining run {result.run_id} finished successfully.")
+    return 0
 
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
