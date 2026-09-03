@@ -13,7 +13,9 @@ Sprint 2: InsForge Persistence (COMPLETE)
 Sprint 3: Historical Metrics (COMPLETE)
 Sprint 4: Outlier Engine (COMPLETE)
 Sprint 5: Niche Miner (COMPLETE)
-Next: Sprint 6 — Revenue + Geography
+Sprint 6: Revenue + Geography (COMPLETE)
+Sprint 7: Competition + Depth + Evergreen (COMPLETE)
+Next: Sprint 8 — Cost + Risk
 ```
 
 Ruta raíz oficial y definitiva: `I:\PRYTB`
@@ -91,6 +93,23 @@ Tests de integración (conectividad real):
 .\.venv\Scripts\python -m pytest -m integration -v
 ```
 
+## Sprint 7
+
+El análisis de competencia, accesibilidad de entrada, profundidad de contenido y evergreen es read-only por defecto:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\analyze_market_structure.py --json
+```
+
+Para habilitar persistencia explícita en InsForge, aplicar primero la migración y usar `--persist`; la ejecución exige read-back exacto:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\migrate_sprint7_schema.py
+.\.venv\Scripts\python.exe scripts\analyze_market_structure.py --json --persist
+```
+
+Metodología y límites de evidencia: [docs/SPRINT_7_COMPETITION_DEPTH_EVERGREEN.md](docs/SPRINT_7_COMPETITION_DEPTH_EVERGREEN.md).
+
 ## Estructura del Proyecto
 
 ```text
@@ -139,4 +158,5 @@ I:\PRYTB
 * **Sprint 4:** Outlier Engine (COMPLETADO)
 * **Sprint 5:** Niche Miner (COMPLETADO)
 * **Sprint 6:** Revenue + Geography (COMPLETADO)
-* **Siguiente:** Sprint 7
+* **Sprint 7:** Competition + Depth + Evergreen (COMPLETADO)
+* **Siguiente:** Sprint 8 — Cost + Risk

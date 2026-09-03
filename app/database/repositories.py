@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 import httpx
 
 from app.database.insforge_client import InsForgeClient, InsForgeClientError
+from app.models.market_structure import Sprint7AnalysisResult
 from app.models.niche import NicheMiningResult
 from app.models.youtube import CollectionResult, YouTubeChannel, YouTubeVideo
 from app.utils.logger import logger
@@ -49,6 +50,21 @@ class ClusterReadbackResult(BaseModel):
     cluster_payload_mismatches: int = 0
     subniche_payload_mismatches: int = 0
     cluster_video_payload_mismatches: int = 0
+    verified: bool
+
+
+class MarketStructurePersistenceResult(BaseModel):
+    run_id: str
+    records_written: int
+
+
+class MarketStructureReadbackResult(BaseModel):
+    run_id: str
+    expected_records: int
+    actual_records: int
+    unique_clusters: int
+    duplicate_records: int
+    payload_mismatches: int
     verified: bool
 
 
@@ -171,6 +187,87 @@ class YouTubeRepository:
         for table in ("clusters", "subniches", "cluster_videos"):
             self._get_records(table, params={"limit": 1})
 
+    def verify_market_structure_schema(self) -> None:
+        self._get_records("market_structure_analyses", params={"limit": 1})
+
+    @staticmethod
+    def _build_market_structure_records(
+        result: Sprint7AnalysisResult
+    ) -> List[Dict[str, Any]]:
+        records = []
+        for cluster in result.clusters:
+            payload = cluster.model_dump(mode="json")
+            records.append({
+                "run_id": result.run_id,
+                "source_cluster_run_id": result.source_cluster_run_id,
+                "cluster_id": cluster.cluster_id,
+                "analyzed_at": result.analyzed_at,
+                "config": result.config,
+                "quality": result.quality.model_dump(mode="json"),
+                "metrics": payload,
+                "microniche": cluster.microniche,
+                "top_5_rank": cluster.top_5_rank,
+                "market_structure_score": cluster.market_structure_score,
+                "competition_score": cluster.competition_score,
+                "accessibility_score": cluster.accessibility_score,
+                "content_depth_score": cluster.content_depth_score,
+                "trend_score": cluster.trend_score,
+                "evergreen_score": cluster.evergreen_score,
+                "evergreen_class": cluster.evergreen_class.value,
+                "market_structure_class": cluster.market_structure_class.value,
+                "confidence": cluster.confidence,
+            })
+        return records
+
+    def insert_market_structure_analysis(
+        self, result: Sprint7AnalysisResult
+    ) -> MarketStructurePersistenceResult:
+        if not result.clusters:
+            raise ValueError("Sprint 7 analysis has no clusters to persist.")
+        cluster_ids = [cluster.cluster_id for cluster in result.clusters]
+        if len(cluster_ids) != len(set(cluster_ids)):
+            raise ValueError("Duplicate cluster IDs in Sprint 7 analysis.")
+        records = self._build_market_structure_records(result)
+        self.verify_market_structure_schema()
+        self._post_records("market_structure_analyses", records, upsert=False)
+        return MarketStructurePersistenceResult(
+            run_id=result.run_id, records_written=len(records)
+        )
+
+    def verify_market_structure_readback(
+        self, expected: Sprint7AnalysisResult
+    ) -> MarketStructureReadbackResult:
+        records = self._get_records(
+            "market_structure_analyses",
+            params={"run_id": f"eq.{expected.run_id}"},
+        )
+        expected_records = self._build_market_structure_records(expected)
+        keys = [(record.get("run_id"), record.get("cluster_id")) for record in records]
+        duplicate_records = sum(
+            count - 1 for count in Counter(keys).values() if count > 1
+        )
+        payload_mismatches = self._payload_mismatches(
+            expected_records, records, ("run_id", "cluster_id")
+        )
+        expected_keys = {
+            (expected.run_id, cluster.cluster_id) for cluster in expected.clusters
+        }
+        verified = (
+            len(records) == len(expected_records)
+            and set(keys) == expected_keys
+            and duplicate_records == 0
+            and payload_mismatches == 0
+        )
+        return MarketStructureReadbackResult(
+            run_id=expected.run_id,
+            expected_records=len(expected_records),
+            actual_records=len(records),
+            unique_clusters=len({record.get("cluster_id") for record in records}),
+            duplicate_records=duplicate_records,
+            payload_mismatches=payload_mismatches,
+            verified=verified,
+        )
+
     @staticmethod
     def _build_cluster_records(
         result: NicheMiningResult
@@ -246,12 +343,13 @@ class YouTubeRepository:
     ) -> int:
         def normalize(record: Dict[str, Any]) -> Dict[str, Any]:
             normalized = dict(record)
-            parameters = normalized.get("parameters")
-            if isinstance(parameters, str):
-                try:
-                    normalized["parameters"] = json.loads(parameters)
-                except json.JSONDecodeError:
-                    pass
+            for field in ("parameters", "config", "quality", "metrics"):
+                value = normalized.get(field)
+                if isinstance(value, str):
+                    try:
+                        normalized[field] = json.loads(value)
+                    except json.JSONDecodeError:
+                        pass
             return normalized
 
         expected_by_key = {
