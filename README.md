@@ -138,4 +138,5 @@ I:\PRYTB
 * **Sprint 3:** Historical Metrics & Velocity (COMPLETADO)
 * **Sprint 4:** Outlier Engine (COMPLETADO)
 * **Sprint 5:** Niche Miner (COMPLETADO)
-* **Sprint 6:** Revenue + Geography (PENDIENTE)
+* **Sprint 6:** Revenue + Geography (COMPLETADO)
+* **Siguiente:** Sprint 7
