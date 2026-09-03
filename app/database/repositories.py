@@ -1,3 +1,4 @@
+import json
 import time
 from collections import Counter
 from datetime import datetime, timezone
@@ -45,6 +46,9 @@ class ClusterReadbackResult(BaseModel):
     orphan_cluster_videos: int
     orphan_subniches: int
     missing_videos: int
+    cluster_payload_mismatches: int = 0
+    subniche_payload_mismatches: int = 0
+    cluster_video_payload_mismatches: int = 0
     verified: bool
 
 
@@ -167,19 +171,10 @@ class YouTubeRepository:
         for table in ("clusters", "subniches", "cluster_videos"):
             self._get_records(table, params={"limit": 1})
 
-    def insert_clusters(self, result: NicheMiningResult) -> ClusterPersistenceResult:
-        if not result.clusters:
-            raise ValueError("Niche mining result has no clusters to persist.")
-
-        cluster_ids = [c.cluster_id for c in result.clusters]
-        video_ids = [video_id for c in result.clusters for video_id in c.video_ids]
-        if len(cluster_ids) != len(set(cluster_ids)):
-            raise ValueError("Duplicate cluster IDs in niche mining result.")
-        if len(video_ids) != len(set(video_ids)):
-            raise ValueError("A video belongs to more than one cluster in this run.")
-        if any(c.video_count != len(c.video_ids) for c in result.clusters):
-            raise ValueError("Cluster video_count does not match its video_ids.")
-
+    @staticmethod
+    def _build_cluster_records(
+        result: NicheMiningResult
+    ) -> tuple[List[Dict[str, Any]], List[Dict[str, Any]], List[Dict[str, Any]]]:
         cluster_records = []
         subniche_records = []
         cluster_video_records = []
@@ -214,7 +209,24 @@ class YouTubeRepository:
                 "video_id": video_id,
                 "distance_to_centroid": None
             } for video_id in cluster.video_ids)
+        return cluster_records, subniche_records, cluster_video_records
 
+    def insert_clusters(self, result: NicheMiningResult) -> ClusterPersistenceResult:
+        if not result.clusters:
+            raise ValueError("Niche mining result has no clusters to persist.")
+
+        cluster_ids = [c.cluster_id for c in result.clusters]
+        video_ids = [video_id for c in result.clusters for video_id in c.video_ids]
+        if len(cluster_ids) != len(set(cluster_ids)):
+            raise ValueError("Duplicate cluster IDs in niche mining result.")
+        if len(video_ids) != len(set(video_ids)):
+            raise ValueError("A video belongs to more than one cluster in this run.")
+        if any(c.video_count != len(c.video_ids) for c in result.clusters):
+            raise ValueError("Cluster video_count does not match its video_ids.")
+
+        cluster_records, subniche_records, cluster_video_records = (
+            self._build_cluster_records(result)
+        )
         self.verify_niche_schema()
         self._post_records("clusters", cluster_records, upsert=False)
         self._post_records("subniches", subniche_records, upsert=False)
@@ -226,21 +238,57 @@ class YouTubeRepository:
             cluster_videos_written=len(cluster_video_records)
         )
 
+    @staticmethod
+    def _payload_mismatches(
+        expected_records: List[Dict[str, Any]],
+        actual_records: List[Dict[str, Any]],
+        key_fields: tuple[str, ...]
+    ) -> int:
+        def normalize(record: Dict[str, Any]) -> Dict[str, Any]:
+            normalized = dict(record)
+            parameters = normalized.get("parameters")
+            if isinstance(parameters, str):
+                try:
+                    normalized["parameters"] = json.loads(parameters)
+                except json.JSONDecodeError:
+                    pass
+            return normalized
+
+        expected_by_key = {
+            tuple(record[field] for field in key_fields): normalize(record)
+            for record in expected_records
+        }
+        actual_by_key = {
+            tuple(record.get(field) for field in key_fields): record
+            for record in actual_records
+        }
+        mismatches = 0
+        for key in expected_by_key.keys() | actual_by_key.keys():
+            expected_record = expected_by_key.get(key)
+            actual_record = actual_by_key.get(key)
+            if expected_record is None or actual_record is None:
+                mismatches += 1
+                continue
+            persisted_payload = normalize({
+                field: actual_record.get(field)
+                for field in expected_record
+            })
+            if persisted_payload != expected_record:
+                mismatches += 1
+        return mismatches
+
     def verify_clusters_readback(self, expected: NicheMiningResult) -> ClusterReadbackResult:
         run_id = expected.run_id
         c_records = self._get_records("clusters", params={"run_id": f"eq.{run_id}"})
         sn_records = self._get_records("subniches", params={"run_id": f"eq.{run_id}"})
         cv_records = self._get_records("cluster_videos", params={"run_id": f"eq.{run_id}"})
+        expected_c, expected_sn, expected_cv = self._build_cluster_records(expected)
 
         expected_clusters = len(expected.clusters)
         expected_video_assignments = {
             (run_id, cluster.cluster_id, video_id)
             for cluster in expected.clusters
             for video_id in cluster.video_ids
-        }
-        expected_videos = {
-            video_id
-            for _, _, video_id in expected_video_assignments
         }
         cluster_keys = [
             (r.get("run_id"), r.get("cluster_id"))
@@ -295,19 +343,29 @@ class YouTubeRepository:
             (run_id, cluster.cluster_id)
             for cluster in expected.clusters
         }
+        cluster_payload_mismatches = self._payload_mismatches(
+            expected_c, c_records, ("run_id", "cluster_id")
+        )
+        subniche_payload_mismatches = self._payload_mismatches(
+            expected_sn, sn_records, ("run_id", "cluster_id")
+        )
+        cluster_video_payload_mismatches = self._payload_mismatches(
+            expected_cv,
+            cv_records,
+            ("run_id", "cluster_id", "video_id")
+        )
         verified = (
             len(c_records) == expected_clusters
             and len(sn_records) == expected_clusters
             and len(cv_records) == len(expected_video_assignments)
             and set(cluster_keys) == expected_cluster_keys
             and set(subniche_keys) == expected_cluster_keys
-            and cluster_video_assignments
-                == expected_video_assignments
+            and cluster_video_assignments == expected_video_assignments
             and duplicate_clusters == duplicate_videos == 0
-            and orphan_cluster_videos
-                == orphan_subniches
-                == missing_videos
-                == 0
+            and orphan_cluster_videos == orphan_subniches == missing_videos == 0
+            and cluster_payload_mismatches == 0
+            and subniche_payload_mismatches == 0
+            and cluster_video_payload_mismatches == 0
         )
         return ClusterReadbackResult(
             run_id=run_id,
@@ -315,7 +373,7 @@ class YouTubeRepository:
             actual_clusters=len(c_records),
             expected_subniches=expected_clusters,
             actual_subniches=len(sn_records),
-            expected_cluster_videos=len(expected_videos),
+            expected_cluster_videos=len(expected_video_assignments),
             actual_cluster_videos=len(cv_records),
             unique_videos=len(persisted_video_ids),
             unique_cluster_ids=len(persisted_cluster_ids),
@@ -324,6 +382,9 @@ class YouTubeRepository:
             orphan_cluster_videos=orphan_cluster_videos,
             orphan_subniches=orphan_subniches,
             missing_videos=missing_videos,
+            cluster_payload_mismatches=cluster_payload_mismatches,
+            subniche_payload_mismatches=subniche_payload_mismatches,
+            cluster_video_payload_mismatches=cluster_video_payload_mismatches,
             verified=verified
         )
 

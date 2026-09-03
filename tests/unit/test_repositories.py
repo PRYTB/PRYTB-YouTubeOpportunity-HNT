@@ -1,3 +1,5 @@
+from copy import deepcopy
+import json
 from unittest.mock import patch, MagicMock
 import pytest
 import httpx
@@ -379,49 +381,42 @@ def test_insert_clusters_propagates_child_table_error(
         repo.insert_clusters(sample_niche_result)
 
 
-def test_verify_clusters_readback_requires_exact_integrity(
-    mock_client,
-    sample_niche_result
-):
+def make_readback_records(result):
+    clusters, subniches, cluster_videos = YouTubeRepository._build_cluster_records(
+        result
+    )
     records = {
-        "clusters": [
-            {"run_id": "sprint5-test-run", "cluster_id": 0},
-            {"run_id": "sprint5-test-run", "cluster_id": 1}
-        ],
-        "subniches": [
-            {"run_id": "sprint5-test-run", "cluster_id": 0},
-            {"run_id": "sprint5-test-run", "cluster_id": 1}
-        ],
-        "cluster_videos": [
-            {
-                "run_id": "sprint5-test-run",
-                "cluster_id": 0,
-                "video_id": "VID1"
-            },
-            {
-                "run_id": "sprint5-test-run",
-                "cluster_id": 0,
-                "video_id": "VID2"
-            },
-            {
-                "run_id": "sprint5-test-run",
-                "cluster_id": 1,
-                "video_id": "VID3"
-            }
-        ]
+        "clusters": deepcopy(clusters),
+        "subniches": deepcopy(subniches),
+        "cluster_videos": deepcopy(cluster_videos),
     }
+    for values in records.values():
+        for record in values:
+            record["database_generated_id"] = 123
+    return records
 
+
+def configure_readback(repo, records):
     def get_records(table, params=None):
         if table == "videos":
             return [{"video_id": params["video_id"][3:]}]
         return records[table]
 
-    repo = YouTubeRepository(client=mock_client)
     repo._get_records = MagicMock(side_effect=get_records)
 
-    readback = repo.verify_clusters_readback(
-        sample_niche_result
+
+def test_verify_clusters_readback_requires_exact_integrity(
+    mock_client,
+    sample_niche_result
+):
+    records = make_readback_records(sample_niche_result)
+    records["clusters"][0]["parameters"] = json.dumps(
+        records["clusters"][0]["parameters"]
     )
+    repo = YouTubeRepository(client=mock_client)
+    configure_readback(repo, records)
+
+    readback = repo.verify_clusters_readback(sample_niche_result)
 
     assert readback.actual_clusters == 2
     assert readback.actual_subniches == 2
@@ -433,7 +428,43 @@ def test_verify_clusters_readback_requires_exact_integrity(
     assert readback.orphan_cluster_videos == 0
     assert readback.orphan_subniches == 0
     assert readback.missing_videos == 0
+    assert readback.cluster_payload_mismatches == 0
+    assert readback.subniche_payload_mismatches == 0
+    assert readback.cluster_video_payload_mismatches == 0
     assert readback.verified is True
+
+
+@pytest.mark.parametrize(
+    ("table", "field", "value", "mismatch_field"),
+    [
+        ("clusters", "parameters", {"k": 99}, "cluster_payload_mismatches"),
+        ("clusters", "semantic_quality", 0.25, "cluster_payload_mismatches"),
+        ("subniches", "summary", "altered", "subniche_payload_mismatches"),
+        (
+            "cluster_videos",
+            "distance_to_centroid",
+            0.1,
+            "cluster_video_payload_mismatches",
+        ),
+    ],
+)
+def test_verify_clusters_readback_rejects_payload_difference(
+    mock_client,
+    sample_niche_result,
+    table,
+    field,
+    value,
+    mismatch_field,
+):
+    records = make_readback_records(sample_niche_result)
+    records[table][0][field] = value
+    repo = YouTubeRepository(client=mock_client)
+    configure_readback(repo, records)
+
+    readback = repo.verify_clusters_readback(sample_niche_result)
+
+    assert getattr(readback, mismatch_field) == 1
+    assert readback.verified is False
 
 
 def test_verify_clusters_readback_propagates_get_error(

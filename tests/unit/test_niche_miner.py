@@ -131,3 +131,30 @@ def test_labeler_fallback():
     assert hierarchy.niche == "Cybersecurity"
     assert hierarchy.subniche != "Cybersecurity Domain"
 
+
+def test_clustering_reproducibility_exact_assignments():
+    """Regression test: same config must produce identical K, silhouette, and assignments hash."""
+    optimizer = ClusterOptimizer(min_k=3, max_k=3, random_state=42)
+    np.random.seed(42)
+    c1 = np.random.normal(loc=0.0, scale=0.1, size=(15, 20))
+    c2 = np.random.normal(loc=10.0, scale=0.1, size=(15, 20))
+    c3 = np.random.normal(loc=-10.0, scale=0.1, size=(15, 20))
+    data = np.vstack([c1, c2, c3])
+
+    # Run 1
+    labels1, algo1, params1, score1 = optimizer.fit_optimal_clusters(data, algorithm="kmeans")
+    # Run 2
+    labels2, algo2, params2, score2 = optimizer.fit_optimal_clusters(data, algorithm="kmeans")
+
+    assert np.array_equal(labels1, labels2), "Labels must be identical across runs"
+    assert algo1 == algo2, "Algorithm must be identical"
+    assert abs(score1 - score2) <= 1e-6, "Silhouette must be identical within tolerance"
+
+    # Also test with Agglomerative which is fully deterministic
+    optimizer2 = ClusterOptimizer(min_k=3, max_k=3, random_state=42)
+    labels3, algo3, params3, score3 = optimizer2.fit_optimal_clusters(data, algorithm="agglomerative")
+    labels4, algo4, params4, score4 = optimizer2.fit_optimal_clusters(data, algorithm="agglomerative")
+
+    assert np.array_equal(labels3, labels4), "Agglomerative labels must be identical"
+    assert abs(score3 - score4) <= 1e-6, "Agglomerative silhouette must be identical"
+
