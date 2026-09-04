@@ -15,7 +15,7 @@ Sprint 4: Outlier Engine (COMPLETE)
 Sprint 5: Niche Miner (COMPLETE)
 Sprint 6: Revenue + Geography (COMPLETE)
 Sprint 7: Competition + Depth + Evergreen (COMPLETE)
-Next: Sprint 8 — Cost + Risk
+Sprint 8: Production Feasibility + Risk (COMPLETE)
 ```
 
 Ruta raíz oficial y definitiva: `I:\PRYTB`
@@ -159,4 +159,4 @@ I:\PRYTB
 * **Sprint 5:** Niche Miner (COMPLETADO)
 * **Sprint 6:** Revenue + Geography (COMPLETADO)
 * **Sprint 7:** Competition + Depth + Evergreen (COMPLETADO)
-* **Siguiente:** Sprint 8 — Cost + Risk
+* **Sprint 8:** Production Feasibility + Risk (COMPLETADO)
