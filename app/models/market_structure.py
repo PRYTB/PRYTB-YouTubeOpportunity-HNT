@@ -17,6 +17,7 @@ class ContentDepthBand(str, Enum):
     IDEAS_20_PLUS = "20_PLUS"
     IDEAS_50_PLUS = "50_PLUS"
     IDEAS_100_PLUS = "100_PLUS"
+    UNDETERMINED = "UNDETERMINED"
     UNKNOWN = "UNKNOWN"
 
 
@@ -70,17 +71,25 @@ class ClusterMarketStructure(BaseModel):
 
     competition_score: float = Field(default=0.0, ge=0.0, le=100.0)
     accessibility_score: float = Field(default=0.0, ge=0.0, le=100.0)
+    accessibility_confidence: float = Field(default=0.0, ge=0.0, le=100.0)
     accessibility: EntryAccessibility = EntryAccessibility.UNKNOWN
 
     distinct_title_count: int = Field(default=0, ge=0)
     title_pattern_count: int = Field(default=0, ge=0)
+    topic_atom_count: int = Field(default=0, ge=0)
+    near_duplicate_count: int = Field(default=0, ge=0)
+    semantic_diversity: Optional[float] = Field(default=None, ge=0.0, le=1.0)
     content_atoms: List[ContentAtom] = Field(default_factory=list)
     short_video_count: int = Field(default=0, ge=0)
     long_form_video_count: int = Field(default=0, ge=0)
     unknown_format_count: int = Field(default=0, ge=0)
+    format_facet_count: int = Field(default=0, ge=0, le=2)
     observed_content_span_days: Optional[float] = Field(default=None, ge=0.0)
+    estimated_capacity_low: Optional[int] = Field(default=None, ge=0)
+    estimated_capacity_high: Optional[int] = Field(default=None, ge=0)
     estimated_distinct_ideas: Optional[int] = Field(default=None, ge=0)
     content_depth_score: float = Field(default=0.0, ge=0.0, le=100.0)
+    depth_confidence: float = Field(default=0.0, ge=0.0, le=100.0)
     content_depth_band: ContentDepthBand = ContentDepthBand.UNKNOWN
 
     recent_video_rate: Optional[float] = Field(default=None, ge=0.0, le=100.0)
@@ -118,6 +127,18 @@ class ClusterMarketStructure(BaseModel):
             raise ValueError("Outlier classifications cannot exceed available results.")
         if self.distinct_title_count > self.video_count:
             raise ValueError("Distinct title count cannot exceed video count.")
+        if self.title_pattern_count > self.distinct_title_count:
+            raise ValueError("Title pattern count cannot exceed distinct title count.")
+        if self.topic_atom_count > self.title_pattern_count:
+            raise ValueError("Topic atom count cannot exceed title pattern count.")
+        if self.near_duplicate_count + self.topic_atom_count > self.video_count:
+            raise ValueError("Title signatures and near-duplicates cannot exceed video count.")
+        if (
+            self.estimated_capacity_low is not None
+            and self.estimated_capacity_high is not None
+            and self.estimated_capacity_low > self.estimated_capacity_high
+        ):
+            raise ValueError("Content capacity bounds must be ordered.")
         if self.short_video_count + self.long_form_video_count + self.unknown_format_count > self.video_count:
             raise ValueError("Content format counts cannot exceed video count.")
         return self

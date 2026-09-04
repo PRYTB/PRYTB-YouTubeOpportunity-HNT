@@ -254,12 +254,16 @@ class MarketStructureEngine:
             + size_component * self.config.competition_weight_channel_size
             + maturity_component * self.config.competition_weight_maturity
         )
-        accessibility_score = _weighted_known([
+        accessibility_components = [
             (small_success_rate, self.config.accessibility_weight_small_success),
             (new_entrant_rate, self.config.accessibility_weight_new_entrants),
             (100.0 - concentration_component if channel_count else None,
              self.config.accessibility_weight_low_concentration),
-        ])
+        ]
+        accessibility_score = _weighted_known(accessibility_components)
+        accessibility_confidence = _bounded(100.0 * sum(
+            weight for value, weight in accessibility_components if value is not None
+        ))
         if not channel_count:
             accessibility = EntryAccessibility.UNKNOWN
         elif accessibility_score >= self.config.high_accessibility_min:
@@ -281,21 +285,40 @@ class MarketStructureEngine:
             ContentAtom(atom=atom, video_count=frequency)
             for atom, frequency in sorted(signature_counts.items(), key=lambda item: (-item[1], item[0]))
         ]
-        evidence_units = max(len(titles), len(signature_counts) * self.config.idea_multiplier)
-        estimated_ideas = min(100, evidence_units) if titles else None
-        if estimated_ideas is None:
+        titled_video_count = sum(bool(str(video.get("title") or "").strip()) for video in members)
+        topic_atom_count = len(signature_counts)
+        capacity_low = topic_atom_count if titled_video_count else None
+        capacity_high = (
+            min(100, topic_atom_count * self.config.idea_multiplier)
+            if capacity_low is not None else None
+        )
+        near_duplicate_count = titled_video_count - topic_atom_count
+        semantic_diversity = (
+            round(topic_atom_count / titled_video_count, 4) if titled_video_count else None
+        )
+        depth_confidence = _bounded(
+            100.0 * (semantic_diversity or 0.0)
+            * min(1.0, titled_video_count / self.config.minimum_cluster_sample)
+        )
+        estimated_ideas = capacity_low
+        if capacity_low is None:
             depth_band = ContentDepthBand.UNKNOWN
-        elif evidence_units >= self.config.depth_100_threshold:
+        elif capacity_low >= 100:
             depth_band, estimated_ideas = ContentDepthBand.IDEAS_100_PLUS, 100
-        elif evidence_units >= self.config.depth_50_threshold:
+        elif capacity_low >= 50 and capacity_high < 100:
             depth_band, estimated_ideas = ContentDepthBand.IDEAS_50_PLUS, 50
-        elif evidence_units >= self.config.depth_20_threshold:
+        elif capacity_low >= 20 and capacity_high < 50:
             depth_band, estimated_ideas = ContentDepthBand.IDEAS_20_PLUS, 20
-        else:
+        elif capacity_high < 20:
             depth_band = ContentDepthBand.BELOW_20
-        depth_score = _bounded(evidence_units / self.config.depth_100_threshold * 100.0)
+        else:
+            depth_band = ContentDepthBand.UNDETERMINED
+        depth_score = _bounded((capacity_low or 0) / 100.0 * 100.0)
 
         formats = Counter(classify_content_type(video.get("duration_seconds")) for video in members)
+        format_facet_count = sum(
+            bool(formats[content_type]) for content_type in (ContentType.SHORT, ContentType.LONG_FORM)
+        )
         video_ages = [_age_days(video.get("published_at"), as_of) for video in members]
         known_video_ages = [value for value in video_ages if value is not None]
         recent_rate = _rate(
@@ -334,7 +357,7 @@ class MarketStructureEngine:
         median_views = round(median(known_views), 1) if known_views else None
         if competition_score >= self.config.saturated_competition_min and median_views is not None and median_views >= self.config.viral_median_views_min:
             structure_class = MarketStructureClass.VIRAL_SATURATED
-        elif estimated_ideas is not None and depth_score < self.config.sustainable_depth_min:
+        elif depth_band is ContentDepthBand.BELOW_20:
             structure_class = MarketStructureClass.CONTENT_CONSTRAINED
         elif accessibility in {EntryAccessibility.HIGH, EntryAccessibility.MEDIUM} and evergreen_class not in {EvergreenClass.TREND, EvergreenClass.UNKNOWN}:
             structure_class = MarketStructureClass.SUSTAINABLE_ACCESSIBLE
@@ -349,7 +372,11 @@ class MarketStructureEngine:
             len(member_outliers) / count if count else 0.0,
         ])
         sample_factor = min(1.0, count / self.config.minimum_cluster_sample)
-        confidence = _bounded(100.0 * completeness * (0.5 + 0.5 * sample_factor))
+        confidence = _bounded(
+            100.0 * completeness * (0.5 + 0.5 * sample_factor)
+            * (0.5 + 0.5 * accessibility_confidence / 100.0)
+            * (0.5 + 0.5 * depth_confidence / 100.0)
+        )
         market_structure_score = _bounded(
             0.35 * accessibility_score + 0.25 * depth_score
             + 0.20 * evergreen_score + 0.20 * (100.0 - competition_score)
@@ -387,16 +414,24 @@ class MarketStructureEngine:
             average_outlier_rank_score=round(mean(rank_scores), 4) if rank_scores else None,
             competition_score=competition_score,
             accessibility_score=accessibility_score,
+            accessibility_confidence=accessibility_confidence,
             accessibility=accessibility,
             distinct_title_count=len(titles),
-            title_pattern_count=len(signature_counts),
+            title_pattern_count=topic_atom_count,
+            topic_atom_count=topic_atom_count,
+            near_duplicate_count=near_duplicate_count,
+            semantic_diversity=semantic_diversity,
             content_atoms=content_atoms,
             short_video_count=formats[ContentType.SHORT],
             long_form_video_count=formats[ContentType.LONG_FORM],
             unknown_format_count=formats[ContentType.UNKNOWN],
+            format_facet_count=format_facet_count,
             observed_content_span_days=span,
+            estimated_capacity_low=capacity_low,
+            estimated_capacity_high=capacity_high,
             estimated_distinct_ideas=estimated_ideas,
             content_depth_score=depth_score,
+            depth_confidence=depth_confidence,
             content_depth_band=depth_band,
             recent_video_rate=recent_rate,
             mature_video_rate=mature_rate,
@@ -415,7 +450,8 @@ class MarketStructureEngine:
                 "concentration_component": round(concentration_component, 1),
                 "channel_size_component": round(size_component, 1),
                 "maturity_component": round(maturity_component, 1),
-                "content_evidence_units": evidence_units,
+                "content_capacity_low": capacity_low,
+                "content_capacity_high": capacity_high,
                 "market_structure_score_formula": {
                     "accessibility": 0.35,
                     "content_depth": 0.25,

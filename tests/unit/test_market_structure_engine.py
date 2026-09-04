@@ -111,21 +111,147 @@ def test_small_channel_sample_requires_non_zero_sufficient_baseline():
 
 
 @pytest.mark.parametrize(
-    "title_count, expected_band, expected_ideas",
-    [(1, ContentDepthBand.BELOW_20, 1), (5, ContentDepthBand.IDEAS_20_PLUS, 20),
-     (10, ContentDepthBand.IDEAS_50_PLUS, 50), (20, ContentDepthBand.IDEAS_100_PLUS, 100)],
+    "signature_count, expected_band, expected_ideas",
+    [
+        (19, ContentDepthBand.BELOW_20, 19),
+        (20, ContentDepthBand.IDEAS_20_PLUS, 20),
+        (50, ContentDepthBand.IDEAS_50_PLUS, 50),
+        (100, ContentDepthBand.IDEAS_100_PLUS, 100),
+    ],
 )
-def test_content_depth_bands(title_count, expected_band, expected_ideas):
+def test_content_depth_bands_use_literal_capacity_boundaries(
+    signature_count, expected_band, expected_ideas
+):
     config = MarketStructureConfig(idea_multiplier=1)
     videos = [
-        {"video_id": f"v{i}", "channel_id": f"c{i}", "title": f"distinct topic number {i}"}
-        for i in range(title_count)
+        {
+            "video_id": f"v{i}",
+            "channel_id": f"c{i}",
+            "title": f"alpha beta topic{chr(97 + i // 26)}{chr(97 + i % 26)}",
+        }
+        for i in range(signature_count)
     ]
 
     cluster = analyze(videos, [], config)
 
+    assert cluster.topic_atom_count == signature_count
+    assert cluster.estimated_capacity_low == signature_count
     assert cluster.content_depth_band is expected_band
     assert cluster.estimated_distinct_ideas == expected_ideas
+
+
+def test_interval_crossing_literal_boundary_is_undetermined():
+    videos = [
+        {
+            "video_id": f"v{i}",
+            "channel_id": "c",
+            "title": f"alpha beta topic{chr(97 + i)}",
+        }
+        for i in range(10)
+    ]
+
+    cluster = analyze(videos, [{"channel_id": "c"}])
+
+    assert cluster.estimated_capacity_low == 10
+    assert cluster.estimated_capacity_high == 50
+    assert cluster.content_depth_band is ContentDepthBand.UNDETERMINED
+
+
+def test_four_video_weak_diversity_does_not_extrapolate_to_100_plus():
+    videos = [
+        {"video_id": f"v{i}", "channel_id": "c", "title": f"same topic episode {i}"}
+        for i in range(4)
+    ]
+
+    cluster = analyze(videos, [{"channel_id": "c"}])
+
+    assert cluster.topic_atom_count == 1
+    assert cluster.near_duplicate_count == 3
+    assert cluster.semantic_diversity == 0.25
+    assert cluster.depth_confidence == 20.0
+    assert cluster.estimated_capacity_high < 20
+    assert cluster.content_depth_band is ContentDepthBand.BELOW_20
+    assert cluster.content_depth_score < 100
+
+
+def test_exact_duplicates_and_small_samples_reduce_depth_confidence():
+    duplicate_cluster = analyze(
+        [
+            {"video_id": f"duplicate-{i}", "channel_id": "c", "title": "same exact title"}
+            for i in range(5)
+        ],
+        [{"channel_id": "c"}],
+    )
+    small_cluster = analyze(
+        [
+            {
+                "video_id": f"small-{i}",
+                "channel_id": "c",
+                "title": f"alpha beta topic{chr(97 + i)}",
+            }
+            for i in range(2)
+        ],
+        [{"channel_id": "c"}],
+    )
+
+    assert duplicate_cluster.near_duplicate_count == 4
+    assert duplicate_cluster.depth_confidence == 20.0
+    assert small_cluster.semantic_diversity == 1.0
+    assert small_cluster.depth_confidence == 40.0
+
+
+def test_format_facet_count_uses_observed_known_formats():
+    videos = [
+        {"video_id": "short", "channel_id": "c", "title": "short topic", "duration_seconds": 30},
+        {"video_id": "long", "channel_id": "c", "title": "long topic", "duration_seconds": 600},
+        {"video_id": "unknown", "channel_id": "c", "title": "unknown topic"},
+    ]
+
+    cluster = analyze(videos, [{"channel_id": "c"}])
+
+    assert cluster.short_video_count == 1
+    assert cluster.long_form_video_count == 1
+    assert cluster.unknown_format_count == 1
+    assert cluster.format_facet_count == 2
+
+
+def test_depth_score_does_not_clip_all_distinct_clusters_to_100():
+    clusters = [
+        analyze(
+            [
+                {
+                    "video_id": f"v{size}-{i}",
+                    "channel_id": "c",
+                    "title": f"distinct topic item{chr(97 + i)}",
+                }
+                for i in range(size)
+            ],
+            [{"channel_id": "c"}],
+        )
+        for size in (4, 5, 10)
+    ]
+
+    assert all(cluster.content_depth_score < 100 for cluster in clusters)
+    assert len({cluster.content_depth_score for cluster in clusters}) > 1
+
+
+def test_missing_small_channel_sample_reduces_accessibility_confidence():
+    videos = [
+        {
+            "video_id": f"v{i}",
+            "channel_id": "c",
+            "title": f"topic {i}",
+            "published_at": "2025-01-01T00:00:00Z",
+        }
+        for i in range(5)
+    ]
+    channel = {"channel_id": "c", "published_at": "2020-01-01T00:00:00Z"}
+
+    cluster = analyze(videos, [channel])
+
+    assert cluster.small_channel_success_rate is None
+    assert cluster.accessibility_confidence == 50.0
+    assert cluster.confidence < 100
 
 
 def test_evergreen_trend_and_unknown_classification():
@@ -202,10 +328,10 @@ def test_market_structure_functional_classes_are_reachable():
         {
             **base_video,
             "video_id": f"v{i}",
-            "title": f"specific topic {i}",
+            "title": f"specific topic item{chr(97 + i)}",
             "view_count": 10,
         }
-        for i in range(10)
+        for i in range(20)
     ]
     sustainable = analyze(
         sustainable_videos,
