@@ -76,21 +76,28 @@ LOG_LEVEL=INFO
 Para validar el entorno completo, configuración, seguridad e integraciones:
 
 ```powershell
-.\.venv\Scripts\python run_healthcheck.py
+$env:PYTHONDONTWRITEBYTECODE='1'
+$env:PYTHONIOENCODING='utf-8'
+.\.venv\Scripts\python.exe run_healthcheck.py
 ```
 
 ## Tests
 
-Tests unitarios (sin llamadas a APIs reales ni consumo de cuotas):
+Tests unitarios y de regresión local:
 
 ```powershell
-.\.venv\Scripts\python -m pytest -m "not integration" -v
+$env:PYTHONDONTWRITEBYTECODE='1'
+$env:PYTHONIOENCODING='utf-8'
+.\.venv\Scripts\python.exe -m compileall app tests scripts
+.\.venv\Scripts\python.exe -m pytest -m "not integration" -q
 ```
 
 Tests de integración (conectividad real):
 
 ```powershell
-.\.venv\Scripts\python -m pytest -m integration -v
+$env:PYTHONDONTWRITEBYTECODE='1'
+$env:PYTHONIOENCODING='utf-8'
+.\.venv\Scripts\python.exe -m pytest -m integration -q
 ```
 
 ## Sprint 7
@@ -110,6 +117,77 @@ Para habilitar persistencia explícita en InsForge, aplicar primero la migració
 
 Metodología y límites de evidencia: [docs/SPRINT_7_COMPETITION_DEPTH_EVERGREEN.md](docs/SPRINT_7_COMPETITION_DEPTH_EVERGREEN.md).
 
+## Sprint 8
+
+Sprint 8 completa el motor de **Production Feasibility + Risk** sobre el dataset aprobado de Sprint 5:
+
+- **83 videos de producción**
+- **10 clusters aprobados**
+- **sin reclustering**
+- exclusión explícita de `VID_TEST_INTEGRATION_99`
+- persistencia opcional en `production_risk_analyses` con **read-back exacto**
+
+### Qué calcula Sprint 8
+
+Por cluster reporta:
+
+- `production_complexity`
+- `production_feasibility`
+- `production_cost_score`
+- `estimated_hours_low` / `estimated_hours_high`
+- `faceless_feasibility`
+- `ai_assistance_potential`
+- `expertise_requirement`
+- `repeatability_score` / `repeatability_band`
+- `copyright_risk`
+- `platform_policy_risk`
+- `accuracy_risk`
+- `update_burden`
+- `source_dependency`
+- `overall_risk`
+- `production_attractiveness_score`
+- `coverage`, `confidence`, `warnings`
+
+### Reglas de Sprint 8
+
+- `UNKNOWN != LOW`
+- `UNKNOWN != 0`
+- un input `UNKNOWN` no mejora `production_attractiveness_score`
+- si cobertura < 50%, `production_attractiveness_available = false`
+- quality metrics se calculan desde los outputs finales reales por cluster
+
+### Fórmula de horas
+
+```text
+horas_base = minutos_mediana × horas_por_minuto_salida
+factor_esfuerzo = 1 + (production_cost_score / 100)
+horas_low = horas_base × factor_esfuerzo × 0.5
+horas_high = horas_base × factor_esfuerzo × 1.0
+```
+
+Las horas son estimaciones comparativas, no costos monetarios.
+
+### Ejecución Sprint 8
+
+Read-only:
+
+```powershell
+$env:PYTHONDONTWRITEBYTECODE='1'
+$env:PYTHONIOENCODING='utf-8'
+.\.venv\Scripts\python.exe scripts\analyze_production_risk.py --json
+```
+
+Persistencia explícita:
+
+```powershell
+$env:PYTHONDONTWRITEBYTECODE='1'
+$env:PYTHONIOENCODING='utf-8'
+.\.venv\Scripts\python.exe scripts\migrate_sprint8_schema.py
+.\.venv\Scripts\python.exe scripts\analyze_production_risk.py --json --persist
+```
+
+Metodología, fórmulas, confidence, UNKNOWN handling, coverage y limitaciones: [docs/SPRINT_8_PRODUCTION_RISK.md](docs/SPRINT_8_PRODUCTION_RISK.md).
+
 ## Estructura del Proyecto
 
 ```text
@@ -119,13 +197,12 @@ I:\PRYTB
 │   ├── agents\        # Agentes de inteligencia
 │   ├── analytics\     # Motores estadísticos
 │   ├── collectors\    # YouTubeClient y colectores
+│   ├── config\        # Configuración analítica
 │   ├── database\      # InsForgeClient y persistencia
 │   ├── models\        # Modelos de datos
-│   ├── orchestrator\  # Orquestador del sistema
 │   ├── scoring\       # Motores de scoring
 │   ├── services\      # Servicios de negocio
-│   └── utils\         # Configuración y Logging centralizados
-├── dashboard\         # Interfaz visual (Streamlit)
+│   └── utils\         # Configuración y logging centralizados
 ├── tests\
 │   ├── unit\          # Unit tests aislados
 │   └── integration\   # Pruebas de integración
@@ -146,17 +223,17 @@ I:\PRYTB
 
 ## Seguridad
 
-* El archivo `.env` está estricta y permanentemente en `.gitignore` y des-trackeado de Git.
-* Todas las API Keys se manejan de forma enmascarada usando `pydantic.SecretStr`.
-* Nunca se imprimen claves ni secretos en consola ni en logs.
+- El archivo `.env` está estricta y permanentemente en `.gitignore` y des-trackeado de Git.
+- Todas las API keys se manejan de forma enmascarada usando `pydantic.SecretStr`.
+- Nunca se imprimen claves ni secretos en consola ni en logs.
 
-## Siguiente Sprint
+## Sprints completados
 
-* **Sprint 1:** YouTube Data Collector (COMPLETADO)
-* **Sprint 2:** InsForge Persistence (COMPLETADO)
-* **Sprint 3:** Historical Metrics & Velocity (COMPLETADO)
-* **Sprint 4:** Outlier Engine (COMPLETADO)
-* **Sprint 5:** Niche Miner (COMPLETADO)
-* **Sprint 6:** Revenue + Geography (COMPLETADO)
-* **Sprint 7:** Competition + Depth + Evergreen (COMPLETADO)
-* **Sprint 8:** Production Feasibility + Risk (COMPLETADO)
+- **Sprint 1:** YouTube Data Collector
+- **Sprint 2:** InsForge Persistence
+- **Sprint 3:** Historical Metrics & Velocity
+- **Sprint 4:** Outlier Engine
+- **Sprint 5:** Niche Miner
+- **Sprint 6:** Revenue + Geography
+- **Sprint 7:** Competition + Depth + Evergreen
+- **Sprint 8:** Production Feasibility + Risk

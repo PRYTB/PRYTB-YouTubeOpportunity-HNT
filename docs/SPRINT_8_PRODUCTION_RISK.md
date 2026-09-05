@@ -2,7 +2,7 @@
 
 ## Estado
 
-Completo. Sprint 8 analiza la viabilidad de producción y el riesgo de los clusters aprobados en Sprint 5. Añade complejidad de producción, estimación de horas, costos de producción y análisis de riesgo (copyright, contenido reutilizado, exposición regulatoria). Persistencia opcional en InsForge con read-back exacto. No calcula Opportunity Score ni rentabilidad.
+Completo. Sprint 8 analiza la viabilidad de producción y el riesgo de los clusters aprobados en Sprint 5. Añade complejidad de producción, estimación de horas, costos de producción, **faceless feasibility, AI assistance potential, expertise requirement, repeatability**, análisis de riesgo completo (copyright, plataforma, precisión, carga de actualización, dependencia de fuentes) y **Production Attractiveness Score**. Persistencia opcional en InsForge con read-back exacto. No calcula Opportunity Score ni rentabilidad.
 
 ## Límites de evidencia
 
@@ -49,20 +49,76 @@ horas_high = horas_base × factor_esfuerzo × 1.0
 
 `horas_por_minuto_salida` configurable (default 0.5). Los rangos son orientativos, no cotizaciones.
 
-## Análisis de riesgo
+**Cluster 9 (Cybersecurity Education):** Median duration 636.43 min (long-form tutorials/certification content). Production cost score 67.9. Calculated range 337.7–675.3 hours. Root cause: legitimate long median duration × effort factor. Not a unit conversion bug.
 
-Tres dimensiones de riesgo a partir de señales de texto:
+## Faceless Feasibility
+
+Clasificación real basada en evidencia textual:
+
+- `HIGH`: tutorial/explainer, screen recording, narration, slides/graphics, documentary style
+- `MEDIUM`: mix of faceless-friendly and camera-dependent signals
+- `LOW`: interview dependency, on-camera personality dependence, physical demonstration, third-party footage
+- `UNKNOWN`: evidencia insuficiente
+
+Exposes: observed evidence, inferred evidence, confidence, warnings.
+
+## AI Assistance Potential
+
+Clasificación real evaluando dimensiones separadas:
+
+- `HIGH`: research, outline/script, translation, voice suitability, graphics, editing assistance, metadata/title assistance, fact-check burden
+- `MEDIUM`: partial coverage of above dimensions
+- `LOW`: minimal AI applicability
+- `UNKNOWN`: evidencia insuficiente
+
+High NO significa completamente automatizado.
+
+## Expertise Requirement
+
+Clasificación real usando semántica de contenido y requisitos de producción:
+
+- `LOW`: contenido general, introductorio
+- `MEDIUM`: conocimiento intermedio, guías técnicas
+- `HIGH`: especialización técnica avanzada
+- `SPECIALIST`: certificaciones, ingeniería, legal, médico, financiero
+- `UNKNOWN`: evidencia insuficiente
+
+NO se infiere solo de etiqueta de nicho.
+
+## Repeatability
+
+- **repeatability_score 0–100** basado en señales positivas/negativas
+- **repeatability_band**: `HIGH` / `MEDIUM` / `LOW` / `UNKNOWN`
+
+Evidencia positiva:
+- repeatable script structure, screen recording, narration + graphics, stable research template, repeatable editing format
+
+Evidencia negativa:
+- exclusive interviews, field production, travel, one-off events, unique footage
+
+NO usa profundidad Sprint 7 como prueba de volumen de ideas.
+
+## Análisis de riesgo completo
+
+Seis dimensiones de riesgo a partir de señales de texto:
 
 - **Copyright:** términos como "music", "song", "film", "movie", "trailer", "clip", "copyright", "licensed"
 - **Contenido reutilizado:** términos como "compilation", "reaction", "reacts", "mashup", "remix", "highlights"
 - **Exposición regulatoria/sensible:** términos como "finance", "financial", "medical", "health", "legal", "politics", "war", "weapon", "violence", "suicide", "drug", "investment", "crypto", "trading"
+- **Platform Policy:** exposición a políticas de plataforma (ej. armas, contenido regulado)
+- **Accuracy:** riesgo de información desactualizada o incorrecta (términos temporales, tecnologías cambiantes)
+- **Update Burden:** frecuencia esperada de actualizaciones necesarias
+- **Source Dependency:** dependencia de fuentes externas, entrevistas, footage de terceros
 
 Cada dimensión se puntúa 0–100. El **Overall Risk Score** combina:
 
 ```text
-40% Copyright
-30% Contenido reutilizado
-30% Exposición regulatoria
+25% Copyright
+20% Contenido reutilizado
+20% Exposición regulatoria
+15% Platform Policy
+10% Accuracy
+10% Update Burden
 ```
 
 El **Risk Level** clasifica el Overall Risk Score:
@@ -71,6 +127,34 @@ El **Risk Level** clasifica el Overall Risk Score:
 - `MEDIUM`: 35–64
 - `HIGH`: ≥ 65
 - `UNKNOWN`: evidencia insuficiente
+
+Cada dimensión expone: level, score, confidence, observed evidence, inferred evidence, warnings.
+
+**Regla:** `UNKNOWN != LOW`, `UNKNOWN != 0`, no observed signal != zero risk.
+
+## Production Attractiveness
+
+Score 0–100 usando componentes conocidos únicamente:
+
+```text
+Inputs:
+- production_feasibility (inverse production complexity)
+- inverse cost index (inverse production_cost_score)
+- faceless_feasibility
+- AI assistance potential
+- repeatability
+- inverse overall risk
+
+Component coverage: % of inputs available (not UNKNOWN)
+Confidence: coverage-weighted confidence
+Warnings: coverage gaps
+```
+
+If coverage below 50%:
+- `available = false`
+- `score = None`
+
+UNKNOWN inputs do NOT improve score.
 
 ## Confianza
 
@@ -130,27 +214,40 @@ Se escribe un registro por cluster con payload completo en JSONB. Antes del POST
 - `production_complexity` (LOW/MEDIUM/HIGH/UNKNOWN)
 - `production_feasibility` (inverso de complejidad: HIGH/MEDIUM/LOW)
 - `cost_class` (VERY_LOW/LOW/MEDIUM/HIGH/VERY_HIGH/UNKNOWN) — derivada de production_cost_score
-- `faceless_feasibility` — UNKNOWN (no implementado en Sprint 8)
-- `ai_assistance_potential` — UNKNOWN (no implementado en Sprint 8)
-- `expertise_requirement` — UNKNOWN (no implementado en Sprint 8)
+- `faceless_feasibility` (HIGH/MEDIUM/LOW/UNKNOWN) — con evidencia y confidence
+- `ai_assistance_potential` (HIGH/MEDIUM/LOW/UNKNOWN) — con evidencia y confidence
+- `expertise_requirement` (LOW/MEDIUM/HIGH/SPECIALIST/UNKNOWN) — con evidencia y confidence
 - `copyright_risk` (LOW/MEDIUM/HIGH/UNKNOWN) — derivada de copyright_risk_score
-- `platform_policy_risk` — UNKNOWN (no implementado en Sprint 8)
-- `accuracy_risk` — UNKNOWN (no implementado en Sprint 8)
-- `update_burden` — UNKNOWN (no implementado en Sprint 8)
-- `source_dependency` — UNKNOWN (no implementado en Sprint 8)
-- `repeatability` — UNKNOWN (no implementado en Sprint 8)
+- `platform_policy_risk` (LOW/MEDIUM/HIGH/UNKNOWN) — con score y confidence
+- `accuracy_risk` (LOW/MEDIUM/HIGH/UNKNOWN) — con score y confidence
+- `update_burden` (LOW/MEDIUM/HIGH/UNKNOWN) — con score y confidence
+- `source_dependency` (LOW/MEDIUM/HIGH/UNKNOWN) — con score y confidence
+- `repeatability_score` (0–100)
+- `repeatability_band` (HIGH/MEDIUM/LOW/UNKNOWN)
 - `overall_risk` (LOW/MEDIUM/HIGH/UNKNOWN) — derivada de overall_risk_score
-- `production_attractiveness` — no implementado en Sprint 8 (ver limitaciones)
+- `production_attractiveness_score` (0–100, available/unavailable, coverage, confidence)
 - `confidence` (0–100)
 - `warnings`
 
+## Métricas de calidad (Sprint8QualityMetrics)
+
+- `faceless_unknown_rate` — % clusters con faceless_feasibility = UNKNOWN
+- `ai_assistance_unknown_rate` — % clusters con ai_assistance_potential = UNKNOWN
+- `expertise_unknown_rate` — % clusters con expertise_requirement = UNKNOWN
+- `platform_risk_unknown_rate` — % clusters con platform_policy_risk = UNKNOWN
+- `accuracy_risk_unknown_rate` — % clusters con accuracy_risk = UNKNOWN
+- `update_burden_unknown_rate` — % clusters con update_burden = UNKNOWN
+- `source_dependency_unknown_rate` — % clusters con source_dependency = UNKNOWN
+- `repeatability_unknown_rate` — % clusters con repeatability_band = UNKNOWN
+- `attractiveness_unavailable_rate` — % clusters con production_attractiveness_available = false
+
+Calculadas desde outputs finales reales. 10/10 UNKNOWN reporta 100.0%, no 0%.
+
 ## Limitaciones conocidas
 
-1. **Producción atractiva (production_attractiveness):** No existe score nativo en Sprint 8. El ranking de "Top 5 Production Candidates" usa proxy: menor Production Cost Score + menor Overall Risk Score.
-2. **Campos UNKNOWN:** `faceless_feasibility`, `ai_assistance_potential`, `expertise_requirement`, `platform_policy_risk`, `accuracy_risk`, `update_burden`, `source_dependency`, `repeatability` no están implementados en Sprint 8 y se reportan como `UNKNOWN`.
-3. **Costos monetarios:** No se inventan. `cost_class` es derivada ordinal del Production Cost Score.
-3. **Tabla InsForge:** Nombre real `production_risk_analyses` (no `cluster_production_risk_analyses`).
-4. **Múltiples runs persistidos:** Durante validación se crearon varios runs. El run de referencia para este reporte es `sprint8-334b32bc-5143-42be-bbdd-3481b9779f21`.
+1. **Costos monetarios:** No se inventan. `cost_class` es derivada ordinal del Production Cost Score.
+2. **Tabla InsForge:** Nombre real `production_risk_analyses` (no `cluster_production_risk_analyses`).
+3. **Múltiples runs persistidos:** Durante validación se crearon varios runs.
 
 ## Pruebas
 
@@ -159,4 +256,4 @@ Se escribe un registro por cluster con payload completo en JSONB. Antes del POST
 .\.venv\Scripts\python.exe -m pytest -m integration -v
 ```
 
-Cubren validación de modelos, configuración, clasificación complejidad/riesgo, estimación horas, señales de texto, persistencia, read-back exacto, validación funcional, contrato Sprint 5, exclusión test record, fallos HTTP/JSON/semánticos.
+Cubren validación de modelos, configuración, clasificación complejidad/riesgo, estimación horas, señales de texto, **faceless, AI assistance, expertise, repeatability, todos los risk components, attractiveness coverage, UNKNOWN handling, quality unknown-rate correctness, cluster 9 hours calculation**, persistencia, read-back exacto, validación funcional, contrato Sprint 5, exclusión test record, fallos HTTP/JSON/semánticos.
