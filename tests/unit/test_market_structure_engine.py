@@ -140,7 +140,7 @@ def test_content_depth_bands_use_literal_capacity_boundaries(
     assert cluster.estimated_distinct_ideas == expected_ideas
 
 
-def test_interval_crossing_literal_boundary_is_undetermined():
+def test_interval_crossing_literal_boundary_is_below_20():
     videos = [
         {
             "video_id": f"v{i}",
@@ -154,7 +154,7 @@ def test_interval_crossing_literal_boundary_is_undetermined():
 
     assert cluster.estimated_capacity_low == 10
     assert cluster.estimated_capacity_high == 50
-    assert cluster.content_depth_band is ContentDepthBand.UNDETERMINED
+    assert cluster.content_depth_band is ContentDepthBand.BELOW_20
 
 
 def test_four_video_weak_diversity_does_not_extrapolate_to_100_plus():

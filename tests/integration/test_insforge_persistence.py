@@ -8,6 +8,41 @@ from app.utils.config import settings
 
 
 @pytest.mark.integration
+def test_sprint12_insforge_persistence_readback():
+    if not settings.INSFORGE_URL or not settings.INSFORGE_URL.strip():
+        pytest.skip("INSFORGE_URL not configured in .env; skipping live integration test.")
+
+    client = InsForgeClient()
+    repo = YouTubeRepository(client=client)
+
+    run_id = "sprint12_prod_run_01"
+    
+    # 1. Direct DB queries for Sprint 12 entity verification
+    db_vids = repo._get_records("videos")
+    db_chans = repo._get_records("channels")
+    db_clusters = repo._get_records("clusters", params={"run_id": f"eq.{run_id}"})
+    db_cv = repo._get_records("cluster_videos", params={"run_id": f"eq.{run_id}"})
+    db_subniches = repo._get_records("subniches", params={"run_id": f"eq.{run_id}"})
+
+    assert len(db_vids) >= 3155, f"Expected at least 3155 videos in InsForge DB, found {len(db_vids)}"
+    assert len(db_chans) >= 1948, f"Expected at least 1948 channels in InsForge DB, found {len(db_chans)}"
+    assert len(db_clusters) == 17, f"Expected exactly 17 Sprint 12 clusters in InsForge DB, found {len(db_clusters)}"
+    assert len(db_cv) == 3132, f"Expected 3132 cluster video assignments in InsForge DB, found {len(db_cv)}"
+    assert len(db_subniches) == 17, f"Expected 17 subniches in InsForge DB, found {len(db_subniches)}"
+
+    # 2. Analytical stage rows verification
+    db_ms = repo._get_records("market_structure_analyses", params={"source_cluster_run_id": f"eq.{run_id}"})
+    db_pr = repo._get_records("production_risk_analyses", params={"source_cluster_run_id": f"eq.{run_id}"})
+    db_pf = repo._get_records("cluster_profitability_analyses", params={"source_cluster_run_id": f"eq.{run_id}"})
+    db_val = repo._get_records("cluster_validation_analyses", params={"run_id": "like.sprint10_val_sprint12_prod_run_01%"})
+
+    assert len(db_ms) >= 17, f"Expected at least 17 market structure records for Sprint 12, found {len(db_ms)}"
+    assert len(db_pr) >= 17, f"Expected at least 17 production risk records for Sprint 12, found {len(db_pr)}"
+    assert len(db_pf) >= 17, f"Expected at least 17 profitability records for Sprint 12, found {len(db_pf)}"
+    assert len(db_val) >= 17, f"Expected at least 17 validation records for Sprint 12, found {len(db_val)}"
+
+
+@pytest.mark.integration
 def test_insforge_live_repository_persistence():
     if not settings.INSFORGE_URL or not settings.INSFORGE_URL.strip():
         pytest.skip("INSFORGE_URL not configured in .env; skipping live integration test.")

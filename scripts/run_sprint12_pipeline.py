@@ -500,6 +500,48 @@ def main():
     try:
         if real_repo.client and real_repo.client.url:
             print("InsForge DB connection available. Persisting analytical runs...")
+            # Insert production videos and channels into InsForge to satisfy FK constraints
+            raw_vids_path = RAW_DIR / "sprint12_prod_run_01_videos.json"
+            raw_chans_path = RAW_DIR / "sprint12_prod_run_01_channels.json"
+            if raw_vids_path.exists() and raw_chans_path.exists():
+                with open(raw_vids_path, "r", encoding="utf-8") as f:
+                    vids_data = json.load(f)
+                with open(raw_chans_path, "r", encoding="utf-8") as f:
+                    chans_data = json.load(f)
+                
+                # Convert to DB dict records
+                chan_records = [{
+                    "channel_id": c.get("channel_id"),
+                    "title": c.get("title", ""),
+                    "description": c.get("description", ""),
+                    "custom_url": c.get("custom_url"),
+                    "country": c.get("country"),
+                    "default_language": c.get("default_language"),
+                    "subscriber_count": c.get("subscriber_count", 0),
+                    "video_count": c.get("video_count", 0),
+                    "view_count": c.get("view_count", 0),
+                    "created_at": c.get("published_at") or datetime.now(timezone.utc).isoformat()
+                } for c in chans_data if c.get("channel_id")]
+                
+                vid_records = [{
+                    "video_id": v.get("video_id"),
+                    "channel_id": v.get("channel_id"),
+                    "title": v.get("title", ""),
+                    "description": v.get("description", ""),
+                    "published_at": v.get("published_at"),
+                    "duration_seconds": v.get("duration_seconds", 0),
+                    "default_language": v.get("default_audio_language") or v.get("default_language"),
+                    "category_id": str(v.get("category_id", "")),
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                } for v in vids_data if v.get("video_id") in in_memory_repo._videos_map]
+
+                try:
+                    real_repo.verify_niche_schema()
+                    real_repo._post_records("channels", chan_records, upsert=True)
+                    real_repo._post_records("videos", vid_records, upsert=True)
+                except Exception as e_seed:
+                    print(f"Video/Channel seed persistence notice: {e_seed}")
+
             c_res = real_repo.insert_clusters(mining_result)
             ms_res = real_repo.insert_market_structure_analysis(market_result)
             pr_res = real_repo.insert_production_risk_analysis(production_result)

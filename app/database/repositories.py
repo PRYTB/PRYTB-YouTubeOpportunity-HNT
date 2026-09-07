@@ -136,27 +136,64 @@ class YouTubeRepository:
 
         url = f"{self.client.url}/api/database/records/{endpoint_table}"
         headers = self.client._get_headers()
+        request_params = dict(params) if params else {}
 
-        try:
-            with httpx.Client(timeout=self.client.timeout) as http_client:
-                response = http_client.get(url, headers=headers, params=params)
-                if response.status_code == 200:
-                    data = response.json()
-                    if isinstance(data, list):
-                        return data
-                    elif isinstance(data, dict) and "data" in data and isinstance(data["data"], list):
-                        return data["data"]
-                    return []
-                elif response.status_code in [401, 403]:
-                    raise InsForgeClientError(f"InsForge authentication failure (HTTP {response.status_code}).")
-                else:
-                    err_msg = f"InsForge GET request to {endpoint_table} failed (HTTP {response.status_code}): {response.text}"
+        # Handle pagination if limit is large or not specified for bulk operations
+        records: List[Dict[str, Any]] = []
+        limit = request_params.get("limit")
+        if limit is not None and isinstance(limit, int) and limit <= 1000:
+            # Single page explicit limit request
+            try:
+                with httpx.Client(timeout=self.client.timeout) as http_client:
+                    response = http_client.get(url, headers=headers, params=request_params)
+                    if response.status_code == 200:
+                        data = response.json()
+                        if isinstance(data, list):
+                            return data
+                        elif isinstance(data, dict) and "data" in data and isinstance(data["data"], list):
+                            return data["data"]
+                        return []
+                    elif response.status_code in [401, 403]:
+                        raise InsForgeClientError(f"InsForge authentication failure (HTTP {response.status_code}).")
+                    else:
+                        err_msg = f"InsForge GET request to {endpoint_table} failed (HTTP {response.status_code}): {response.text}"
+                        logger.error(err_msg)
+                        raise InsForgeClientError(err_msg)
+            except httpx.RequestError as exc:
+                err_msg = f"Network error reading from InsForge {endpoint_table}: {exc}"
+                logger.error(err_msg)
+                raise InsForgeClientError(err_msg)
+        else:
+            # Paged fetch to retrieve all records safely
+            page_size = 1000
+            offset = 0
+            while True:
+                page_params = dict(request_params)
+                page_params["limit"] = page_size
+                page_params["offset"] = offset
+                try:
+                    with httpx.Client(timeout=self.client.timeout) as http_client:
+                        response = http_client.get(url, headers=headers, params=page_params)
+                        if response.status_code == 200:
+                            data = response.json()
+                            batch = data if isinstance(data, list) else (data.get("data", []) if isinstance(data, dict) else [])
+                            if not batch:
+                                break
+                            records.extend(batch)
+                            if len(batch) < page_size:
+                                break
+                            offset += page_size
+                        elif response.status_code in [401, 403]:
+                            raise InsForgeClientError(f"InsForge authentication failure (HTTP {response.status_code}).")
+                        else:
+                            err_msg = f"InsForge GET request to {endpoint_table} failed (HTTP {response.status_code}): {response.text}"
+                            logger.error(err_msg)
+                            raise InsForgeClientError(err_msg)
+                except httpx.RequestError as exc:
+                    err_msg = f"Network error reading from InsForge {endpoint_table}: {exc}"
                     logger.error(err_msg)
                     raise InsForgeClientError(err_msg)
-        except httpx.RequestError as exc:
-            err_msg = f"Network error reading from InsForge {endpoint_table}: {exc}"
-            logger.error(err_msg)
-            raise InsForgeClientError(err_msg)
+            return records
 
     def get_video_metrics_history(
         self,
@@ -829,6 +866,11 @@ class YouTubeRepository:
         headers = self.client._get_headers()
         if upsert:
             headers["Prefer"] = "resolution=merge-duplicates"
+            # PostgREST requires on_conflict query parameter for tables with composite unique constraints
+            if endpoint_table in ("clusters", "subniches", "market_structure_analyses", "production_risk_analyses", "cluster_profitability_analyses", "cluster_validation_analyses"):
+                url = f"{url}?on_conflict=run_id,cluster_id"
+            elif endpoint_table == "cluster_videos":
+                url = f"{url}?on_conflict=run_id,video_id"
 
         try:
             with httpx.Client(timeout=self.client.timeout) as http_client:

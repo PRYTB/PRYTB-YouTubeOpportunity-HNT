@@ -287,6 +287,8 @@ class MarketStructureEngine:
         ]
         titled_video_count = sum(bool(str(video.get("title") or "").strip()) for video in members)
         topic_atom_count = len(signature_counts)
+        # Conservative lower bound: number of distinct observed title signatures in evidence
+        # An lower bound >= 100 requires at least 100 distinct observed title signatures in the cluster members.
         capacity_low = topic_atom_count if titled_video_count else None
         capacity_high = (
             max(capacity_low, topic_atom_count * self.config.idea_multiplier)
@@ -309,7 +311,7 @@ class MarketStructureEngine:
             depth_band, estimated_ideas = ContentDepthBand.IDEAS_50_PLUS, 50
         elif capacity_low >= 20:
             depth_band, estimated_ideas = ContentDepthBand.IDEAS_20_PLUS, 20
-        elif capacity_high is not None and capacity_high < 20:
+        elif capacity_low < 20:
             depth_band = ContentDepthBand.BELOW_20
         else:
             depth_band = ContentDepthBand.UNDETERMINED

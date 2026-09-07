@@ -1,7 +1,7 @@
 {
   "run_id": "sprint12_prod_run_01",
   "created_at": "2026-09-07T18:52:19.919858",
-  "updated_at": "2026-09-07T18:54:50.793266",
+  "updated_at": "2026-09-07T21:23:24.948804",
   "status": "failed",
   "completed_seed_ids": [
     "sw_en_01",
