@@ -81,15 +81,49 @@ def run_analysis(
     videos_by_id = {str(video.get("video_id") or ""): video for video in enriched_videos}
 
     # 3. Load prior evidence (Sprint 6 Revenue, Sprint 7 Market Structure, Sprint 8 Production Risk)
-    rev_engine = RevenueGeographyEngine(repository=repo)
-    sprint6_res = rev_engine.analyze_all(sprint5.clusters, enriched_videos, enriched_channels)
+    rev_engine = RevenueGeographyEngine()
+    sprint6_res = rev_engine.analyze(
+        videos=enriched_videos,
+        channels=enriched_channels,
+        clusters=[
+            {
+                "cluster_id": c.cluster_id,
+                "video_ids": c.video_ids,
+            }
+            for c in sprint5.clusters
+        ],
+        source_cluster_run_id=sprint5.run_id,
+    )
 
     outlier_results = OutlierEngine(repository=repo).analyze_all()
-    market_engine = MarketStructureEngine(repository=repo)
-    sprint7_res = market_engine.analyze_all(sprint5.clusters, enriched_videos, enriched_channels, outlier_results)
+    market_engine = MarketStructureEngine()
+    sprint7_res = market_engine.analyze(
+        videos=enriched_videos,
+        channels=enriched_channels,
+        clusters=[
+            {
+                "cluster_id": c.cluster_id,
+                "video_ids": c.video_ids,
+            }
+            for c in sprint5.clusters
+        ],
+        source_cluster_run_id=sprint5.run_id,
+        outlier_results=outlier_results,
+    )
 
-    prod_engine = ProductionRiskEngine(repository=repo)
-    sprint8_res = prod_engine.analyze_all(sprint5.clusters, enriched_videos, enriched_channels, sprint7_res)
+    prod_engine = ProductionRiskEngine()
+    sprint8_res = prod_engine.analyze(
+        videos=enriched_videos,
+        clusters=[
+            {
+                "cluster_id": c.cluster_id,
+                "video_ids": c.video_ids,
+            }
+            for c in sprint5.clusters
+        ],
+        source_cluster_run_id=sprint5.run_id,
+        source_market_structure_run_id=sprint7_res.run_id,
+    )
 
     market_structures_map = {c.cluster_id: c for c in sprint7_res.clusters}
     production_risks_map = {c.cluster_id: c for c in sprint8_res.clusters}
