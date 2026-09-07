@@ -18,6 +18,7 @@ Sprint 7: Competition + Depth + Evergreen (COMPLETE)
 Sprint 8: Production Feasibility + Risk (COMPLETE)
 Sprint 10: Adversarial Opportunity Validator (COMPLETE)
 Sprint 11: Dashboard MVP & Internationalization (es / en) (COMPLETE)
+Sprint 12: First Serious Data Run (COMPLETE)
 ```
 
 Ruta raíz oficial y definitiva: `I:\PRYTB`

@@ -289,7 +289,7 @@ class MarketStructureEngine:
         topic_atom_count = len(signature_counts)
         capacity_low = topic_atom_count if titled_video_count else None
         capacity_high = (
-            min(100, topic_atom_count * self.config.idea_multiplier)
+            max(capacity_low, topic_atom_count * self.config.idea_multiplier)
             if capacity_low is not None else None
         )
         near_duplicate_count = titled_video_count - topic_atom_count
@@ -305,11 +305,11 @@ class MarketStructureEngine:
             depth_band = ContentDepthBand.UNKNOWN
         elif capacity_low >= 100:
             depth_band, estimated_ideas = ContentDepthBand.IDEAS_100_PLUS, 100
-        elif capacity_low >= 50 and capacity_high < 100:
+        elif capacity_low >= 50:
             depth_band, estimated_ideas = ContentDepthBand.IDEAS_50_PLUS, 50
-        elif capacity_low >= 20 and capacity_high < 50:
+        elif capacity_low >= 20:
             depth_band, estimated_ideas = ContentDepthBand.IDEAS_20_PLUS, 20
-        elif capacity_high < 20:
+        elif capacity_high is not None and capacity_high < 20:
             depth_band = ContentDepthBand.BELOW_20
         else:
             depth_band = ContentDepthBand.UNDETERMINED

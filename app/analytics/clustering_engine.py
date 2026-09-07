@@ -161,7 +161,7 @@ class ClusterOptimizer:
             return model.fit_predict(embeddings)
         else:
             # Default KMeans
-            model = KMeans(n_clusters=k, random_state=self.random_state, n_init=10)
+            model = KMeans(n_clusters=k, random_state=self.random_state, n_init=3)
             return model.fit_predict(embeddings)
 
     def _compute_safe_silhouette(self, embeddings: np.ndarray, labels: np.ndarray) -> float:

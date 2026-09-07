@@ -1,0 +1,83 @@
+{
+  "version": "1.0.0",
+  "description": "Sprint 12 Production Seed Manifest for Diversified Opportunity Discovery",
+  "seeds": [
+    {"seed_id": "tech_en_01", "query": "software development tutorials", "language": "en", "family": "technology", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "tech_en_02", "query": "cloud architecture best practices", "language": "en", "family": "technology", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "tech_en_03", "query": "devops pipeline setup guide", "language": "en", "family": "technology", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "tech_es_01", "query": "tutoriales de desarrollo de software", "language": "es", "family": "technology", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "tech_es_02", "query": "arquitectura en la nube guia", "language": "es", "family": "technology", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "tech_es_03", "query": "configurar pipeline devops", "language": "es", "family": "technology", "source": "sprint12_seed_manifest", "enabled": true},
+
+    {"seed_id": "sw_en_01", "query": "web development framework comparison", "language": "en", "family": "software", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "sw_en_02", "query": "backend database optimization", "language": "en", "family": "software", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "sw_en_03", "query": "mobile app architecture design", "language": "en", "family": "software", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "sw_es_01", "query": "desarrollo web frontend backend", "language": "es", "family": "software", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "sw_es_02", "query": "optimizacion de bases de datos", "language": "es", "family": "software", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "sw_es_03", "query": "crear aplicaciones moviles paso a paso", "language": "es", "family": "software", "source": "sprint12_seed_manifest", "enabled": true},
+
+    {"seed_id": "ai_en_01", "query": "machine learning workflow tutorial", "language": "en", "family": "ai", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "ai_en_02", "query": "open source llm fine tuning", "language": "en", "family": "ai", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "ai_es_01", "query": "aprendizaje automatico guia practica", "language": "es", "family": "ai", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "ai_es_02", "query": "inteligencia artificial aplicada negocios", "language": "es", "family": "ai", "source": "sprint12_seed_manifest", "enabled": true},
+
+    {"seed_id": "sec_en_01", "query": "network security basics hands-on", "language": "en", "family": "cybersecurity", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "sec_en_02", "query": "penetration testing breakdown", "language": "en", "family": "cybersecurity", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "sec_es_01", "query": "seguridad informatica para principiantes", "language": "es", "family": "cybersecurity", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "sec_es_02", "query": "auditoria de ciberseguridad guia", "language": "es", "family": "cybersecurity", "source": "sprint12_seed_manifest", "enabled": true},
+
+    {"seed_id": "biz_en_01", "query": "bootstrap saas business model", "language": "en", "family": "business", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "biz_en_02", "query": "b2b sales strategy workflow", "language": "en", "family": "business", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "biz_en_03", "query": "digital agency scaling guide", "language": "en", "family": "business", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "biz_es_01", "query": "modelos de negocio saas emprendimiento", "language": "es", "family": "business", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "biz_es_02", "query": "estrategias de ventas b2b", "language": "es", "family": "business", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "biz_es_03", "query": "como escalar una agencia digital", "language": "es", "family": "business", "source": "sprint12_seed_manifest", "enabled": true},
+
+    {"seed_id": "fin_en_01", "query": "personal finance budgeting strategy", "language": "en", "family": "finance", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "fin_en_02", "query": "investing fundamentals beginners guide", "language": "en", "family": "finance", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "fin_en_03", "query": "cash flow management small business", "language": "en", "family": "finance", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "fin_es_01", "query": "finanzas personales administracion dinero", "language": "es", "family": "finance", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "fin_es_02", "query": "fundamentos de inversion para principiantes", "language": "es", "family": "finance", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "fin_es_03", "query": "gestion de flujo de caja empresas", "language": "es", "family": "finance", "source": "sprint12_seed_manifest", "enabled": true},
+
+    {"seed_id": "edu_en_01", "query": "effective study methods university", "language": "en", "family": "education", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "edu_en_02", "query": "online course creation breakdown", "language": "en", "family": "education", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "edu_es_01", "query": "tecnicas de estudio efectivas", "language": "es", "family": "education", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "edu_es_02", "query": "como crear cursos online exitosos", "language": "es", "family": "education", "source": "sprint12_seed_manifest", "enabled": true},
+
+    {"seed_id": "prod_en_01", "query": "time management workflow notion", "language": "en", "family": "productivity", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "prod_en_02", "query": "building a second brain system", "language": "en", "family": "productivity", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "prod_es_01", "query": "gestion del tiempo y productividad personal", "language": "es", "family": "productivity", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "prod_es_02", "query": "sistema de organizacion de tareas obsidian", "language": "es", "family": "productivity", "source": "sprint12_seed_manifest", "enabled": true},
+
+    {"seed_id": "sci_en_01", "query": "data science analysis case study", "language": "en", "family": "science", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "sci_en_02", "query": "applied statistics for data analysis", "language": "en", "family": "science", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "sci_es_01", "query": "ciencia de datos analisis practico", "language": "es", "family": "science", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "sci_es_02", "query": "estadistica aplicada analisis de datos", "language": "es", "family": "science", "source": "sprint12_seed_manifest", "enabled": true},
+
+    {"seed_id": "prob_en_01", "query": "fixing slow computer performance guide", "language": "en", "family": "consumer_problems", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "prob_en_02", "query": "home wifi network troubleshooting", "language": "en", "family": "consumer_problems", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "prob_es_01", "query": "como solucionar problema computadora lenta", "language": "es", "family": "consumer_problems", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "prob_es_02", "query": "solucionar problemas de conexion wifi casa", "language": "es", "family": "consumer_problems", "source": "sprint12_seed_manifest", "enabled": true},
+
+    {"seed_id": "skill_en_01", "query": "project management fundamentals scrum", "language": "en", "family": "professional_skills", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "skill_en_02", "query": "copywriting techniques for conversion", "language": "en", "family": "professional_skills", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "skill_es_01", "query": "gestion de proyectos metodologias agiles", "language": "es", "family": "professional_skills", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "skill_es_02", "query": "tecnicas de redaccion persuasiva copywriting", "language": "es", "family": "professional_skills", "source": "sprint12_seed_manifest", "enabled": true},
+
+    {"seed_id": "tool_en_01", "query": "video editing workflow premiere davinci", "language": "en", "family": "tools", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "tool_en_02", "query": "graphic design canvas Figma tutorial", "language": "en", "family": "tools", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "tool_es_01", "query": "flujo de trabajo edicion de video premiere", "language": "es", "family": "tools", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "tool_es_02", "query": "tutorial figma diseno de interfaces", "language": "es", "family": "tools", "source": "sprint12_seed_manifest", "enabled": true},
+
+    {"seed_id": "howto_en_01", "query": "how to build automated workflows n8n", "language": "en", "family": "how_to", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "howto_en_02", "query": "how to create professional audio podcast", "language": "en", "family": "how_to", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "howto_es_01", "query": "como automatizar tareas con n8n zapier", "language": "es", "family": "how_to", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "howto_es_02", "query": "como grabar un podcast profesional", "language": "es", "family": "how_to", "source": "sprint12_seed_manifest", "enabled": true},
+
+    {"seed_id": "emerg_en_01", "query": "agentic ai architecture trends", "language": "en", "family": "emerging_topics", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "emerg_en_02", "query": "no code platform developments", "language": "en", "family": "emerging_topics", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "emerg_es_01", "query": "tendencias agentes inteligencia artificial", "language": "es", "family": "emerging_topics", "source": "sprint12_seed_manifest", "enabled": true},
+    {"seed_id": "emerg_es_02", "query": "desarrollo sin codigo plataformas no code", "language": "es", "family": "emerging_topics", "source": "sprint12_seed_manifest", "enabled": true}
+  ]
+}
