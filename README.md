@@ -238,3 +238,34 @@ I:\PRYTB
 - **Sprint 6:** Revenue + Geography
 - **Sprint 7:** Competition + Depth + Evergreen
 - **Sprint 8:** Production Feasibility + Risk
+- **Sprint 9:** Profitability Engine
+- **Sprint 10:** Opportunity Validator / Adversarial Validation
+
+## Sprint 10
+
+Sprint 10 introduces the **Adversarial Opportunity Validator** to challenge Sprint 9 profitability candidates against false positives, channel/video concentration, fragility, and cross-signal contradictions:
+
+- **83 videos de producción / 10 clusters aprobados**
+- **Validación adversarial sin reclustering**
+- **Persistencia en `cluster_validation_analyses` con read-back exacto**
+
+### Ejecución Sprint 10
+
+Read-only:
+
+```powershell
+$env:PYTHONDONTWRITEBYTECODE='1'
+$env:PYTHONIOENCODING='utf-8'
+.\.venv\Scripts\python.exe scripts\validate_opportunities.py --json
+```
+
+Persistencia explícita:
+
+```powershell
+$env:PYTHONDONTWRITEBYTECODE='1'
+$env:PYTHONIOENCODING='utf-8'
+.\.venv\Scripts\python.exe scripts\migrate_sprint10_schema.py
+.\.venv\Scripts\python.exe scripts\validate_opportunities.py --persist
+```
+
+Metodología, fórmulas de fragilidad, falsos positivos y pruebas de sensibilidad: [docs/SPRINT_10_VALIDATOR.md](docs/SPRINT_10_VALIDATOR.md).
