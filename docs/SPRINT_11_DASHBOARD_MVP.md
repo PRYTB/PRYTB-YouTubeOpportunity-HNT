@@ -55,9 +55,22 @@ Execute the entry point using the venv-safe Streamlit executable:
 5. **Channels**:
    - Emerging/relevant channel intelligence, video counts in dataset, outlier counts, clusters represented, median views, and small channel indicator.
 
-6. **Costs**:
-   - Transparency page documenting API quota and AI model usage status.
-   - Re-states current development dataset financial limitations (no fabricated RPM/revenue/profit figures).
+---
+
+## 7. Internationalization (I18n / L10n)
+
+The dashboard includes full bilingual localization:
+
+- **Supported Languages:**
+  - `es` (Español) - Default
+  - `en` (English)
+- **Language Selector:** Located in the sidebar above page navigation (`Language / Idioma`). Changing selection updates all page elements immediately without data loss.
+- **Centralized Architecture (`dashboard/i18n.py`):**
+  - All dictionary keys are organized in `TRANSLATIONS["es"]` and `TRANSLATIONS["en"]`.
+  - Helper `t(key, lang)` accesses localized strings with fallback handling.
+  - `format_enum_presentation(enum_val, lang)` maps internal canonical analytical enums (e.g. `PASS_WITH_WARNINGS`, `WATCH`, `FAIL`) to user-facing strings without altering stored database values.
+  - `translate_column_header(col, lang)` dynamically localizes Pandas DataFrame table column headers at render time without mutating DataFrame schema names.
+  - `format_number(val, lang)` applies locale-safe numeric formatting (`.` for thousands in Spanish, `,` in English).
 
 ---
 

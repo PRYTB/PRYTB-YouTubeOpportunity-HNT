@@ -467,16 +467,19 @@ class DashboardDataService:
             )
             candidate_vms.append(cand)
 
+        prod_video_ids = set(v.video_id for v in video_vms)
+        prod_outliers = [o for o in outliers_raw if o.video_id in prod_video_ids]
+
         return DashboardDataset(
             provenance=provenance,
             candidates=candidate_vms,
             videos=video_vms,
-            outliers=outliers_raw,
+            outliers=prod_outliers,
             channels=channel_vms,
             total_videos=len(video_vms),
             total_channels=len(channel_vms),
             total_clusters=len(candidate_vms),
-            total_outliers=len(outliers_raw),
+            total_outliers=len(prod_outliers),
             status_counts=status_counts,
             profitability_counts=prof_counts,
         )

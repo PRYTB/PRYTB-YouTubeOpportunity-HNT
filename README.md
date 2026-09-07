@@ -16,7 +16,8 @@ Sprint 5: Niche Miner (COMPLETE)
 Sprint 6: Revenue + Geography (COMPLETE)
 Sprint 7: Competition + Depth + Evergreen (COMPLETE)
 Sprint 8: Production Feasibility + Risk (COMPLETE)
-Sprint 9: Profitability Engine (COMPLETE)
+Sprint 10: Adversarial Opportunity Validator (COMPLETE)
+Sprint 11: Dashboard MVP & Internationalization (es / en) (COMPLETE)
 ```
 
 Ruta raíz oficial y definitiva: `I:\PRYTB`
@@ -32,7 +33,19 @@ Streamlit (Futuro Dashboard)
 Pytest (Testing suite)
 ```
 
-## Creación del Entorno Virtual (.venv)
+## Dashboard e Internacionalización (I18n)
+
+El dashboard interactivo de Streamlit (`dashboard/app.py`) cuenta con soporte bilingüe completo:
+- **Idiomas soportados:** Español (`es`), English (`en`).
+- **Idioma por defecto:** Español.
+- **Selector de idioma:** Ubicado de forma prominente en la barra lateral (Sidebar) sobre la navegación.
+- **Arquitectura de internacionalización:** Centralizada en `dashboard/i18n.py`. Utiliza funciones `t()`, `format_enum_presentation()`, `translate_column_header()` y `format_number()` para traducir dinámicamente títulos de páginas, navegación, botones, métricas, encabezados de tabla y disclaimers en la capa de presentación sin modificar los valores canónicos analíticos en la base de datos.
+
+Para iniciar el dashboard:
+
+```powershell
+.\.venv\Scripts\streamlit.exe run dashboard\app.py
+```
 
 El proyecto requiere **Python 3.12+**. Para recrear o configurar el entorno virtual oficial:
 
