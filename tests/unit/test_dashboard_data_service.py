@@ -15,6 +15,14 @@ from dashboard.data_service import (
 )
 
 
+def test_dashboard_import_portability():
+    """Verify app.py modifies sys.path properly so dashboard can be imported when running from project root."""
+    import sys
+    from pathlib import Path
+    project_root = str(Path(__file__).resolve().parent.parent.parent)
+    assert project_root in sys.path
+
+
 def test_dashboard_data_service_initialization():
     service = DashboardDataService()
     assert service.repository is not None

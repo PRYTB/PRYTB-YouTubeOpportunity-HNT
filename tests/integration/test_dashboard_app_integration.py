@@ -22,9 +22,15 @@ def test_dashboard_data_service_integration():
 
 @pytest.mark.integration
 def test_streamlit_app_smoke_test():
-    """Smoke test running Streamlit app initialization using Streamlit AppTest framework."""
+    """Smoke test running Streamlit app initialization using Streamlit AppTest framework across pages."""
     from pathlib import Path
     app_path = Path(__file__).parent.parent.parent / "dashboard" / "app.py"
     at = AppTest.from_file(str(app_path), default_timeout=120)
     at.run(timeout=120)
-    assert not at.exception, f"App threw exception: {at.exception}"
+    assert not at.exception, f"Overview page threw exception: {at.exception}"
+
+    pages = ["Opportunities", "Opportunity Detail", "Outliers", "Channels", "Costs"]
+    for page in pages:
+        at.sidebar.radio[0].set_value(page)
+        at.run(timeout=120)
+        assert not at.exception, f"Page '{page}' threw exception: {at.exception}"
