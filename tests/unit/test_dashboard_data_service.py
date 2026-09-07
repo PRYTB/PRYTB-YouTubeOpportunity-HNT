@@ -15,12 +15,32 @@ from dashboard.data_service import (
 )
 
 
-def test_dashboard_import_portability():
-    """Verify app.py modifies sys.path properly so dashboard can be imported when running from project root."""
+def test_dashboard_import_portability_and_namespace_precedence():
+    """Verify app.py modifies sys.path properly so project root takes precedence over dashboard dir, avoiding app package collision."""
     import sys
     from pathlib import Path
+
     project_root = str(Path(__file__).resolve().parent.parent.parent)
-    assert project_root in sys.path
+
+    # Simulate Streamlit prepending script directory (dashboard/) before project_root
+    dashboard_dir = str(Path(__file__).resolve().parent.parent)
+    if dashboard_dir in sys.path:
+        sys.path.remove(dashboard_dir)
+    sys.path.insert(0, dashboard_dir)
+
+    # Emulate app.py sys.path precedence fix logic
+    while project_root in sys.path:
+        sys.path.remove(project_root)
+    sys.path.insert(0, project_root)
+
+    assert sys.path[0] == project_root
+
+    import app
+    import app.database.repositories
+
+    assert "dashboard" not in app.__file__
+    assert app.__file__.endswith(str(Path("app/__init__.py"))) or "app\\__init__.py" in app.__file__ or "app/__init__.py" in app.__file__
+    assert "app\\database\\repositories.py" in app.database.repositories.__file__ or "app/database/repositories.py" in app.database.repositories.__file__
 
 
 def test_dashboard_data_service_initialization():

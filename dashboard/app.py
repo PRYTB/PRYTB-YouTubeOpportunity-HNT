@@ -7,17 +7,22 @@ Run with:
 
 from __future__ import annotations
 
+from pathlib import Path
+import sys
+
+# Force repository root to position 0 in sys.path to prevent namespace collision with dashboard/app.py
+PROJECT_ROOT = str(Path(__file__).resolve().parents[1])
+while PROJECT_ROOT in sys.path:
+    sys.path.remove(PROJECT_ROOT)
+sys.path.insert(0, PROJECT_ROOT)
+assert sys.path[0] == PROJECT_ROOT
+
+import app
+import app.database.repositories
+
 import streamlit as st
 import pandas as pd
 from typing import List, Optional
-
-import sys
-from pathlib import Path
-
-# Ensure project root is in sys.path when running via `streamlit run dashboard/app.py`
-project_root = Path(__file__).resolve().parent.parent
-if str(project_root) not in sys.path:
-    sys.path.insert(0, str(project_root))
 
 from dashboard.data_service import (
     DashboardDataService,
