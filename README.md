@@ -16,6 +16,7 @@ Sprint 5: Niche Miner (COMPLETE)
 Sprint 6: Revenue + Geography (COMPLETE)
 Sprint 7: Competition + Depth + Evergreen (COMPLETE)
 Sprint 8: Production Feasibility + Risk (COMPLETE)
+Sprint 9: Profitability Engine (COMPLETE)
 ```
 
 Ruta raíz oficial y definitiva: `I:\PRYTB`

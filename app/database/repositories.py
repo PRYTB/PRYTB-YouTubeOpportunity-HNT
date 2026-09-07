@@ -9,6 +9,7 @@ import httpx
 from app.database.insforge_client import InsForgeClient, InsForgeClientError
 from app.models.market_structure import Sprint7AnalysisResult
 from app.models.production_risk import Sprint8AnalysisResult
+from app.models.profitability import Sprint9AnalysisResult
 from app.models.niche import NicheMiningResult
 from app.models.youtube import CollectionResult, YouTubeChannel, YouTubeVideo
 from app.utils.logger import logger
@@ -81,6 +82,22 @@ class ProductionRiskReadbackResult(BaseModel):
     unique_clusters: int
     duplicate_records: int
     payload_mismatches: int
+    verified: bool
+
+
+class ProfitabilityPersistenceResult(BaseModel):
+    run_id: str
+    records_written: int
+
+
+class ProfitabilityReadbackResult(BaseModel):
+    run_id: str
+    expected_records: int
+    actual_records: int
+    unique_clusters: int
+    duplicate_records: int
+    payload_mismatches: int
+    provenance_mismatches: int
     verified: bool
 
 
@@ -209,6 +226,9 @@ class YouTubeRepository:
     def verify_production_risk_schema(self) -> None:
         self._get_records("production_risk_analyses", params={"limit": 1})
 
+    def verify_profitability_schema(self) -> None:
+        self._get_records("cluster_profitability_analyses", params={"limit": 1})
+
     @staticmethod
     def _build_production_risk_records(
         result: Sprint8AnalysisResult
@@ -282,6 +302,101 @@ class YouTubeRepository:
             unique_clusters=len({record.get("cluster_id") for record in records}),
             duplicate_records=duplicate_records,
             payload_mismatches=payload_mismatches,
+            verified=verified,
+        )
+
+    @staticmethod
+    def _build_profitability_records(
+        result: Sprint9AnalysisResult
+    ) -> List[Dict[str, Any]]:
+        records = []
+        for cluster in result.clusters:
+            payload = cluster.model_dump(mode="json")
+            records.append({
+                "run_id": result.run_id,
+                "source_cluster_run_id": result.source_cluster_run_id,
+                "source_revenue_run_id": result.source_revenue_run_id,
+                "source_market_run_id": result.source_market_run_id,
+                "source_production_run_id": result.source_production_run_id,
+                "dataset_hash": result.dataset_hash,
+                "assignments_hash": result.assignments_hash,
+                "methodology_version": result.methodology_version,
+                "cluster_id": cluster.cluster_id,
+                "analyzed_at": result.analyzed_at,
+                "quality": result.quality.model_dump(mode="json"),
+                "metrics": payload,
+                "microniche": cluster.microniche,
+                "expected_views_base": cluster.expected_views_range.base,
+                "rpm_available": cluster.rpm_range.available,
+                "revenue_available": cluster.revenue_scenarios.available,
+                "cost_money_available": cluster.production_cost.available,
+                "profit_available": cluster.profit_scenarios.available,
+                "base_score": cluster.base_score,
+                "risk_penalty": cluster.risk_penalty,
+                "profitability_score": cluster.profitability_score,
+                "classification": cluster.classification.value,
+                "confidence": cluster.confidence,
+                "component_coverage": cluster.component_coverage,
+            })
+        return records
+
+    def insert_profitability_analysis(
+        self, result: Sprint9AnalysisResult
+    ) -> ProfitabilityPersistenceResult:
+        if not result.clusters:
+            raise ValueError("Sprint 9 analysis has no clusters to persist.")
+        cluster_ids = [cluster.cluster_id for cluster in result.clusters]
+        if len(cluster_ids) != len(set(cluster_ids)):
+            raise ValueError("Duplicate cluster IDs in Sprint 9 analysis.")
+        records = self._build_profitability_records(result)
+        self.verify_profitability_schema()
+        self._post_records("cluster_profitability_analyses", records, upsert=False)
+        return ProfitabilityPersistenceResult(
+            run_id=result.run_id, records_written=len(records)
+        )
+
+    def verify_profitability_readback(
+        self, expected: Sprint9AnalysisResult
+    ) -> ProfitabilityReadbackResult:
+        records = self._get_records(
+            "cluster_profitability_analyses",
+            params={"run_id": f"eq.{expected.run_id}"},
+        )
+        expected_records = self._build_profitability_records(expected)
+        keys = [(record.get("run_id"), record.get("cluster_id")) for record in records]
+        duplicate_records = sum(
+            count - 1 for count in Counter(keys).values() if count > 1
+        )
+        payload_mismatches = self._payload_mismatches(
+            expected_records, records, ("run_id", "cluster_id")
+        )
+        provenance_mismatches = 0
+        for rec in records:
+            if (
+                rec.get("dataset_hash") != expected.dataset_hash
+                or rec.get("assignments_hash") != expected.assignments_hash
+                or rec.get("methodology_version") != expected.methodology_version
+            ):
+                provenance_mismatches += 1
+
+        expected_keys = {
+            (expected.run_id, cluster.cluster_id) for cluster in expected.clusters
+        }
+        verified = (
+            len(records) == len(expected_records)
+            and set(keys) == expected_keys
+            and duplicate_records == 0
+            and payload_mismatches == 0
+            and provenance_mismatches == 0
+        )
+        return ProfitabilityReadbackResult(
+            run_id=expected.run_id,
+            expected_records=len(expected_records),
+            actual_records=len(records),
+            unique_clusters=len({record.get("cluster_id") for record in records}),
+            duplicate_records=duplicate_records,
+            payload_mismatches=payload_mismatches,
+            provenance_mismatches=provenance_mismatches,
             verified=verified,
         )
 
