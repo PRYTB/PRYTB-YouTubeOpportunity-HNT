@@ -1,0 +1,30 @@
+"""
+Integration and Smoke tests for Streamlit Dashboard MVP (Sprint 11).
+"""
+
+import pytest
+from streamlit.testing.v1 import AppTest
+from dashboard.data_service import DashboardDataService
+
+
+@pytest.mark.integration
+def test_dashboard_data_service_integration():
+    """Verify data service reads real InsForge data and produces compatible dataset without writes."""
+    service = DashboardDataService()
+    dataset = service.get_dashboard_data()
+
+    assert dataset.provenance.is_compatible is True
+    assert dataset.total_videos == 83
+    assert dataset.total_clusters == 10
+    assert len(dataset.candidates) == 10
+    assert len(dataset.videos) == 83
+
+
+@pytest.mark.integration
+def test_streamlit_app_smoke_test():
+    """Smoke test running Streamlit app initialization using Streamlit AppTest framework."""
+    from pathlib import Path
+    app_path = Path(__file__).parent.parent.parent / "dashboard" / "app.py"
+    at = AppTest.from_file(str(app_path), default_timeout=120)
+    at.run(timeout=120)
+    assert not at.exception, f"App threw exception: {at.exception}"

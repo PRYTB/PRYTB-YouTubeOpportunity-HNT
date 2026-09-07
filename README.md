@@ -240,6 +240,30 @@ I:\PRYTB
 - **Sprint 8:** Production Feasibility + Risk
 - **Sprint 9:** Profitability Engine
 - **Sprint 10:** Opportunity Validator / Adversarial Validation
+- **Sprint 11:** Dashboard MVP
+
+## Dashboard (Sprint 11)
+
+El Dashboard MVP provee la primera interfaz visual navegable para explorar las candidatas a oportunidad de PRYTB y su evidencia subyacente.
+
+### Cómo Ejecutar el Dashboard
+
+```powershell
+$env:PYTHONDONTWRITEBYTECODE='1'
+$env:PYTHONIOENCODING='utf-8'
+.\.venv\Scripts\streamlit.exe run dashboard\app.py
+```
+
+### Páginas del Dashboard
+
+- **Overview:** Métricas consolidadas del portafolio (83 videos, 10 clusters), distribución de estatus de validación, hashes de procedencia canónicos y aviso del dataset de desarrollo.
+- **Opportunities:** Tabla interactiva, ordenable y filtrable de candidatas clasificadas por fuerza de validación.
+- **Opportunity Detail:** Inspección profunda de evidencia por cluster (Resumen ejecutivo, Rentabilidad, Validación/Sensibilidad, Estructura de Mercado, Riesgo de Producción, Valor Económico y Videos subyacentes con links directos a YouTube).
+- **Outliers:** Ranking de los mayores outliers de video filtrables por cluster y ratio.
+- **Channels:** Canales emergentes en el dataset, conteo de outliers y métricas de desempeño.
+- **Costs:** Estado de uso de cuota API y modelos de IA, junto a la política estricta de no inventar valores financieros no disponibles.
+
+Documentación detallada del dashboard: [docs/SPRINT_11_DASHBOARD_MVP.md](docs/SPRINT_11_DASHBOARD_MVP.md).
 
 ## Sprint 10
 

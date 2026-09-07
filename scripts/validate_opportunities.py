@@ -179,6 +179,13 @@ def run_validation(
     return {
         "result": val_res,
         "sprint9_result": sprint9_res,
+        "sprint5_clusters": sprint5.clusters,
+        "sprint6_result": sprint6_res,
+        "sprint7_result": sprint7_res,
+        "sprint8_result": sprint8_res,
+        "outlier_results": outlier_results,
+        "ordered_videos": [videos_by_id[row["video_id"]] for row in rows],
+        "enriched_channels": enriched_channels,
         "persisted": persisted,
         "readback": readback,
         "source_runs": {
