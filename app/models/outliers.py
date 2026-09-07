@@ -34,6 +34,10 @@ class VideoOutlierResult(BaseModel):
     is_extreme_outlier: bool = False
     small_channel_outlier: bool = False
 
+    def is_actual_outlier(self) -> bool:
+        """Single source of truth predicate for whether a video is an actual outlier in PRYTB (Sprint 4)."""
+        return bool(self.is_strong_outlier or self.is_major_outlier or self.is_extreme_outlier)
+
     confidence: float = Field(default=0.0, ge=0.0, le=100.0)
     outlier_rank_score: float = 0.0
     warnings: List[str] = Field(default_factory=list)

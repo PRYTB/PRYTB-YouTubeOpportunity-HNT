@@ -507,16 +507,26 @@ def page_outliers(dataset: DashboardDataset, lang: str = DEFAULT_LANGUAGE):
     st.title(t("outliers.title", lang))
     st.caption(t("outliers.caption", lang))
 
+    # Show total identified outliers vs baseline population banner
+    actual_outliers = [o for o in dataset.outliers if o.is_actual_outlier()]
+    st.info(t("outliers.summary_banner", lang, count=len(actual_outliers), total=dataset.total_videos))
+
     with st.sidebar.expander(t("outliers.filters", lang), expanded=True):
         all_label = t("outliers.all_clusters", lang)
         cluster_opts = [all_label] + sorted(list(set(o.cluster_id for o in dataset.videos if o.cluster_id)))
         sel_cluster = st.selectbox(t("outliers.cluster_filter", lang), cluster_opts)
 
+        only_actual = st.checkbox(t("outliers.only_actual_outliers", lang), value=True)
         min_outlier_ratio = st.slider(t("outliers.min_outlier_ratio", lang), 0.0, 50.0, 0.0, 1.0)
+
+    outlier_res_map = {o.video_id: o for o in dataset.outliers}
 
     outliers_data = []
     for v in dataset.videos:
         if v.outlier_ratio is None:
+            continue
+        out_res = outlier_res_map.get(v.video_id)
+        if only_actual and (not out_res or not out_res.is_actual_outlier()):
             continue
         if sel_cluster != all_label and v.cluster_id != sel_cluster:
             continue

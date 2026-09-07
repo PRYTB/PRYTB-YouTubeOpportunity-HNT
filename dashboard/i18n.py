@@ -205,9 +205,11 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         # Outliers Page
         "outliers.title": "🚀 Videos outliers",
         "outliers.caption": "Outliers de video más fuertes ordenados por evidencia de outlier.",
+        "outliers.summary_banner": "Población total de outliers identificados: {count} videos (de {total} videos de producción analizados).",
         "outliers.filters": "🔍 Filtros de outliers",
         "outliers.all_clusters": "Todos",
         "outliers.cluster_filter": "Filtro de cluster",
+        "outliers.only_actual_outliers": "Solo outliers reales (is_strong / is_major / is_extreme)",
         "outliers.min_outlier_ratio": "Ratio mínimo de outlier",
         "outliers.no_matching": "Ningún outlier coincide con los criterios de filtro.",
 
@@ -429,10 +431,12 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
 
         # Outliers Page
         "outliers.title": "🚀 Outlier Videos",
-        "outliers.caption": "Strongest video outliers ordered by outlier evidence.",
+        "outliers.caption": "Strongest video outliers sorted by outlier evidence.",
+        "outliers.summary_banner": "Total identified outlier population: {count} videos (out of {total} analyzed production videos).",
         "outliers.filters": "🔍 Outlier Filters",
         "outliers.all_clusters": "All",
         "outliers.cluster_filter": "Cluster Filter",
+        "outliers.only_actual_outliers": "Only actual outliers (is_strong / is_major / is_extreme)",
         "outliers.min_outlier_ratio": "Minimum Outlier Ratio",
         "outliers.no_matching": "No outliers match the filter criteria.",
 

@@ -469,6 +469,7 @@ class DashboardDataService:
 
         prod_video_ids = set(v.video_id for v in video_vms)
         prod_outliers = [o for o in outliers_raw if o.video_id in prod_video_ids]
+        actual_outliers = [o for o in prod_outliers if o.is_actual_outlier()]
 
         return DashboardDataset(
             provenance=provenance,
@@ -479,7 +480,7 @@ class DashboardDataService:
             total_videos=len(video_vms),
             total_channels=len(channel_vms),
             total_clusters=len(candidate_vms),
-            total_outliers=len(prod_outliers),
+            total_outliers=len(actual_outliers),
             status_counts=status_counts,
             profitability_counts=prof_counts,
         )

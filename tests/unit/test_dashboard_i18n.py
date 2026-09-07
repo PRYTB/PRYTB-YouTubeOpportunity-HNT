@@ -180,15 +180,26 @@ def test_numeric_formatting():
 
 @pytest.mark.integration
 def test_outliers_overview_metric_semantic_correctness():
-    """Verify total_outliers metric in DashboardDataset equals canonical production video count (83), not raw DB count with test videos (84)."""
+    """
+    Verify total_outliers metric in DashboardDataset equals distinct production video_ids
+    satisfying the single-source-of-truth outlier predicate (is_actual_outlier() -> 8).
+    """
     service = DashboardDataService()
     dataset = service.get_dashboard_data()
 
     assert dataset.total_videos == CANONICAL_VIDEOS
-    assert dataset.total_outliers <= dataset.total_videos
-    assert dataset.total_outliers == CANONICAL_VIDEOS
-    assert len(dataset.outliers) == CANONICAL_VIDEOS
+    assert "VID_TEST_INTEGRATION_99" not in [v.video_id for v in dataset.videos]
+    assert "VID_TEST_INTEGRATION_99" not in [o.video_id for o in dataset.outliers]
 
-    # Verify no integration test videos in dataset view models
-    outlier_video_ids = [o.video_id for o in dataset.outliers]
-    assert "VID_TEST_INTEGRATION_99" not in outlier_video_ids
+    # Verify exact predicate reconciliation
+    actual_outliers = [o for o in dataset.outliers if o.is_actual_outlier()]
+    distinct_outlier_video_ids = set(o.video_id for o in actual_outliers)
+
+    assert dataset.total_outliers == len(actual_outliers)
+    assert dataset.total_outliers == len(distinct_outlier_video_ids)
+    assert dataset.total_outliers == 8
+
+    # Unfiltered page count with only_actual=True must equal dataset.total_outliers (8)
+    actual_video_ids = set(o.video_id for o in dataset.outliers if o.is_actual_outlier())
+    outlier_vms = [v for v in dataset.videos if v.video_id in actual_video_ids]
+    assert len(outlier_vms) == dataset.total_outliers
