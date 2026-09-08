@@ -61,12 +61,33 @@ OUTPUT_DIR = PROCESSED_DIR / "sprint12"
 
 class InMemoryYouTubeRepository(YouTubeRepository):
     """In-memory wrapper around YouTubeRepository for Sprint 12 dataset execution."""
-    def __init__(self, videos: List[Dict[str, Any]], channels: List[Dict[str, Any]]):
+    def __init__(
+        self,
+        videos: List[Dict[str, Any]],
+        channels: List[Dict[str, Any]],
+        video_metrics: Optional[List[Dict[str, Any]]] = None,
+        channel_metrics: Optional[List[Dict[str, Any]]] = None
+    ):
         self.client = None
         self._videos = videos
         self._channels = channels
         self._videos_map = {v["video_id"]: v for v in videos if "video_id" in v}
         self._channels_map = {c["channel_id"]: c for c in channels if "channel_id" in c}
+
+        # Build maps for latest video and channel metrics
+        self._v_metrics_map: Dict[str, Dict[str, Any]] = {}
+        if video_metrics:
+            for vm in video_metrics:
+                vid = vm.get("video_id")
+                if vid and (vid not in self._v_metrics_map or vm.get("collected_at", "") > self._v_metrics_map[vid].get("collected_at", "")):
+                    self._v_metrics_map[vid] = vm
+
+        self._c_metrics_map: Dict[str, Dict[str, Any]] = {}
+        if channel_metrics:
+            for cm in channel_metrics:
+                cid = cm.get("channel_id")
+                if cid and (cid not in self._c_metrics_map or cm.get("collected_at", "") > self._c_metrics_map[cid].get("collected_at", "")):
+                    self._c_metrics_map[cid] = cm
 
     def get_all_videos(self) -> List[Dict[str, Any]]:
         return self._videos
@@ -78,32 +99,48 @@ class InMemoryYouTubeRepository(YouTubeRepository):
         return list(self._videos_map.keys())
 
     def get_video_by_id(self, video_id: str) -> Optional[Dict[str, Any]]:
-        return self._videos_map.get(video_id)
+        v = self._videos_map.get(video_id)
+        if not v:
+            return None
+        v_copy = dict(v)
+        if v_copy.get("view_count") is None and video_id in self._v_metrics_map:
+            v_copy["view_count"] = self._v_metrics_map[video_id].get("view_count", 0)
+        return v_copy
 
     def get_channel_by_id(self, channel_id: str) -> Optional[Dict[str, Any]]:
-        return self._channels_map.get(channel_id)
+        c = self._channels_map.get(channel_id)
+        if not c:
+            return None
+        c_copy = dict(c)
+        if c_copy.get("subscriber_count") is None and channel_id in self._c_metrics_map:
+            c_copy["subscriber_count"] = self._c_metrics_map[channel_id].get("subscriber_count", 0)
+        return c_copy
 
     def get_all_video_metrics(self) -> List[Dict[str, Any]]:
         metrics = []
         for v in self._videos:
+            vid = v["video_id"]
+            vm = self._v_metrics_map.get(vid)
             metrics.append({
-                "video_id": v["video_id"],
-                "view_count": v.get("view_count", 0),
-                "like_count": v.get("like_count", 0),
-                "comment_count": v.get("comment_count", 0),
-                "collected_at": v.get("published_at", "2026-01-01T00:00:00Z"),
+                "video_id": vid,
+                "view_count": vm.get("view_count", v.get("view_count", 0)) if vm else v.get("view_count", 0),
+                "like_count": vm.get("like_count", v.get("like_count", 0)) if vm else v.get("like_count", 0),
+                "comment_count": vm.get("comment_count", v.get("comment_count", 0)) if vm else v.get("comment_count", 0),
+                "collected_at": vm.get("collected_at", v.get("published_at", "2026-01-01T00:00:00Z")) if vm else v.get("published_at", "2026-01-01T00:00:00Z"),
             })
         return metrics
 
     def get_all_channel_metrics(self) -> List[Dict[str, Any]]:
         metrics = []
         for c in self._channels:
+            cid = c["channel_id"]
+            cm = self._c_metrics_map.get(cid)
             metrics.append({
-                "channel_id": c["channel_id"],
-                "subscriber_count": c.get("subscriber_count", 0),
-                "video_count": c.get("video_count", 0),
-                "view_count": c.get("view_count", 0),
-                "collected_at": c.get("published_at", "2026-01-01T00:00:00Z"),
+                "channel_id": cid,
+                "subscriber_count": cm.get("subscriber_count", c.get("subscriber_count", 0)) if cm else c.get("subscriber_count", 0),
+                "video_count": cm.get("video_count", c.get("video_count", 0)) if cm else c.get("video_count", 0),
+                "view_count": cm.get("view_count", c.get("view_count", 0)) if cm else c.get("view_count", 0),
+                "collected_at": cm.get("collected_at", c.get("published_at", "2026-01-01T00:00:00Z")) if cm else c.get("published_at", "2026-01-01T00:00:00Z"),
             })
         return metrics
 
@@ -111,24 +148,26 @@ class InMemoryYouTubeRepository(YouTubeRepository):
         v = self._videos_map.get(video_id)
         if not v:
             return []
+        vm = self._v_metrics_map.get(video_id)
         return [{
             "video_id": video_id,
-            "view_count": v.get("view_count", 0),
-            "like_count": v.get("like_count", 0),
-            "comment_count": v.get("comment_count", 0),
-            "collected_at": v.get("published_at", "2026-01-01T00:00:00Z"),
+            "view_count": vm.get("view_count", v.get("view_count", 0)) if vm else v.get("view_count", 0),
+            "like_count": vm.get("like_count", v.get("like_count", 0)) if vm else v.get("like_count", 0),
+            "comment_count": vm.get("comment_count", v.get("comment_count", 0)) if vm else v.get("comment_count", 0),
+            "collected_at": vm.get("collected_at", v.get("published_at", "2026-01-01T00:00:00Z")) if vm else v.get("published_at", "2026-01-01T00:00:00Z"),
         }]
 
     def get_channel_metrics_history(self, channel_id: str, start_time: Optional[str] = None, end_time: Optional[str] = None) -> List[Dict[str, Any]]:
         c = self._channels_map.get(channel_id)
         if not c:
             return []
+        cm = self._c_metrics_map.get(channel_id)
         return [{
             "channel_id": channel_id,
-            "subscriber_count": c.get("subscriber_count", 0),
-            "video_count": c.get("video_count", 0),
-            "view_count": c.get("view_count", 0),
-            "collected_at": c.get("published_at", "2026-01-01T00:00:00Z"),
+            "subscriber_count": cm.get("subscriber_count", c.get("subscriber_count", 0)) if cm else c.get("subscriber_count", 0),
+            "video_count": cm.get("video_count", c.get("video_count", 0)) if cm else c.get("video_count", 0),
+            "view_count": cm.get("view_count", c.get("view_count", 0)) if cm else c.get("view_count", 0),
+            "collected_at": cm.get("collected_at", c.get("published_at", "2026-01-01T00:00:00Z")) if cm else c.get("published_at", "2026-01-01T00:00:00Z"),
         }]
 
     def get_latest_video_metrics(self, video_id: str) -> Optional[Dict[str, Any]]:
