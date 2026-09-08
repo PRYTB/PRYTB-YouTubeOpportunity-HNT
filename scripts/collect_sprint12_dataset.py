@@ -13,7 +13,8 @@ if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 from app.collectors.youtube_client import YouTubeClient, YouTubeQuotaExceededError, parse_iso8601_duration, parse_int_or_none
-from app.models.youtube import YouTubeVideo, YouTubeChannel
+from app.models.youtube import YouTubeVideo, YouTubeChannel, CollectionResult
+from app.database.repositories import YouTubeRepository, InsForgeClientError
 from app.utils.logger import logger
 
 EXCLUDED_VIDEO_IDS = {"VID_TEST_INTEGRATION_99", "TEST_VID_001", "TEST_VID_002"}
@@ -37,6 +38,7 @@ class Sprint12CheckpointedCollector:
 
         self.manifest = self._load_manifest()
         self.state = self._load_or_init_checkpoint()
+        self.repository = YouTubeRepository()
 
     def _load_manifest(self) -> List[Dict[str, Any]]:
         with open(self.manifest_path, "r", encoding="utf-8") as f:
@@ -237,6 +239,24 @@ class Sprint12CheckpointedCollector:
                             view_count=parse_int_or_none(ch_stats.get("viewCount"))
                         )
                         collected_channel_map[ch_id] = channel_obj
+
+            # Persist newly collected seed batch to InsForge BEFORE checkpoint update
+            seed_videos = [collected_video_map[vid] for vid in seed_video_ids if vid in collected_video_map]
+            seed_channels = [collected_channel_map[cid] for cid in new_channel_ids if cid in collected_channel_map]
+            if seed_videos or seed_channels:
+                try:
+                    seed_coll_res = CollectionResult(
+                        query=query,
+                        videos=seed_videos,
+                        channels=seed_channels
+                    )
+                    self.repository.persist_collection(seed_coll_res)
+                except Exception as p_err:
+                    logger.error(f"InsForge persistence failed for seed {seed_id}: {p_err}")
+                    self.state["status"] = "FIX"
+                    self.state["persistence_error"] = str(p_err)
+                    self._save_checkpoint()
+                    raise RuntimeError(f"InsForge persistence failure on seed {seed_id}: {p_err}") from p_err
 
             # Update checkpoint state
             completed_seeds.add(seed_id)
