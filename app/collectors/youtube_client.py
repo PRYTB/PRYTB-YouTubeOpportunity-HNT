@@ -138,9 +138,9 @@ class YouTubeClient:
                         reason = ""
                         msg = response.text
 
-                    if reason == "quotaExceeded":
-                        logger.error("YouTube API quota exceeded.")
-                        raise YouTubeQuotaExceededError("YouTube API quota exceeded.")
+                    if reason in ("quotaExceeded", "dailyLimitExceeded", "quotaExceeded403") or "Quota exceeded" in msg or "quota" in msg.lower():
+                        logger.error(f"YouTube API quota exceeded: {msg}")
+                        raise YouTubeQuotaExceededError(f"YouTube API quota exceeded: {msg}")
                     elif status in (401, 403) or reason in ("keyInvalid", "badRequest", "unauthorized"):
                         logger.error(f"YouTube API authentication error: {msg}")
                         raise YouTubeAuthError(f"YouTube API authentication error: {msg}")

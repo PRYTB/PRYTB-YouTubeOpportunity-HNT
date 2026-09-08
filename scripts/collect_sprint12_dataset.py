@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-from app.collectors.youtube_client import YouTubeClient, parse_iso8601_duration, parse_int_or_none
+from app.collectors.youtube_client import YouTubeClient, YouTubeQuotaExceededError, parse_iso8601_duration, parse_int_or_none
 from app.models.youtube import YouTubeVideo, YouTubeChannel
 from app.utils.logger import logger
 
@@ -132,6 +132,20 @@ class Sprint12CheckpointedCollector:
                     max_results=max_videos_per_seed,
                     relevance_language=lang
                 )
+            except YouTubeQuotaExceededError as e:
+                logger.error(f"YouTube Quota Exceeded on seed {seed_id}: {e}")
+                self.state["status"] = "STOP"
+                self.state["quota_error"] = str(e)
+                self._save_checkpoint()
+                return {
+                    "run_id": self.run_id,
+                    "status": "STOP",
+                    "reason": "quota_exceeded",
+                    "error": str(e),
+                    "production_videos": len(collected_video_map),
+                    "unique_channels": len(collected_channel_map),
+                    "seeds_completed": len(completed_seeds)
+                }
             except Exception as e:
                 logger.error(f"Search failed for seed {seed_id}: {e}")
                 self.state["status"] = "failed"
