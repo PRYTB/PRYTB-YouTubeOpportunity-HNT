@@ -187,8 +187,8 @@ def main():
     small_channel_outliers = [res for res in all_outliers if res.small_channel_outlier]
     valid_baselines = [res for res in all_outliers if res.baseline_confidence in ("MEDIUM", "HIGH")]
 
-    # Rank top 100 outliers by outlier_rank_score
-    top_100_outliers = sorted(all_outliers, key=lambda x: x.outlier_rank_score, reverse=True)[:100]
+    # Rank top 100 outliers among actual outliers by outlier_rank_score
+    top_100_outliers = sorted(actual_outliers, key=lambda x: x.outlier_rank_score, reverse=True)[:100]
     top_100_unique_channels = len(set(res.channel_id for res in top_100_outliers))
     
     outliers_map_by_id = {res.video_id: res for res in all_outliers}
@@ -397,12 +397,12 @@ def main():
     t0 = time.time()
     validator_engine = OpportunityValidator()
     
-    # Map outliers per cluster
+    # Map actual outliers per cluster for validator
     outliers_map = {}
     for cp in clusters_payload:
         cid = cp["cluster_id"]
         v_ids = set(cp["video_ids"])
-        outliers_map[cid] = [res for res in all_outliers if res.video_id in v_ids]
+        outliers_map[cid] = [res for res in actual_outliers if res.video_id in v_ids]
 
     clusters_videos_map = {cp["cluster_id"]: cp["videos"] for cp in clusters_payload}
 
@@ -533,7 +533,7 @@ def main():
                     "default_language": v.get("default_audio_language") or v.get("default_language"),
                     "category_id": str(v.get("category_id", "")),
                     "created_at": datetime.now(timezone.utc).isoformat()
-                } for v in vids_data if v.get("video_id") in in_memory_repo._videos_map]
+                } for v in vids_data if v.get("video_id") in repo._videos_map]
 
                 try:
                     real_repo.verify_niche_schema()

@@ -256,9 +256,10 @@ class OpportunityValidator:
         # 9. SEMANTIC COHERENCE CHECK
         # -------------------------------------------------------------
         if market_structure and market_structure.semantic_diversity is not None:
-            # High semantic diversity in a niche cluster can mean mixing/drift
-            within_sim = 1.0 - market_structure.semantic_diversity
-            semantic_val = min(100.0, max(0.0, within_sim * 100.0))
+            # semantic_diversity = unique_title_signatures / total_titled_videos.
+            # Higher semantic_diversity means more diverse title signatures (less duplication).
+            # Near duplicate count tracks duplicated title structures.
+            semantic_val = min(100.0, max(0.0, market_structure.semantic_diversity * 100.0))
             if market_structure.near_duplicate_count > (video_count * 0.5):
                 warnings.append("HIGH_NEAR_DUPLICATE_TITLE_SHARE")
         else:
