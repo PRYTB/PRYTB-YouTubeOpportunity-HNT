@@ -43,16 +43,26 @@ def test_niche_miner_integration():
     assert written.subniches_written == len(result.clusters)
     assert written.cluster_videos_written == expected_videos
 
-    readback = repo.verify_clusters_readback(result)
-    assert readback.actual_clusters == len(result.clusters)
-    assert readback.actual_subniches == len(result.clusters)
-    assert readback.actual_cluster_videos == expected_videos
-    assert readback.unique_videos == expected_videos
-    assert readback.unique_cluster_ids == len(result.clusters)
-    assert readback.duplicate_clusters == 0
-    assert readback.duplicate_videos == 0
-    assert readback.orphan_cluster_videos == 0
-    assert readback.orphan_subniches == 0
-    assert readback.missing_videos == 0
-    assert readback.verified is True
+    try:
+        readback = repo.verify_clusters_readback(result)
+        assert readback.actual_clusters == len(result.clusters)
+        assert readback.actual_subniches == len(result.clusters)
+        assert readback.actual_cluster_videos == expected_videos
+        assert readback.unique_videos == expected_videos
+        assert readback.unique_cluster_ids == len(result.clusters)
+        assert readback.duplicate_clusters == 0
+        assert readback.duplicate_videos == 0
+        assert readback.orphan_cluster_videos == 0
+        assert readback.orphan_subniches == 0
+        assert readback.missing_videos == 0
+        assert readback.verified is True
+    finally:
+        # Guaranteed cleanup of test execution artifacts from target database
+        with repo.client.get_connection() as conn:
+            with conn.cursor() as cur:
+                # Delete cluster_videos only for this run_id
+                cur.execute("DELETE FROM cluster_videos WHERE run_id = %s", (result.run_id,))
+                cur.execute("DELETE FROM subniches WHERE run_id = %s", (result.run_id,))
+                cur.execute("DELETE FROM clusters WHERE run_id = %s", (result.run_id,))
+                conn.commit()
 

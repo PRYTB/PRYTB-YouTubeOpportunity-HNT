@@ -909,6 +909,8 @@ class YouTubeRepository:
                         normalized[field] = json.loads(value)
                     except json.JSONDecodeError:
                         pass
+            if "created_at" in normalized:
+                normalized.pop("created_at")
             return normalized
 
         expected_by_key = {
