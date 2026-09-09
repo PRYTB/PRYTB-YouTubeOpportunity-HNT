@@ -7,7 +7,7 @@ import math
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timezone
 
-from app.analytics.historical_metrics import HistoricalMetricsAnalyzer, parse_datetime
+from app.analytics.historical_metrics import HistoricalMetricsAnalyzer, parse_datetime, sort_and_deduplicate_snapshots
 from app.database.repositories import YouTubeRepository
 from app.models.outliers import VideoOutlierResult
 from config import outlier_config as cfg
@@ -128,6 +128,13 @@ class OutlierEngine:
             if c_id:
                 channel_videos_map.setdefault(c_id, []).append(v)
 
+        # Group channel_metrics by channel_id
+        channel_metrics_map: Dict[str, List[Dict[str, Any]]] = {}
+        for cm in all_c_metrics:
+            c_id = cm.get("channel_id")
+            if c_id:
+                channel_metrics_map.setdefault(c_id, []).append(cm)
+
         # Group video_metrics by video_id
         video_metrics_map: Dict[str, List[Dict[str, Any]]] = {}
         for vm in all_v_metrics:
@@ -166,16 +173,18 @@ class OutlierEngine:
                 video_info=v,
                 channel_info=c_info,
                 target_metrics=v_metrics,
-                baseline=baseline
+                baseline=baseline,
+                latest_channel_metrics=self._get_latest_c_metrics_from_cache(c_id, channel_metrics_map)
             )
             results.append(res)
 
         return results
 
     def rank_outliers(self, limit: int = 20) -> List[VideoOutlierResult]:
-        """Ranks all analyzed videos by OutlierRankScore."""
+        """Ranks only actual outliers by OutlierRankScore without padding."""
         all_results = self.analyze_all()
-        sorted_results = sorted(all_results, key=lambda x: x.outlier_rank_score, reverse=True)
+        actual_outliers = [res for res in all_results if res.is_actual_outlier()]
+        sorted_results = sorted(actual_outliers, key=lambda x: x.outlier_rank_score, reverse=True)
         return sorted_results[:limit]
 
     def _compute_channel_baseline(
@@ -218,7 +227,7 @@ class OutlierEngine:
                 velocity_list.append(float(v_hist.latest_velocity))
 
         return {
-            "video_count": len(baseline_vids),
+            "video_count": len(views_list),
             "median_views": calculate_median(views_list),
             "mean_views": calculate_mean(views_list),
             "median_views_per_day": calculate_median(per_day_list),
@@ -261,19 +270,31 @@ class OutlierEngine:
                 velocity_list.append(float(v_hist.latest_velocity))
 
         return {
-            "video_count": len(baseline_vids),
+            "video_count": len(views_list),
             "median_views": calculate_median(views_list),
             "mean_views": calculate_mean(views_list),
             "median_views_per_day": calculate_median(per_day_list),
             "median_latest_velocity": calculate_median(velocity_list),
         }
 
+    def _get_latest_c_metrics_from_cache(
+        self,
+        channel_id: str,
+        channel_metrics_map: Dict[str, List[Dict[str, Any]]]
+    ) -> Optional[Dict[str, Any]]:
+        snaps = channel_metrics_map.get(channel_id, [])
+        if not snaps:
+            return None
+        clean_snaps, _ = sort_and_deduplicate_snapshots(snaps)
+        return clean_snaps[-1] if clean_snaps else None
+
     def _build_outlier_result(
         self,
         video_info: Dict[str, Any],
         channel_info: Optional[Dict[str, Any]],
         target_metrics: Any,
-        baseline: Dict[str, Any]
+        baseline: Dict[str, Any],
+        latest_channel_metrics: Optional[Dict[str, Any]] = None
     ) -> VideoOutlierResult:
         warnings = list(target_metrics.warnings)
         video_id = video_info.get("video_id", "")
@@ -328,7 +349,9 @@ class OutlierEngine:
                     warnings.append(f"Acceleration ignored for primary signals due to short interval ({last_interval_hours:.2f}h < {cfg.MIN_ACCELERATION_INTERVAL_HOURS}h).")
 
         # Subscriber count and views/subscriber ratio
-        latest_c_metrics = self.repository.get_latest_channel_metrics(channel_id) if channel_id else None
+        latest_c_metrics = latest_channel_metrics if latest_channel_metrics is not None else (
+            self.repository.get_latest_channel_metrics(channel_id) if channel_id else None
+        )
         subscriber_count = latest_c_metrics.get("subscriber_count") if latest_c_metrics else None
 
         is_small_channel = None

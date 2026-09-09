@@ -334,6 +334,51 @@ def test_analyze_all_and_ranking():
 
     assert len(results) == 4
 
-    ranked = engine.rank_outliers(limit=2)
+    ranked = engine.rank_outliers(limit=10)
+    # Out of 4 videos, only v2 (20x) and v4 (5x) are actual outliers (ratio >= 5.0).
+    # v1 and v3 (1000/1000 = 1.0x) are not actual outliers.
+    # Therefore limit=10 returns exactly 2 items without padding.
     assert len(ranked) == 2
     assert ranked[0].video_id == "v2"  # Highest outlier rank score
+    assert ranked[1].video_id == "v4"
+    assert all(r.is_actual_outlier() for r in ranked)
+
+
+def test_rank_outliers_excludes_non_outliers():
+    mock_repo = MagicMock()
+    mock_metrics = MagicMock()
+
+    vids = [
+        {"video_id": "v_normal1", "channel_id": "c1"},
+        {"video_id": "v_normal2", "channel_id": "c1"},
+        {"video_id": "v_outlier", "channel_id": "c1"},
+    ]
+    mock_repo.get_all_videos.return_value = vids
+    mock_repo.get_all_channels.return_value = [{"channel_id": "c1"}]
+    mock_repo.get_all_video_metrics.return_value = []
+    mock_repo.get_all_channel_metrics.return_value = []
+
+    def mock_analyze(v_id, video_info=None, snapshots=None):
+        views = 10000 if v_id == "v_outlier" else 1000
+        return VideoHistoricalMetrics(
+            video_id=v_id,
+            snapshot_count=1,
+            latest_views=views,
+            video_age_days=10.0,
+            lifetime_views_per_day=views / 10.0,
+            latest_velocity=None,
+            latest_acceleration=None,
+            intervals=[],
+            warnings=[]
+        )
+
+    mock_metrics.analyze_video.side_effect = mock_analyze
+    mock_repo.get_latest_channel_metrics.return_value = {"subscriber_count": 5000}
+
+    engine = OutlierEngine(repository=mock_repo, metrics_analyzer=mock_metrics)
+    ranked = engine.rank_outliers(limit=100)
+
+    # Only 1 video is an actual outlier, 2 normal videos must be excluded
+    assert len(ranked) == 1
+    assert ranked[0].video_id == "v_outlier"
+    assert ranked[0].is_actual_outlier() is True

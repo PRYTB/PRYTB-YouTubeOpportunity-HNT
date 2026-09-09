@@ -270,6 +270,21 @@ class YouTubeRepository:
         records = self._get_records("channels")
         return [r["channel_id"] for r in records if "channel_id" in r]
 
+    def verify_outlier_schema(self) -> None:
+        self._get_records("video_outlier_analyses", params={"limit": 1})
+
+    def insert_outlier_analysis(self, records: List[Dict[str, Any]], batch_size: int = 500) -> bool:
+        if not records:
+            return True
+        self.verify_outlier_schema()
+        for i in range(0, len(records), batch_size):
+            batch = records[i:i + batch_size]
+            self._post_records("video_outlier_analyses", batch, upsert=False)
+        return True
+
+    def get_outlier_analysis_by_run_id(self, run_id: str) -> List[Dict[str, Any]]:
+        return self._get_records("video_outlier_analyses", params={"run_id": f"eq.{run_id}"})
+
     def verify_niche_schema(self) -> None:
         for table in ("clusters", "subniches", "cluster_videos"):
             self._get_records(table, params={"limit": 1})
@@ -871,9 +886,13 @@ class YouTubeRepository:
                 url = f"{url}?on_conflict=run_id,cluster_id"
             elif endpoint_table == "cluster_videos":
                 url = f"{url}?on_conflict=run_id,video_id"
+            elif endpoint_table == "video_outlier_analyses":
+                url = f"{url}?on_conflict=run_id,video_id"
 
         try:
             with httpx.Client(timeout=self.client.timeout) as http_client:
+                # Set return representation so PostgREST doesn't block or return empty bodies silently
+                headers["Prefer"] = headers.get("Prefer", "") + ",return=representation" if "Prefer" in headers else "return=representation"
                 response = http_client.post(url, headers=headers, json=records)
                 if response.status_code in [200, 201]:
                     return True

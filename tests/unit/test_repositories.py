@@ -103,7 +103,7 @@ def test_upsert_channels_success(mock_post, mock_client, sample_channel):
     mock_post.assert_called_once()
     args, kwargs = mock_post.call_args
     assert "Prefer" in kwargs["headers"]
-    assert kwargs["headers"]["Prefer"] == "resolution=merge-duplicates"
+    assert "resolution=merge-duplicates" in kwargs["headers"]["Prefer"]
     assert kwargs["json"][0]["channel_id"] == "UC12345"
 
 
@@ -481,3 +481,33 @@ def test_verify_clusters_readback_propagates_get_error(
         match="clusters missing"
     ):
         repo.verify_clusters_readback(sample_niche_result)
+
+
+def test_insert_outlier_analysis_and_readback(mock_client):
+    repo = YouTubeRepository(client=mock_client)
+    repo.verify_outlier_schema = MagicMock()
+    repo._post_records = MagicMock(return_value=True)
+
+    records = [
+        {
+            "run_id": "test_run_123",
+            "video_id": f"v_{i}",
+            "channel_id": "c_1",
+            "outlier_ratio": 5.5,
+            "outlier_rank_score": 10.2,
+            "small_channel_outlier": False,
+        }
+        for i in range(1200)
+    ]
+
+    success = repo.insert_outlier_analysis(records, batch_size=500)
+    assert success is True
+    # Should call batch insert 3 times (500 + 500 + 200)
+    assert repo._post_records.call_count == 3
+
+    repo._get_records = MagicMock(return_value=records)
+    fetched = repo.get_outlier_analysis_by_run_id("test_run_123")
+    assert len(fetched) == 1200
+    repo._get_records.assert_called_once_with(
+        "video_outlier_analyses", params={"run_id": "eq.test_run_123"}
+    )
