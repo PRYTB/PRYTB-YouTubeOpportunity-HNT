@@ -162,3 +162,41 @@ def test_invariant_j_readback_provenance_matches_run(gate2_data):
     for r in records:
         assert r.get("run_id") == expected_run_id, "Read-back record run_id mismatch"
         assert r.get("dataset_hash") == expected_dataset_hash, "Read-back record dataset_hash mismatch"
+
+
+def test_analytical_runs_canonical_lookup():
+    repo = YouTubeRepository()
+    canonical = repo.get_canonical_run()
+    assert canonical is not None
+    assert canonical.run_id == "sprint12_interim_reconciled_20260908_202912"
+    assert canonical.dataset_hash == "6b0ac147d9aae34551c6db0a450ae778d22c6c5132feb89c8878eafeacf69919"
+    assert canonical.video_count == 7611
+    assert canonical.channel_count == 4773
+    assert canonical.status == "APPROVED_GATE2_CANONICAL"
+
+    by_id = repo.get_analytical_run("sprint12_interim_reconciled_20260908_202912")
+    assert by_id is not None
+    assert by_id.run_id == canonical.run_id
+
+    # Test idempotency
+    repo.upsert_analytical_run(
+        run_id=canonical.run_id,
+        run_type=canonical.run_type,
+        dataset_hash=canonical.dataset_hash,
+        video_count=canonical.video_count,
+        channel_count=canonical.channel_count,
+        status=canonical.status,
+        source_collection_run=canonical.source_collection_run,
+        methodology_version=canonical.methodology_version,
+        notes=canonical.notes,
+    )
+    rec2 = repo.get_canonical_run()
+    assert rec2.run_id == canonical.run_id
+
+
+def test_stale_metadata_cannot_become_canonical():
+    repo = YouTubeRepository()
+    canonical = repo.get_canonical_run()
+    assert canonical.video_count != 7637
+    assert canonical.channel_count != 4781
+    assert canonical.dataset_hash != "061de620aa852d3e33e163430bf3e8130af3081abd5b99d84cd081a503b83d4d"

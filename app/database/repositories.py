@@ -117,6 +117,20 @@ class ValidationReadbackResult(BaseModel):
     verified: bool
 
 
+class AnalyticalRunRecord(BaseModel):
+    run_id: str
+    run_type: str
+    dataset_hash: str
+    video_count: int
+    channel_count: int
+    status: str
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    source_collection_run: Optional[str] = None
+    methodology_version: Optional[str] = None
+    notes: Optional[str] = None
+
+
 class YouTubeRepository:
     """
     Repository responsible for persisting YouTube collection data into PostgreSQL database.
@@ -197,6 +211,98 @@ class YouTubeRepository:
 
     def verify_outlier_schema(self) -> None:
         self.client.execute("SELECT 1 FROM public.video_outlier_analyses LIMIT 1")
+
+    def verify_analytical_runs_schema(self) -> None:
+        create_sql = """
+        CREATE TABLE IF NOT EXISTS public.analytical_runs (
+            run_id TEXT PRIMARY KEY,
+            run_type TEXT NOT NULL,
+            dataset_hash TEXT NOT NULL,
+            video_count INTEGER NOT NULL,
+            channel_count INTEGER NOT NULL,
+            status TEXT NOT NULL,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            source_collection_run TEXT,
+            methodology_version TEXT,
+            notes TEXT
+        );
+        CREATE INDEX IF NOT EXISTS analytical_runs_status_idx ON public.analytical_runs(status);
+        CREATE INDEX IF NOT EXISTS analytical_runs_dataset_hash_idx ON public.analytical_runs(dataset_hash);
+        """
+        self.client.execute(create_sql)
+
+    def upsert_analytical_run(
+        self,
+        run_id: str,
+        run_type: str,
+        dataset_hash: str,
+        video_count: int,
+        channel_count: int,
+        status: str,
+        source_collection_run: Optional[str] = None,
+        methodology_version: Optional[str] = None,
+        notes: Optional[str] = None,
+    ) -> AnalyticalRunRecord:
+        self.verify_analytical_runs_schema()
+        query = """
+        INSERT INTO public.analytical_runs (
+            run_id, run_type, dataset_hash, video_count, channel_count,
+            status, created_at, updated_at, source_collection_run,
+            methodology_version, notes
+        ) VALUES (
+            %(run_id)s, %(run_type)s, %(dataset_hash)s, %(video_count)s, %(channel_count)s,
+            %(status)s, NOW(), NOW(), %(source_collection_run)s,
+            %(methodology_version)s, %(notes)s
+        ) ON CONFLICT (run_id) DO UPDATE SET
+            run_type = EXCLUDED.run_type,
+            dataset_hash = EXCLUDED.dataset_hash,
+            video_count = EXCLUDED.video_count,
+            channel_count = EXCLUDED.channel_count,
+            status = EXCLUDED.status,
+            updated_at = NOW(),
+            source_collection_run = EXCLUDED.source_collection_run,
+            methodology_version = EXCLUDED.methodology_version,
+            notes = EXCLUDED.notes
+        RETURNING *;
+        """
+        params = {
+            "run_id": run_id,
+            "run_type": run_type,
+            "dataset_hash": dataset_hash,
+            "video_count": video_count,
+            "channel_count": channel_count,
+            "status": status,
+            "source_collection_run": source_collection_run,
+            "methodology_version": methodology_version,
+            "notes": notes,
+        }
+        records = self.client.execute(query, params)
+        if not records:
+            raise RuntimeError(f"Failed to upsert analytical_run for {run_id}")
+        r = records[0]
+        return AnalyticalRunRecord(**r)
+
+    def get_analytical_run(self, run_id: str) -> Optional[AnalyticalRunRecord]:
+        self.verify_analytical_runs_schema()
+        records = self.client.execute(
+            "SELECT * FROM public.analytical_runs WHERE run_id = %s", [run_id]
+        )
+        if not records:
+            return None
+        return AnalyticalRunRecord(**records[0])
+
+    def get_canonical_sprint12_run(self) -> Optional[AnalyticalRunRecord]:
+        return self.get_canonical_run()
+
+    def get_canonical_run(self) -> Optional[AnalyticalRunRecord]:
+        self.verify_analytical_runs_schema()
+        records = self.client.execute(
+            "SELECT * FROM public.analytical_runs WHERE status IN ('APPROVED_GATE2_CANONICAL', 'CANONICAL', 'APPROVED_CANONICAL') ORDER BY updated_at DESC LIMIT 1"
+        )
+        if not records:
+            return None
+        return AnalyticalRunRecord(**records[0])
 
     def insert_outlier_analysis(self, records: List[Dict[str, Any]], batch_size: int = 500) -> bool:
         if not records:

@@ -28,7 +28,7 @@
 | Scoring | 9 | Profitability Engine | GO/FIX |
 | Validación | 10 | Validator adversarial | GO/FIX |
 | UI | 11 | Dashboard MVP | GO/FIX |
-| Data Run | 12 | 10K–20K videos analizados | GO/FIX |
+| Data Run | 12 | 10K–20K videos analizados (Gate 1 GO, Gate 1A GO, Gate 2A GO) | GO/FIX |
 | Selección | 13 | Top 3 oportunidades | GO/FIX |
 | Ejecución | 14 | Canal piloto + 10 contenidos | GO/FIX |
 | Aprendizaje | 15 | Feedback Loop | GO/FIX |

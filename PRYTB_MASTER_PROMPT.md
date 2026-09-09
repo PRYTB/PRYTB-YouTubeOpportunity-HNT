@@ -7,6 +7,7 @@
 **Backend de datos principal:** PostgreSQL local (`localhost:5433`, DB `prytb`, User `prytb_app`)
 **Backend de datos histórico:** InsForge (fuente de migración legacy únicamente)
 **Supabase:** No usado
+**Sprint 12 Estado:** Gate 1 GO, Gate 1A GO, Gate 2A (PostgreSQL Provenance Reconciliation) GO. Canonical run_id stored unambiguously in `analytical_runs` (`sprint12_interim_reconciled_20260908_202912`, 7611 videos, 4773 channels, dataset_hash `6b0ac147d9aae34551c6db0a450ae778d22c6c5132feb89c8878eafeacf69919`). Stale Gate1 metadata superseded. Gate3 remains BLOCKED until explicitly unblocked.
 **Fuente principal de datos:** YouTube Data API v3  
 **Proveedor de modelos IA:** OmniRoute  
 **Lenguaje principal:** Python 3.12+  
