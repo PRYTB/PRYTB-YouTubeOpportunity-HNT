@@ -285,6 +285,9 @@ class YouTubeRepository:
     def get_outlier_analysis_by_run_id(self, run_id: str) -> List[Dict[str, Any]]:
         return self._get_records("video_outlier_analyses", params={"run_id": f"eq.{run_id}"})
 
+    def delete_outlier_analysis_by_run_id(self, run_id: str) -> bool:
+        return self._delete_records("video_outlier_analyses", params={"run_id": f"eq.{run_id}"})
+
     def verify_niche_schema(self) -> None:
         for table in ("clusters", "subniches", "cluster_videos"):
             self._get_records(table, params={"limit": 1})
@@ -904,6 +907,34 @@ class YouTubeRepository:
                     raise InsForgeClientError(err_msg)
         except httpx.RequestError as exc:
             err_msg = f"Network error sending batch to InsForge {endpoint_table}: {exc}"
+            logger.error(err_msg)
+            raise InsForgeClientError(err_msg)
+
+    def _delete_records(
+        self,
+        endpoint_table: str,
+        params: Optional[Dict[str, Any]] = None
+    ) -> bool:
+        if not self.client.url:
+            raise InsForgeClientError("INSFORGE_URL is not configured.")
+
+        url = f"{self.client.url}/api/database/records/{endpoint_table}"
+        headers = self.client._get_headers()
+        request_params = dict(params) if params else {}
+
+        try:
+            with httpx.Client(timeout=self.client.timeout) as http_client:
+                response = http_client.delete(url, headers=headers, params=request_params)
+                if response.status_code in [200, 204]:
+                    return True
+                elif response.status_code in [401, 403]:
+                    raise InsForgeClientError(f"InsForge authentication failure (HTTP {response.status_code}).")
+                else:
+                    err_msg = f"InsForge DELETE request to {endpoint_table} failed (HTTP {response.status_code}): {response.text}"
+                    logger.error(err_msg)
+                    raise InsForgeClientError(err_msg)
+        except httpx.RequestError as exc:
+            err_msg = f"Network error deleting from InsForge {endpoint_table}: {exc}"
             logger.error(err_msg)
             raise InsForgeClientError(err_msg)
 

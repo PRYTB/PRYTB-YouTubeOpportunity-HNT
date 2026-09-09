@@ -4,6 +4,7 @@ Calculates channel baselines, video outlier ratios, age-normalized ratios, veloc
 small channel indicators, confidence scores, and ranks outliers.
 """
 import math
+import re
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timezone
 
@@ -12,6 +13,21 @@ from app.database.repositories import YouTubeRepository
 from app.models.outliers import VideoOutlierResult
 from config import outlier_config as cfg
 from app.utils.logger import logger
+
+_TEST_ID_PATTERN = re.compile(r"(^|[_-])(test|fixture|mock)([_-]|$)", re.IGNORECASE)
+_TEST_TEXT_MARKERS = ("integration test", "fixture data", "mock data", "test data")
+
+def is_test_video(video: Dict[str, Any]) -> bool:
+    video_id = str(video.get("video_id", "") or "")
+    text = " ".join(
+        (
+            str(video.get("title", "") or ""),
+            str(video.get("description", "") or ""),
+        )
+    ).lower()
+    return bool(_TEST_ID_PATTERN.search(video_id)) or any(
+        marker in text for marker in _TEST_TEXT_MARKERS
+    )
 
 
 def calculate_median(values: List[float]) -> Optional[float]:
@@ -113,7 +129,7 @@ class OutlierEngine:
 
     def analyze_all(self) -> List[VideoOutlierResult]:
         """Analyzes all videos in the database efficiently using batch data fetching."""
-        all_videos = self.repository.get_all_videos()
+        all_videos = [v for v in self.repository.get_all_videos() if not is_test_video(v)]
         all_channels = self.repository.get_all_channels()
         all_v_metrics = self.repository.get_all_video_metrics()
         all_c_metrics = self.repository.get_all_channel_metrics()
