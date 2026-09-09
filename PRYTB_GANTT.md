@@ -1,7 +1,10 @@
 # PRYTB — CARTA GANTT MAESTRA
 ## YouTube Opportunity Hunter
 
-**Ruta del proyecto:** `C:\Users\JLLV\Desktop\PRYTB`  
+**Ruta del proyecto:** `I:\PRYTB`
+**Base de datos principal actual:** PostgreSQL local (`localhost:5433`, DB `prytb`, User `prytb_app`)
+**InsForge:** legacy/fuente histórica únicamente
+**Supabase:** no usado
 **Inicio:** Sprint 0  
 **Metodología:** Sprint gated — no avanzar con defectos críticos  
 

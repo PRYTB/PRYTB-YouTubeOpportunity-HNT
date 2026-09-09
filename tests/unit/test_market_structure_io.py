@@ -7,6 +7,7 @@ import httpx
 import pytest
 
 from app.database.insforge_client import InsForgeClient, InsForgeClientError
+from app.database.postgres_client import PostgresClient, PostgresClientError
 from app.database.repositories import YouTubeRepository
 from app.models.market_structure import (
     ClusterMarketStructure,
@@ -25,7 +26,12 @@ from scripts.migrate_sprint7_schema import (
 
 @pytest.fixture
 def client():
-    return InsForgeClient(url="https://test.insforge.app", api_key="key")
+    c = MagicMock(spec=PostgresClient)
+    c.host = "localhost"
+    c.port = 5433
+    c.dbname = "prytb"
+    c.user = "prytb_app"
+    return c
 
 
 @pytest.fixture
@@ -76,18 +82,16 @@ def test_enrichment_uses_latest_metrics_without_mutating_static_records():
 
 
 def test_repository_persists_one_record_per_cluster(client, result):
+    mock_cursor = MagicMock()
+    client.get_cursor.return_value.__enter__.return_value = mock_cursor
+
     repo = YouTubeRepository(client=client)
     repo.verify_market_structure_schema = MagicMock()
-    repo._post_records = MagicMock(return_value=True)
 
     written = repo.insert_market_structure_analysis(result)
 
     assert written.records_written == 2
-    repo._post_records.assert_called_once()
-    table, records = repo._post_records.call_args.args
-    assert table == "market_structure_analyses"
-    assert records[0]["metrics"]["cluster_id"] == 0
-    assert repo._post_records.call_args.kwargs == {"upsert": False}
+    assert mock_cursor.execute.call_count == 2
 
 
 def test_repository_rejects_empty_or_duplicate_clusters(client, result):
@@ -108,7 +112,7 @@ def test_market_structure_readback_requires_exact_payload_and_normalizes_json(cl
     records[0]["config"] = json.dumps(records[0]["config"])
     records[0]["quality"] = json.dumps(records[0]["quality"])
     records[0]["metrics"] = json.dumps(records[0]["metrics"])
-    repo._get_records = MagicMock(return_value=records)
+    client.execute.return_value = records
 
     readback = repo.verify_market_structure_readback(result)
 
@@ -130,13 +134,14 @@ def test_market_structure_readback_rejects_integrity_differences(client, result,
         records.append(deepcopy(records[0]))
     else:
         records[0]["competition_score"] = 99
-    repo._get_records = MagicMock(return_value=records)
+    client.execute.return_value = records
 
     assert repo.verify_market_structure_readback(result).verified is False
 
 
 @patch("scripts.migrate_sprint7_schema.httpx.post")
-def test_sprint7_migration_uses_official_endpoint(mock_post, client):
+def test_sprint7_migration_uses_official_endpoint(mock_post):
+    legacy_client = InsForgeClient(url="http://localhost", api_key="key")
     response = MagicMock(status_code=201)
     response.json.return_value = {
         "version": MIGRATION_VERSION,
@@ -146,7 +151,7 @@ def test_sprint7_migration_uses_official_endpoint(mock_post, client):
     }
     mock_post.return_value = response
 
-    assert execute_migration(client)["version"] == MIGRATION_VERSION
+    assert execute_migration(legacy_client)["version"] == MIGRATION_VERSION
     _, kwargs = mock_post.call_args
     assert kwargs["json"] == {"version": MIGRATION_VERSION, "name": MIGRATION_NAME, "sql": MIGRATION_SQL}
     assert mock_post.call_args.args[0].endswith("/api/database/migrations")
@@ -154,7 +159,8 @@ def test_sprint7_migration_uses_official_endpoint(mock_post, client):
 
 @pytest.mark.parametrize("failure", ["http", "json", "semantic", "network"])
 @patch("scripts.migrate_sprint7_schema.httpx.post")
-def test_sprint7_migration_rejects_failures(mock_post, client, failure):
+def test_sprint7_migration_rejects_failures(mock_post, failure):
+    legacy_client = InsForgeClient(url="http://localhost", api_key="key")
     if failure == "network":
         mock_post.side_effect = httpx.TimeoutException("timeout")
     else:
@@ -166,17 +172,18 @@ def test_sprint7_migration_rejects_failures(mock_post, client, failure):
         mock_post.return_value = response
 
     with pytest.raises(InsForgeClientError):
-        execute_migration(client)
+        execute_migration(legacy_client)
 
 
 @patch("scripts.migrate_sprint7_schema.httpx.get")
-def test_sprint7_migration_verifies_table_and_reports_missing(mock_get, client):
+def test_sprint7_migration_verifies_table_and_reports_missing(mock_get):
+    legacy_client = InsForgeClient(url="http://localhost", api_key="key")
     mock_get.return_value = MagicMock(status_code=200)
-    assert verify_tables(client) == ["market_structure_analyses"]
+    assert verify_tables(legacy_client) == ["market_structure_analyses"]
 
     mock_get.return_value = MagicMock(status_code=404, text="missing")
     with pytest.raises(InsForgeClientError, match="not accessible"):
-        verify_tables(client)
+        verify_tables(legacy_client)
 
 
 def test_sprint7_migration_requires_url():

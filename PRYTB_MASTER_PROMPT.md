@@ -2,9 +2,11 @@
 ## YouTube Opportunity Hunter — Private Engine
 
 **Versión:** 1.0  
-**Ruta raíz obligatoria:** `C:\Users\JLLV\Desktop\PRYTB`  
-**IDE / agente de desarrollo:** TRAE  
-**Backend de datos:** InsForge  
+**Ruta raíz obligatoria:** `I:\PRYTB`
+**IDE / agente de desarrollo:** TRAE
+**Backend de datos principal:** PostgreSQL local (`localhost:5433`, DB `prytb`, User `prytb_app`)
+**Backend de datos histórico:** InsForge (fuente de migración legacy únicamente)
+**Supabase:** No usado
 **Fuente principal de datos:** YouTube Data API v3  
 **Proveedor de modelos IA:** OmniRoute  
 **Lenguaje principal:** Python 3.12+  

@@ -7,7 +7,7 @@ import pytest
 from pathlib import Path
 from typing import Dict, Any, List
 
-from app.database.insforge_client import InsForgeClient
+from app.database.postgres_client import PostgresClient
 from app.database.repositories import YouTubeRepository
 from app.analytics.outlier_engine import OutlierEngine
 from scripts.create_sprint12_dataset_contract import clean_text_for_embedding, is_test_video, compute_dataset_hash
@@ -16,7 +16,7 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
 @pytest.fixture(scope="module")
 def gate2_data():
-    client = InsForgeClient()
+    client = PostgresClient()
     repo = YouTubeRepository(client)
 
     videos_raw = repo.get_all_videos()
@@ -158,7 +158,7 @@ def test_invariant_j_readback_provenance_matches_run(gate2_data):
     expected_run_id = "sprint12_interim_reconciled_20260908_202912"
     expected_dataset_hash = "6b0ac147d9aae34551c6db0a450ae778d22c6c5132feb89c8878eafeacf69919"
 
-    records = repo._get_records("video_outlier_analyses", params={"run_id": f"eq.{expected_run_id}"})
+    records = repo.get_outlier_analysis_by_run_id(expected_run_id)
     for r in records:
         assert r.get("run_id") == expected_run_id, "Read-back record run_id mismatch"
         assert r.get("dataset_hash") == expected_dataset_hash, "Read-back record dataset_hash mismatch"

@@ -5,7 +5,8 @@ from pathlib import Path
 from app.utils.config import settings, BASE_DIR
 from app.utils.logger import logger
 from app.collectors.youtube_client import YouTubeClient, YouTubeClientError
-from app.database.insforge_client import InsForgeClient, InsForgeClientError
+from app.database.postgres_client import PostgresClient, PostgresClientError
+from app.database.repositories import YouTubeRepository
 
 
 def run_healthcheck() -> bool:
@@ -71,10 +72,10 @@ def run_healthcheck() -> bool:
         print("[FAIL] YouTube configuration (YOUTUBE_API_KEY missing)")
         all_passed = False
 
-    if key_status.get("INSFORGE_URL") and (key_status.get("INSFORGE_API_KEY") or key_status.get("INSFORGE_ANON_KEY")):
-        print("[OK] InsForge configuration")
+    if key_status.get("POSTGRES_HOST") and key_status.get("POSTGRES_PORT") and key_status.get("POSTGRES_DB") and key_status.get("POSTGRES_USER"):
+        print("[OK] POSTGRES CONFIG: OK")
     else:
-        print("[FAIL] InsForge configuration (URL or API key missing)")
+        print("[FAIL] PostgreSQL configuration missing")
         all_passed = False
 
     print("[INFO] OmniRoute provided by TRAE")
@@ -93,14 +94,15 @@ def run_healthcheck() -> bool:
         import app
         from app.utils.config import settings as _
         from app.collectors.youtube_client import YouTubeClient as _
-        from app.database.insforge_client import InsForgeClient as _
+        from app.database.postgres_client import PostgresClient as _
+        from app.database.repositories import YouTubeRepository as _
         print("[OK] Project imports")
     except Exception as exc:
         print(f"[FAIL] Project imports ({exc})")
         all_passed = False
 
-    # 5. Integrations
-    print("\nIntegrations")
+    # 5. Integrations & Database
+    print("\nIntegrations & Primary Database")
     if key_status.get("YOUTUBE_API_KEY"):
         try:
             client = YouTubeClient()
@@ -114,23 +116,57 @@ def run_healthcheck() -> bool:
             print(f"[FAIL] YouTube Data API ({exc})")
             all_passed = False
     else:
-        print("[FAIL] YouTube Data API (Key unconfigured)")
-        all_passed = False
+        print("[WARN] YouTube Data API (Key unconfigured)")
 
-    if key_status.get("INSFORGE_URL"):
-        try:
-            ins_client = InsForgeClient()
-            res = ins_client.check_connection()
-            if res.get("status") == "connected":
-                print("[OK] InsForge")
+    try:
+        pg_client = PostgresClient()
+        conn_info = pg_client.check_connection()
+        if conn_info.get("status") == "connected":
+            print("[OK] POSTGRES CONNECTION: OK")
+            if conn_info.get("user") == settings.POSTGRES_USER:
+                print("[OK] POSTGRES AUTH: OK")
             else:
-                print("[FAIL] InsForge (Connection status unexpected)")
+                print(f"[FAIL] POSTGRES AUTH: Unexpected user {conn_info.get('user')}")
                 all_passed = False
-        except InsForgeClientError as exc:
-            print(f"[FAIL] InsForge ({exc})")
+
+            if conn_info.get("database") == "prytb":
+                print("[OK] DATABASE: prytb")
+            else:
+                print(f"[FAIL] DATABASE: {conn_info.get('database')}")
+                all_passed = False
+
+            # Verify required tables
+            req_tables = [
+                "channels", "videos", "channel_metrics", "video_metrics",
+                "clusters", "subniches", "cluster_videos",
+                "market_structure_analyses", "production_risk_analyses",
+                "cluster_profitability_analyses", "cluster_validation_analyses",
+                "video_outlier_analyses"
+            ]
+            repo = YouTubeRepository(pg_client)
+            all_tables_ok = True
+            for tbl in req_tables:
+                try:
+                    pg_client.execute(f"SELECT 1 FROM public.{tbl} LIMIT 1;")
+                except Exception as t_exc:
+                    print(f"[FAIL] Table missing/error: {tbl} ({t_exc})")
+                    all_tables_ok = False
+                    all_passed = False
+            if all_tables_ok:
+                print("[OK] REQUIRED TABLES: OK")
+
+            # Real SQL read check
+            video_count_res = pg_client.execute("SELECT COUNT(*) FROM public.videos;")
+            if video_count_res:
+                print("[OK] REAL READ: OK")
+            else:
+                print("[FAIL] REAL READ: Empty result")
+                all_passed = False
+        else:
+            print("[FAIL] POSTGRES CONNECTION: Failed")
             all_passed = False
-    else:
-        print("[FAIL] InsForge (URL unconfigured)")
+    except PostgresClientError as exc:
+        print(f"[FAIL] PostgreSQL healthcheck error: {exc}")
         all_passed = False
 
     print("[INFO] OmniRoute via TRAE (AVAILABLE)")

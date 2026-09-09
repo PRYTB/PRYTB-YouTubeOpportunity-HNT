@@ -28,9 +28,10 @@ Ruta raíz oficial y definitiva: `I:\PRYTB`
 ```text
 Python 3.12+
 YouTube Data API v3
-InsForge Backend
+PostgreSQL Local (Primary Runtime DB: localhost:5433, db prytb, user prytb_app)
+InsForge Backend (Legacy / Historical migration source only)
 OmniRoute (Administrado vía entorno TRAE)
-Streamlit (Futuro Dashboard)
+Streamlit (Dashboard)
 Pytest (Testing suite)
 ```
 

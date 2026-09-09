@@ -2,11 +2,10 @@ import json
 import time
 from collections import Counter
 from datetime import datetime, timezone
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from pydantic import BaseModel, Field
-import httpx
 
-from app.database.insforge_client import InsForgeClient, InsForgeClientError
+from app.database.postgres_client import PostgresClient, PostgresClientError
 from app.models.market_structure import Sprint7AnalysisResult
 from app.models.production_risk import Sprint8AnalysisResult
 from app.models.profitability import Sprint9AnalysisResult
@@ -120,80 +119,11 @@ class ValidationReadbackResult(BaseModel):
 
 class YouTubeRepository:
     """
-    Repository responsible for persisting YouTube collection data into InsForge PostgreSQL.
+    Repository responsible for persisting YouTube collection data into PostgreSQL database.
     """
 
-    def __init__(self, client: Optional[InsForgeClient] = None):
-        self.client = client or InsForgeClient()
-
-    def _get_records(
-        self,
-        endpoint_table: str,
-        params: Optional[Dict[str, Any]] = None
-    ) -> List[Dict[str, Any]]:
-        if not self.client.url:
-            raise InsForgeClientError("INSFORGE_URL is not configured.")
-
-        url = f"{self.client.url}/api/database/records/{endpoint_table}"
-        headers = self.client._get_headers()
-        request_params = dict(params) if params else {}
-
-        # Handle pagination if limit is large or not specified for bulk operations
-        records: List[Dict[str, Any]] = []
-        limit = request_params.get("limit")
-        if limit is not None and isinstance(limit, int) and limit <= 1000:
-            # Single page explicit limit request
-            try:
-                with httpx.Client(timeout=self.client.timeout) as http_client:
-                    response = http_client.get(url, headers=headers, params=request_params)
-                    if response.status_code == 200:
-                        data = response.json()
-                        if isinstance(data, list):
-                            return data
-                        elif isinstance(data, dict) and "data" in data and isinstance(data["data"], list):
-                            return data["data"]
-                        return []
-                    elif response.status_code in [401, 403]:
-                        raise InsForgeClientError(f"InsForge authentication failure (HTTP {response.status_code}).")
-                    else:
-                        err_msg = f"InsForge GET request to {endpoint_table} failed (HTTP {response.status_code}): {response.text}"
-                        logger.error(err_msg)
-                        raise InsForgeClientError(err_msg)
-            except httpx.RequestError as exc:
-                err_msg = f"Network error reading from InsForge {endpoint_table}: {exc}"
-                logger.error(err_msg)
-                raise InsForgeClientError(err_msg)
-        else:
-            # Paged fetch to retrieve all records safely
-            page_size = 1000
-            offset = 0
-            while True:
-                page_params = dict(request_params)
-                page_params["limit"] = page_size
-                page_params["offset"] = offset
-                try:
-                    with httpx.Client(timeout=self.client.timeout) as http_client:
-                        response = http_client.get(url, headers=headers, params=page_params)
-                        if response.status_code == 200:
-                            data = response.json()
-                            batch = data if isinstance(data, list) else (data.get("data", []) if isinstance(data, dict) else [])
-                            if not batch:
-                                break
-                            records.extend(batch)
-                            if len(batch) < page_size:
-                                break
-                            offset += page_size
-                        elif response.status_code in [401, 403]:
-                            raise InsForgeClientError(f"InsForge authentication failure (HTTP {response.status_code}).")
-                        else:
-                            err_msg = f"InsForge GET request to {endpoint_table} failed (HTTP {response.status_code}): {response.text}"
-                            logger.error(err_msg)
-                            raise InsForgeClientError(err_msg)
-                except httpx.RequestError as exc:
-                    err_msg = f"Network error reading from InsForge {endpoint_table}: {exc}"
-                    logger.error(err_msg)
-                    raise InsForgeClientError(err_msg)
-            return records
+    def __init__(self, client: Optional[PostgresClient] = None):
+        self.client = client or PostgresClient()
 
     def get_video_metrics_history(
         self,
@@ -201,18 +131,16 @@ class YouTubeRepository:
         start_time: Optional[str] = None,
         end_time: Optional[str] = None
     ) -> List[Dict[str, Any]]:
-        params = {"video_id": f"eq.{video_id}", "order": "collected_at.asc"}
+        query = "SELECT * FROM public.video_metrics WHERE video_id = %s"
+        params: List[Any] = [video_id]
         if start_time:
-            params["collected_at"] = f"gte.{start_time}"
+            query += " AND collected_at >= %s"
+            params.append(start_time)
         if end_time:
-            if "collected_at" in params:
-                params["collected_at"] = f"and(gte.{start_time},lte.{end_time})"
-            else:
-                params["collected_at"] = f"lte.{end_time}"
-        records = self._get_records("video_metrics", params=params)
-        # Fallback python sort in case backend doesn't respect order param
-        records.sort(key=lambda x: str(x.get("collected_at", "")))
-        return records
+            query += " AND collected_at <= %s"
+            params.append(end_time)
+        query += " ORDER BY collected_at ASC"
+        return self.client.execute(query, params)
 
     def get_channel_metrics_history(
         self,
@@ -220,17 +148,16 @@ class YouTubeRepository:
         start_time: Optional[str] = None,
         end_time: Optional[str] = None
     ) -> List[Dict[str, Any]]:
-        params = {"channel_id": f"eq.{channel_id}", "order": "collected_at.asc"}
+        query = "SELECT * FROM public.channel_metrics WHERE channel_id = %s"
+        params: List[Any] = [channel_id]
         if start_time:
-            params["collected_at"] = f"gte.{start_time}"
+            query += " AND collected_at >= %s"
+            params.append(start_time)
         if end_time:
-            if "collected_at" in params:
-                params["collected_at"] = f"and(gte.{start_time},lte.{end_time})"
-            else:
-                params["collected_at"] = f"lte.{end_time}"
-        records = self._get_records("channel_metrics", params=params)
-        records.sort(key=lambda x: str(x.get("collected_at", "")))
-        return records
+            query += " AND collected_at <= %s"
+            params.append(end_time)
+        query += " ORDER BY collected_at ASC"
+        return self.client.execute(query, params)
 
     def get_latest_video_metrics(self, video_id: str) -> Optional[Dict[str, Any]]:
         history = self.get_video_metrics_history(video_id)
@@ -241,65 +168,106 @@ class YouTubeRepository:
         return history[-1] if history else None
 
     def get_video_by_id(self, video_id: str) -> Optional[Dict[str, Any]]:
-        params = {"video_id": f"eq.{video_id}"}
-        records = self._get_records("videos", params=params)
+        records = self.client.execute("SELECT * FROM public.videos WHERE video_id = %s", [video_id])
         return records[0] if records else None
 
     def get_channel_by_id(self, channel_id: str) -> Optional[Dict[str, Any]]:
-        params = {"channel_id": f"eq.{channel_id}"}
-        records = self._get_records("channels", params=params)
+        records = self.client.execute("SELECT * FROM public.channels WHERE channel_id = %s", [channel_id])
         return records[0] if records else None
 
     def get_all_videos(self) -> List[Dict[str, Any]]:
-        return self._get_records("videos")
+        return self.client.execute("SELECT * FROM public.videos")
 
     def get_all_channels(self) -> List[Dict[str, Any]]:
-        return self._get_records("channels")
+        return self.client.execute("SELECT * FROM public.channels")
 
     def get_all_video_metrics(self) -> List[Dict[str, Any]]:
-        return self._get_records("video_metrics")
+        return self.client.execute("SELECT * FROM public.video_metrics")
 
     def get_all_channel_metrics(self) -> List[Dict[str, Any]]:
-        return self._get_records("channel_metrics")
+        return self.client.execute("SELECT * FROM public.channel_metrics")
 
     def get_all_video_ids(self) -> List[str]:
-        records = self._get_records("videos")
+        records = self.client.execute("SELECT video_id FROM public.videos")
         return [r["video_id"] for r in records if "video_id" in r]
 
     def get_all_channel_ids(self) -> List[str]:
-        records = self._get_records("channels")
+        records = self.client.execute("SELECT channel_id FROM public.channels")
         return [r["channel_id"] for r in records if "channel_id" in r]
 
     def verify_outlier_schema(self) -> None:
-        self._get_records("video_outlier_analyses", params={"limit": 1})
+        self.client.execute("SELECT 1 FROM public.video_outlier_analyses LIMIT 1")
 
     def insert_outlier_analysis(self, records: List[Dict[str, Any]], batch_size: int = 500) -> bool:
         if not records:
             return True
         self.verify_outlier_schema()
-        for i in range(0, len(records), batch_size):
-            batch = records[i:i + batch_size]
-            self._post_records("video_outlier_analyses", batch, upsert=False)
+
+        query = """
+        INSERT INTO public.video_outlier_analyses (
+            run_id, dataset_hash, run_type, video_id, channel_id, video_title, channel_title,
+            video_views, channel_median_views, outlier_ratio, age_normalized_outlier_ratio,
+            velocity_ratio, subscriber_count, is_small_channel, is_strong_outlier,
+            is_major_outlier, is_extreme_outlier, small_channel_outlier, confidence,
+            outlier_rank_score, warnings
+        ) VALUES (
+            %(run_id)s, %(dataset_hash)s, %(run_type)s, %(video_id)s, %(channel_id)s, %(video_title)s, %(channel_title)s,
+            %(video_views)s, %(channel_median_views)s, %(outlier_ratio)s, %(age_normalized_outlier_ratio)s,
+            %(velocity_ratio)s, %(subscriber_count)s, %(is_small_channel)s, %(is_strong_outlier)s,
+            %(is_major_outlier)s, %(is_extreme_outlier)s, %(small_channel_outlier)s, %(confidence)s,
+            %(outlier_rank_score)s, %(warnings)s
+        ) ON CONFLICT (run_id, video_id) DO UPDATE SET
+            dataset_hash = EXCLUDED.dataset_hash,
+            run_type = EXCLUDED.run_type,
+            channel_id = EXCLUDED.channel_id,
+            video_title = EXCLUDED.video_title,
+            channel_title = EXCLUDED.channel_title,
+            video_views = EXCLUDED.video_views,
+            channel_median_views = EXCLUDED.channel_median_views,
+            outlier_ratio = EXCLUDED.outlier_ratio,
+            age_normalized_outlier_ratio = EXCLUDED.age_normalized_outlier_ratio,
+            velocity_ratio = EXCLUDED.velocity_ratio,
+            subscriber_count = EXCLUDED.subscriber_count,
+            is_small_channel = EXCLUDED.is_small_channel,
+            is_strong_outlier = EXCLUDED.is_strong_outlier,
+            is_major_outlier = EXCLUDED.is_major_outlier,
+            is_extreme_outlier = EXCLUDED.is_extreme_outlier,
+            small_channel_outlier = EXCLUDED.small_channel_outlier,
+            confidence = EXCLUDED.confidence,
+            outlier_rank_score = EXCLUDED.outlier_rank_score,
+            warnings = EXCLUDED.warnings;
+        """
+
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                if isinstance(r.get("warnings"), (list, dict)):
+                    r["warnings"] = json.dumps(r["warnings"])
+                cur.execute(query, r)
         return True
 
     def get_outlier_analysis_by_run_id(self, run_id: str) -> List[Dict[str, Any]]:
-        return self._get_records("video_outlier_analyses", params={"run_id": f"eq.{run_id}"})
+        return self.client.execute("SELECT * FROM public.video_outlier_analyses WHERE run_id = %s", [run_id])
 
     def delete_outlier_analysis_by_run_id(self, run_id: str) -> bool:
-        return self._delete_records("video_outlier_analyses", params={"run_id": f"eq.{run_id}"})
+        self.client.execute("DELETE FROM public.video_outlier_analyses WHERE run_id = %s", [run_id])
+        return True
 
     def verify_niche_schema(self) -> None:
         for table in ("clusters", "subniches", "cluster_videos"):
-            self._get_records(table, params={"limit": 1})
+            self.client.execute(f"SELECT 1 FROM public.{table} LIMIT 1")
 
     def verify_market_structure_schema(self) -> None:
-        self._get_records("market_structure_analyses", params={"limit": 1})
+        self.client.execute("SELECT 1 FROM public.market_structure_analyses LIMIT 1")
 
     def verify_production_risk_schema(self) -> None:
-        self._get_records("production_risk_analyses", params={"limit": 1})
+        self.client.execute("SELECT 1 FROM public.production_risk_analyses LIMIT 1")
 
     def verify_profitability_schema(self) -> None:
-        self._get_records("cluster_profitability_analyses", params={"limit": 1})
+        self.client.execute("SELECT 1 FROM public.cluster_profitability_analyses LIMIT 1")
+
+    def verify_validation_schema(self) -> None:
+        self.client.execute("SELECT 1 FROM public.cluster_validation_analyses LIMIT 1")
 
     @staticmethod
     def _build_production_risk_records(
@@ -338,7 +306,42 @@ class YouTubeRepository:
             raise ValueError("Duplicate cluster IDs in Sprint 8 analysis.")
         records = self._build_production_risk_records(result)
         self.verify_production_risk_schema()
-        self._post_records("production_risk_analyses", records, upsert=False)
+
+        query = """
+        INSERT INTO public.production_risk_analyses (
+            run_id, source_market_structure_run_id, source_cluster_run_id, cluster_id,
+            analyzed_at, config, quality, metrics, microniche, production_cost_score,
+            estimated_hours_low, estimated_hours_high, production_complexity,
+            overall_risk_score, risk_level, confidence
+        ) VALUES (
+            %(run_id)s, %(source_market_structure_run_id)s, %(source_cluster_run_id)s, %(cluster_id)s,
+            %(analyzed_at)s, %(config)s, %(quality)s, %(metrics)s, %(microniche)s, %(production_cost_score)s,
+            %(estimated_hours_low)s, %(estimated_hours_high)s, %(production_complexity)s,
+            %(overall_risk_score)s, %(risk_level)s, %(confidence)s
+        ) ON CONFLICT (run_id, cluster_id) DO UPDATE SET
+            source_market_structure_run_id = EXCLUDED.source_market_structure_run_id,
+            source_cluster_run_id = EXCLUDED.source_cluster_run_id,
+            analyzed_at = EXCLUDED.analyzed_at,
+            config = EXCLUDED.config,
+            quality = EXCLUDED.quality,
+            metrics = EXCLUDED.metrics,
+            microniche = EXCLUDED.microniche,
+            production_cost_score = EXCLUDED.production_cost_score,
+            estimated_hours_low = EXCLUDED.estimated_hours_low,
+            estimated_hours_high = EXCLUDED.estimated_hours_high,
+            production_complexity = EXCLUDED.production_complexity,
+            overall_risk_score = EXCLUDED.overall_risk_score,
+            risk_level = EXCLUDED.risk_level,
+            confidence = EXCLUDED.confidence;
+        """
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                for f in ("config", "quality", "metrics"):
+                    if isinstance(r.get(f), (list, dict)):
+                        r[f] = json.dumps(r[f])
+                cur.execute(query, r)
+
         return ProductionRiskPersistenceResult(
             run_id=result.run_id, records_written=len(records)
         )
@@ -346,9 +349,9 @@ class YouTubeRepository:
     def verify_production_risk_readback(
         self, expected: Sprint8AnalysisResult
     ) -> ProductionRiskReadbackResult:
-        records = self._get_records(
-            "production_risk_analyses",
-            params={"run_id": f"eq.{expected.run_id}"},
+        records = self.client.execute(
+            "SELECT * FROM public.production_risk_analyses WHERE run_id = %s",
+            [expected.run_id]
         )
         expected_records = self._build_production_risk_records(expected)
         keys = [(record.get("run_id"), record.get("cluster_id")) for record in records]
@@ -422,13 +425,57 @@ class YouTubeRepository:
             raise ValueError("Duplicate cluster IDs in Sprint 9 analysis.")
         records = self._build_profitability_records(result)
         self.verify_profitability_schema()
-        self._post_records("cluster_profitability_analyses", records, upsert=False)
+
+        query = """
+        INSERT INTO public.cluster_profitability_analyses (
+            run_id, source_cluster_run_id, source_revenue_run_id, source_market_run_id,
+            source_production_run_id, dataset_hash, assignments_hash, methodology_version,
+            cluster_id, analyzed_at, quality, metrics, microniche, expected_views_base,
+            rpm_available, revenue_available, cost_money_available, profit_available,
+            base_score, risk_penalty, profitability_score, classification, confidence,
+            component_coverage
+        ) VALUES (
+            %(run_id)s, %(source_cluster_run_id)s, %(source_revenue_run_id)s, %(source_market_run_id)s,
+            %(source_production_run_id)s, %(dataset_hash)s, %(assignments_hash)s, %(methodology_version)s,
+            %(cluster_id)s, %(analyzed_at)s, %(quality)s, %(metrics)s, %(microniche)s, %(expected_views_base)s,
+            %(rpm_available)s, %(revenue_available)s, %(cost_money_available)s, %(profit_available)s,
+            %(base_score)s, %(risk_penalty)s, %(profitability_score)s, %(classification)s, %(confidence)s,
+            %(component_coverage)s
+        ) ON CONFLICT (run_id, cluster_id) DO UPDATE SET
+            source_cluster_run_id = EXCLUDED.source_cluster_run_id,
+            source_revenue_run_id = EXCLUDED.source_revenue_run_id,
+            source_market_run_id = EXCLUDED.source_market_run_id,
+            source_production_run_id = EXCLUDED.source_production_run_id,
+            dataset_hash = EXCLUDED.dataset_hash,
+            assignments_hash = EXCLUDED.assignments_hash,
+            methodology_version = EXCLUDED.methodology_version,
+            analyzed_at = EXCLUDED.analyzed_at,
+            quality = EXCLUDED.quality,
+            metrics = EXCLUDED.metrics,
+            microniche = EXCLUDED.microniche,
+            expected_views_base = EXCLUDED.expected_views_base,
+            rpm_available = EXCLUDED.rpm_available,
+            revenue_available = EXCLUDED.revenue_available,
+            cost_money_available = EXCLUDED.cost_money_available,
+            profit_available = EXCLUDED.profit_available,
+            base_score = EXCLUDED.base_score,
+            risk_penalty = EXCLUDED.risk_penalty,
+            profitability_score = EXCLUDED.profitability_score,
+            classification = EXCLUDED.classification,
+            confidence = EXCLUDED.confidence,
+            component_coverage = EXCLUDED.component_coverage;
+        """
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                for f in ("quality", "metrics", "component_coverage"):
+                    if isinstance(r.get(f), (list, dict)):
+                        r[f] = json.dumps(r[f])
+                cur.execute(query, r)
+
         return ProfitabilityPersistenceResult(
             run_id=result.run_id, records_written=len(records)
         )
-
-    def verify_validation_schema(self) -> None:
-        self._get_records("cluster_validation_analyses", params={"limit": "1"})
 
     @staticmethod
     def _build_validation_records(
@@ -471,7 +518,48 @@ class YouTubeRepository:
             raise ValueError("Duplicate cluster IDs in Sprint 10 analysis.")
         records = self._build_validation_records(result)
         self.verify_validation_schema()
-        self._post_records("cluster_validation_analyses", records, upsert=False)
+
+        query = """
+        INSERT INTO public.cluster_validation_analyses (
+            run_id, source_profitability_run_id, source_cluster_run_id, source_revenue_run_id,
+            source_market_run_id, source_production_run_id, dataset_hash, assignments_hash,
+            methodology_version, cluster_id, analyzed_at, quality, metrics, microniche,
+            profitability_score, validation_score, validation_status, validation_confidence,
+            false_positive_risk, fragility_score
+        ) VALUES (
+            %(run_id)s, %(source_profitability_run_id)s, %(source_cluster_run_id)s, %(source_revenue_run_id)s,
+            %(source_market_run_id)s, %(source_production_run_id)s, %(dataset_hash)s, %(assignments_hash)s,
+            %(methodology_version)s, %(cluster_id)s, %(analyzed_at)s, %(quality)s, %(metrics)s, %(microniche)s,
+            %(profitability_score)s, %(validation_score)s, %(validation_status)s, %(validation_confidence)s,
+            %(false_positive_risk)s, %(fragility_score)s
+        ) ON CONFLICT (run_id, cluster_id) DO UPDATE SET
+            source_profitability_run_id = EXCLUDED.source_profitability_run_id,
+            source_cluster_run_id = EXCLUDED.source_cluster_run_id,
+            source_revenue_run_id = EXCLUDED.source_revenue_run_id,
+            source_market_run_id = EXCLUDED.source_market_run_id,
+            source_production_run_id = EXCLUDED.source_production_run_id,
+            dataset_hash = EXCLUDED.dataset_hash,
+            assignments_hash = EXCLUDED.assignments_hash,
+            methodology_version = EXCLUDED.methodology_version,
+            analyzed_at = EXCLUDED.analyzed_at,
+            quality = EXCLUDED.quality,
+            metrics = EXCLUDED.metrics,
+            microniche = EXCLUDED.microniche,
+            profitability_score = EXCLUDED.profitability_score,
+            validation_score = EXCLUDED.validation_score,
+            validation_status = EXCLUDED.validation_status,
+            validation_confidence = EXCLUDED.validation_confidence,
+            false_positive_risk = EXCLUDED.false_positive_risk,
+            fragility_score = EXCLUDED.fragility_score;
+        """
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                for f in ("quality", "metrics"):
+                    if isinstance(r.get(f), (list, dict)):
+                        r[f] = json.dumps(r[f])
+                cur.execute(query, r)
+
         return ValidationPersistenceResult(
             run_id=result.run_id, records_written=len(records)
         )
@@ -479,9 +567,9 @@ class YouTubeRepository:
     def verify_validation_readback(
         self, expected: Sprint10AnalysisResult
     ) -> ValidationReadbackResult:
-        records = self._get_records(
-            "cluster_validation_analyses",
-            params={"run_id": f"eq.{expected.run_id}"},
+        records = self.client.execute(
+            "SELECT * FROM public.cluster_validation_analyses WHERE run_id = %s",
+            [expected.run_id]
         )
         expected_records = self._build_validation_records(expected)
         keys = [(record.get("run_id"), record.get("cluster_id")) for record in records]
@@ -529,9 +617,9 @@ class YouTubeRepository:
     def verify_profitability_readback(
         self, expected: Sprint9AnalysisResult
     ) -> ProfitabilityReadbackResult:
-        records = self._get_records(
-            "cluster_profitability_analyses",
-            params={"run_id": f"eq.{expected.run_id}"},
+        records = self.client.execute(
+            "SELECT * FROM public.cluster_profitability_analyses WHERE run_id = %s",
+            [expected.run_id]
         )
         expected_records = self._build_profitability_records(expected)
         keys = [(record.get("run_id"), record.get("cluster_id")) for record in records]
@@ -610,7 +698,44 @@ class YouTubeRepository:
             raise ValueError("Duplicate cluster IDs in Sprint 7 analysis.")
         records = self._build_market_structure_records(result)
         self.verify_market_structure_schema()
-        self._post_records("market_structure_analyses", records, upsert=False)
+
+        query = """
+        INSERT INTO public.market_structure_analyses (
+            run_id, source_cluster_run_id, cluster_id, analyzed_at, config, quality,
+            metrics, microniche, top_5_rank, market_structure_score, competition_score,
+            accessibility_score, content_depth_score, trend_score, evergreen_score,
+            evergreen_class, market_structure_class, confidence
+        ) VALUES (
+            %(run_id)s, %(source_cluster_run_id)s, %(cluster_id)s, %(analyzed_at)s, %(config)s, %(quality)s,
+            %(metrics)s, %(microniche)s, %(top_5_rank)s, %(market_structure_score)s, %(competition_score)s,
+            %(accessibility_score)s, %(content_depth_score)s, %(trend_score)s, %(evergreen_score)s,
+            %(evergreen_class)s, %(market_structure_class)s, %(confidence)s
+        ) ON CONFLICT (run_id, cluster_id) DO UPDATE SET
+            source_cluster_run_id = EXCLUDED.source_cluster_run_id,
+            analyzed_at = EXCLUDED.analyzed_at,
+            config = EXCLUDED.config,
+            quality = EXCLUDED.quality,
+            metrics = EXCLUDED.metrics,
+            microniche = EXCLUDED.microniche,
+            top_5_rank = EXCLUDED.top_5_rank,
+            market_structure_score = EXCLUDED.market_structure_score,
+            competition_score = EXCLUDED.competition_score,
+            accessibility_score = EXCLUDED.accessibility_score,
+            content_depth_score = EXCLUDED.content_depth_score,
+            trend_score = EXCLUDED.trend_score,
+            evergreen_score = EXCLUDED.evergreen_score,
+            evergreen_class = EXCLUDED.evergreen_class,
+            market_structure_class = EXCLUDED.market_structure_class,
+            confidence = EXCLUDED.confidence;
+        """
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                for f in ("config", "quality", "metrics"):
+                    if isinstance(r.get(f), (list, dict)):
+                        r[f] = json.dumps(r[f])
+                cur.execute(query, r)
+
         return MarketStructurePersistenceResult(
             run_id=result.run_id, records_written=len(records)
         )
@@ -618,9 +743,9 @@ class YouTubeRepository:
     def verify_market_structure_readback(
         self, expected: Sprint7AnalysisResult
     ) -> MarketStructureReadbackResult:
-        records = self._get_records(
-            "market_structure_analyses",
-            params={"run_id": f"eq.{expected.run_id}"},
+        records = self.client.execute(
+            "SELECT * FROM public.market_structure_analyses WHERE run_id = %s",
+            [expected.run_id]
         )
         expected_records = self._build_market_structure_records(expected)
         keys = [(record.get("run_id"), record.get("cluster_id")) for record in records]
@@ -706,9 +831,62 @@ class YouTubeRepository:
             self._build_cluster_records(result)
         )
         self.verify_niche_schema()
-        self._post_records("clusters", cluster_records, upsert=False)
-        self._post_records("subniches", subniche_records, upsert=False)
-        self._post_records("cluster_videos", cluster_video_records, upsert=False)
+
+        q_clusters = """
+        INSERT INTO public.clusters (
+            cluster_id, run_id, algorithm, semantic_provider, parameters,
+            video_count, unique_channels, dominant_channel_share, semantic_quality,
+            confidence, signal_score, created_at
+        ) VALUES (
+            %(cluster_id)s, %(run_id)s, %(algorithm)s, %(semantic_provider)s, %(parameters)s,
+            %(video_count)s, %(unique_channels)s, %(dominant_channel_share)s, %(semantic_quality)s,
+            %(confidence)s, %(signal_score)s, %(created_at)s
+        ) ON CONFLICT (run_id, cluster_id) DO UPDATE SET
+            algorithm = EXCLUDED.algorithm,
+            semantic_provider = EXCLUDED.semantic_provider,
+            parameters = EXCLUDED.parameters,
+            video_count = EXCLUDED.video_count,
+            unique_channels = EXCLUDED.unique_channels,
+            dominant_channel_share = EXCLUDED.dominant_channel_share,
+            semantic_quality = EXCLUDED.semantic_quality,
+            confidence = EXCLUDED.confidence,
+            signal_score = EXCLUDED.signal_score;
+        """
+
+        q_subniches = """
+        INSERT INTO public.subniches (
+            cluster_id, run_id, niche, subniche, microniche, summary, label_confidence, created_at
+        ) VALUES (
+            %(cluster_id)s, %(run_id)s, %(niche)s, %(subniche)s, %(microniche)s, %(summary)s, %(label_confidence)s, %(created_at)s
+        ) ON CONFLICT (run_id, cluster_id) DO UPDATE SET
+            niche = EXCLUDED.niche,
+            subniche = EXCLUDED.subniche,
+            microniche = EXCLUDED.microniche,
+            summary = EXCLUDED.summary,
+            label_confidence = EXCLUDED.label_confidence;
+        """
+
+        q_cvideos = """
+        INSERT INTO public.cluster_videos (
+            cluster_id, run_id, video_id, distance_to_centroid
+        ) VALUES (
+            %(cluster_id)s, %(run_id)s, %(video_id)s, %(distance_to_centroid)s
+        ) ON CONFLICT (run_id, video_id) DO UPDATE SET
+            cluster_id = EXCLUDED.cluster_id,
+            distance_to_centroid = EXCLUDED.distance_to_centroid;
+        """
+
+        with self.client.get_cursor() as cur:
+            for rec in cluster_records:
+                r = dict(rec)
+                if isinstance(r.get("parameters"), (list, dict)):
+                    r["parameters"] = json.dumps(r["parameters"])
+                cur.execute(q_clusters, r)
+            for rec in subniche_records:
+                cur.execute(q_subniches, rec)
+            for rec in cluster_video_records:
+                cur.execute(q_cvideos, rec)
+
         return ClusterPersistenceResult(
             run_id=result.run_id,
             clusters_written=len(cluster_records),
@@ -758,9 +936,9 @@ class YouTubeRepository:
 
     def verify_clusters_readback(self, expected: NicheMiningResult) -> ClusterReadbackResult:
         run_id = expected.run_id
-        c_records = self._get_records("clusters", params={"run_id": f"eq.{run_id}"})
-        sn_records = self._get_records("subniches", params={"run_id": f"eq.{run_id}"})
-        cv_records = self._get_records("cluster_videos", params={"run_id": f"eq.{run_id}"})
+        c_records = self.client.execute("SELECT * FROM public.clusters WHERE run_id = %s", [run_id])
+        sn_records = self.client.execute("SELECT * FROM public.subniches WHERE run_id = %s", [run_id])
+        cv_records = self.client.execute("SELECT * FROM public.cluster_videos WHERE run_id = %s", [run_id])
         expected_c, expected_sn, expected_cv = self._build_cluster_records(expected)
 
         expected_clusters = len(expected.clusters)
@@ -812,10 +990,7 @@ class YouTubeRepository:
             for r in cv_records
         )
         missing_videos = sum(
-            not self._get_records(
-                "videos",
-                params={"video_id": f"eq.{video_id}"}
-            )
+            not self.client.execute("SELECT 1 FROM public.videos WHERE video_id = %s", [video_id])
             for video_id in persisted_video_ids
         )
         expected_cluster_keys = {
@@ -867,119 +1042,75 @@ class YouTubeRepository:
             verified=verified
         )
 
-
-    def _post_records(
-        self,
-        endpoint_table: str,
-        records: List[Dict[str, Any]],
-        upsert: bool = False
-    ) -> bool:
-        if not records:
-            return True
-
-        if not self.client.url:
-            raise InsForgeClientError("INSFORGE_URL is not configured.")
-
-        url = f"{self.client.url}/api/database/records/{endpoint_table}"
-        headers = self.client._get_headers()
-        if upsert:
-            headers["Prefer"] = "resolution=merge-duplicates"
-            # PostgREST requires on_conflict query parameter for tables with composite unique constraints
-            if endpoint_table in ("clusters", "subniches", "market_structure_analyses", "production_risk_analyses", "cluster_profitability_analyses", "cluster_validation_analyses"):
-                url = f"{url}?on_conflict=run_id,cluster_id"
-            elif endpoint_table == "cluster_videos":
-                url = f"{url}?on_conflict=run_id,video_id"
-            elif endpoint_table == "video_outlier_analyses":
-                url = f"{url}?on_conflict=run_id,video_id"
-
-        try:
-            with httpx.Client(timeout=self.client.timeout) as http_client:
-                # Set return representation so PostgREST doesn't block or return empty bodies silently
-                headers["Prefer"] = headers.get("Prefer", "") + ",return=representation" if "Prefer" in headers else "return=representation"
-                response = http_client.post(url, headers=headers, json=records)
-                if response.status_code in [200, 201]:
-                    return True
-                elif response.status_code in [401, 403]:
-                    raise InsForgeClientError(f"InsForge authentication failure (HTTP {response.status_code}).")
-                else:
-                    err_msg = f"InsForge request to {endpoint_table} failed (HTTP {response.status_code}): {response.text}"
-                    logger.error(err_msg)
-                    raise InsForgeClientError(err_msg)
-        except httpx.RequestError as exc:
-            err_msg = f"Network error sending batch to InsForge {endpoint_table}: {exc}"
-            logger.error(err_msg)
-            raise InsForgeClientError(err_msg)
-
-    def _delete_records(
-        self,
-        endpoint_table: str,
-        params: Optional[Dict[str, Any]] = None
-    ) -> bool:
-        if not self.client.url:
-            raise InsForgeClientError("INSFORGE_URL is not configured.")
-
-        url = f"{self.client.url}/api/database/records/{endpoint_table}"
-        headers = self.client._get_headers()
-        request_params = dict(params) if params else {}
-
-        try:
-            with httpx.Client(timeout=self.client.timeout) as http_client:
-                response = http_client.delete(url, headers=headers, params=request_params)
-                if response.status_code in [200, 204]:
-                    return True
-                elif response.status_code in [401, 403]:
-                    raise InsForgeClientError(f"InsForge authentication failure (HTTP {response.status_code}).")
-                else:
-                    err_msg = f"InsForge DELETE request to {endpoint_table} failed (HTTP {response.status_code}): {response.text}"
-                    logger.error(err_msg)
-                    raise InsForgeClientError(err_msg)
-        except httpx.RequestError as exc:
-            err_msg = f"Network error deleting from InsForge {endpoint_table}: {exc}"
-            logger.error(err_msg)
-            raise InsForgeClientError(err_msg)
-
     def upsert_channels(self, channels: List[YouTubeChannel]) -> int:
         if not channels:
             return 0
-
-        records = []
-        for ch in channels:
-            rec = {
-                "channel_id": ch.channel_id,
-                "title": ch.channel_title,
-                "description": ch.channel_description,
-                "published_at": ch.published_at,
-                "country": ch.country
-            }
-            records.append(rec)
-
-        self._post_records("channels", records, upsert=True)
-        return len(records)
+        query = """
+        INSERT INTO public.channels (
+            channel_id, title, description, published_at, country
+        ) VALUES (
+            %(channel_id)s, %(title)s, %(description)s, %(published_at)s, %(country)s
+        ) ON CONFLICT (channel_id) DO UPDATE SET
+            title = EXCLUDED.title,
+            description = EXCLUDED.description,
+            published_at = EXCLUDED.published_at,
+            country = EXCLUDED.country;
+        """
+        with self.client.get_cursor() as cur:
+            for ch in channels:
+                rec = {
+                    "channel_id": ch.channel_id,
+                    "title": ch.channel_title,
+                    "description": ch.channel_description,
+                    "published_at": ch.published_at,
+                    "country": ch.country
+                }
+                cur.execute(query, rec)
+        return len(channels)
 
     def upsert_videos(self, videos: List[YouTubeVideo]) -> int:
         if not videos:
             return 0
-
-        records = []
-        for v in videos:
-            rec = {
-                "video_id": v.video_id,
-                "channel_id": v.channel_id,
-                "title": v.title,
-                "description": v.description,
-                "published_at": v.published_at,
-                "duration": v.duration_iso,
-                "duration_seconds": v.duration_seconds,
-                "caption": v.caption,
-                "definition": v.definition,
-                "licensed_content": v.licensed_content,
-                "default_language": v.default_language,
-                "default_audio_language": v.default_audio_language
-            }
-            records.append(rec)
-
-        self._post_records("videos", records, upsert=True)
-        return len(records)
+        query = """
+        INSERT INTO public.videos (
+            video_id, channel_id, title, description, published_at, duration,
+            duration_seconds, caption, definition, licensed_content,
+            default_language, default_audio_language
+        ) VALUES (
+            %(video_id)s, %(channel_id)s, %(title)s, %(description)s, %(published_at)s, %(duration)s,
+            %(duration_seconds)s, %(caption)s, %(definition)s, %(licensed_content)s,
+            %(default_language)s, %(default_audio_language)s
+        ) ON CONFLICT (video_id) DO UPDATE SET
+            channel_id = EXCLUDED.channel_id,
+            title = EXCLUDED.title,
+            description = EXCLUDED.description,
+            published_at = EXCLUDED.published_at,
+            duration = EXCLUDED.duration,
+            duration_seconds = EXCLUDED.duration_seconds,
+            caption = EXCLUDED.caption,
+            definition = EXCLUDED.definition,
+            licensed_content = EXCLUDED.licensed_content,
+            default_language = EXCLUDED.default_language,
+            default_audio_language = EXCLUDED.default_audio_language;
+        """
+        with self.client.get_cursor() as cur:
+            for v in videos:
+                rec = {
+                    "video_id": v.video_id,
+                    "channel_id": v.channel_id,
+                    "title": v.title,
+                    "description": v.description,
+                    "published_at": v.published_at,
+                    "duration": v.duration_iso,
+                    "duration_seconds": v.duration_seconds,
+                    "caption": v.caption,
+                    "definition": v.definition,
+                    "licensed_content": v.licensed_content,
+                    "default_language": v.default_language,
+                    "default_audio_language": v.default_audio_language
+                }
+                cur.execute(query, rec)
+        return len(videos)
 
     def insert_channel_metrics(
         self,
@@ -988,21 +1119,25 @@ class YouTubeRepository:
     ) -> int:
         if not channels:
             return 0
-
         ts = checked_at or datetime.now(timezone.utc).isoformat()
-        records = []
-        for ch in channels:
-            rec = {
-                "channel_id": ch.channel_id,
-                "subscriber_count": ch.subscriber_count,
-                "video_count": ch.video_count,
-                "view_count": ch.view_count,
-                "collected_at": ts
-            }
-            records.append(rec)
-
-        self._post_records("channel_metrics", records, upsert=False)
-        return len(records)
+        query = """
+        INSERT INTO public.channel_metrics (
+            channel_id, subscriber_count, video_count, view_count, collected_at
+        ) VALUES (
+            %(channel_id)s, %(subscriber_count)s, %(video_count)s, %(view_count)s, %(collected_at)s
+        );
+        """
+        with self.client.get_cursor() as cur:
+            for ch in channels:
+                rec = {
+                    "channel_id": ch.channel_id,
+                    "subscriber_count": ch.subscriber_count,
+                    "video_count": ch.video_count,
+                    "view_count": ch.view_count,
+                    "collected_at": ts
+                }
+                cur.execute(query, rec)
+        return len(channels)
 
     def insert_video_metrics(
         self,
@@ -1011,21 +1146,25 @@ class YouTubeRepository:
     ) -> int:
         if not videos:
             return 0
-
         ts = checked_at or datetime.now(timezone.utc).isoformat()
-        records = []
-        for v in videos:
-            rec = {
-                "video_id": v.video_id,
-                "view_count": v.view_count,
-                "like_count": v.like_count,
-                "comment_count": v.comment_count,
-                "collected_at": ts
-            }
-            records.append(rec)
-
-        self._post_records("video_metrics", records, upsert=False)
-        return len(records)
+        query = """
+        INSERT INTO public.video_metrics (
+            video_id, view_count, like_count, comment_count, collected_at
+        ) VALUES (
+            %(video_id)s, %(view_count)s, %(like_count)s, %(comment_count)s, %(collected_at)s
+        );
+        """
+        with self.client.get_cursor() as cur:
+            for v in videos:
+                rec = {
+                    "video_id": v.video_id,
+                    "view_count": v.view_count,
+                    "like_count": v.like_count,
+                    "comment_count": v.comment_count,
+                    "collected_at": ts
+                }
+                cur.execute(query, rec)
+        return len(videos)
 
     def persist_collection(
         self,
@@ -1035,14 +1174,13 @@ class YouTubeRepository:
         start_time = time.time()
         warnings: List[str] = []
         db_ops = 0
-
         ts = checked_at or datetime.now(timezone.utc).isoformat()
 
         channels_rec = len(collection_result.channels)
         videos_rec = len(collection_result.videos)
 
         logger.info(
-            f"Starting InsForge persistence for collection query='{collection_result.query}': "
+            f"Starting PostgreSQL persistence for collection query='{collection_result.query}': "
             f"{channels_rec} channels, {videos_rec} videos"
         )
 
@@ -1051,7 +1189,6 @@ class YouTubeRepository:
         ch_metrics_inserted = 0
         v_metrics_inserted = 0
 
-        # Step 1: Upsert channels
         if collection_result.channels:
             try:
                 ch_upserted = self.upsert_channels(collection_result.channels)
@@ -1062,7 +1199,6 @@ class YouTubeRepository:
                 logger.error(msg)
                 raise
 
-        # Step 2: Upsert videos
         if collection_result.videos:
             try:
                 v_upserted = self.upsert_videos(collection_result.videos)
@@ -1073,7 +1209,6 @@ class YouTubeRepository:
                 logger.error(msg)
                 raise
 
-        # Step 3: Insert channel metrics snapshot
         if collection_result.channels:
             try:
                 ch_metrics_inserted = self.insert_channel_metrics(collection_result.channels, checked_at=ts)
@@ -1084,7 +1219,6 @@ class YouTubeRepository:
                 logger.error(msg)
                 raise
 
-        # Step 4: Insert video metrics snapshot
         if collection_result.videos:
             try:
                 v_metrics_inserted = self.insert_video_metrics(collection_result.videos, checked_at=ts)
@@ -1110,7 +1244,7 @@ class YouTubeRepository:
         )
 
         logger.info(
-            f"InsForge persistence complete: channels_upserted={ch_upserted}, videos_upserted={v_upserted}, "
+            f"PostgreSQL persistence complete: channels_upserted={ch_upserted}, videos_upserted={v_upserted}, "
             f"ch_metrics={ch_metrics_inserted}, v_metrics={v_metrics_inserted}, db_ops={db_ops}, elapsed={elapsed}s"
         )
 
