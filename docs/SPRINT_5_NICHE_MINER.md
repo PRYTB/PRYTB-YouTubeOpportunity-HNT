@@ -24,7 +24,7 @@ Structured Labeling (ClusterLabeler: JSON schema LLM / Deterministic Fallback)
 ↓
 Scoring (ClusterConfidence & ClusterSignalScore)
 ↓
-Persistence (InsForge `clusters` and `subniches` tables with unique `run_id`)
+Persistence (PostgreSQL `clusters` and `subniches` tables with unique `run_id`)
 ```
 
 ---

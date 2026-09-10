@@ -3,7 +3,7 @@ Sprint 12 Gate 2A: Authoritative Run Provenance Finalization Script.
 
 Checks run_metadata for run_id='sprint12_interim_reconciled_20260908_202912',
 repairs metadata if stale values exist, verifies dataset hash & video/channel counts,
-validates Gate 2 analytical rows & provenance in InsForge, creates local manifest,
+validates Gate 2 analytical rows and provenance in PostgreSQL, creates local manifest,
 and verifies zero stale contract contamination.
 """
 
@@ -14,7 +14,7 @@ import os
 import sys
 from typing import Dict, Any, List
 
-from app.database.insforge_client import InsForgeClient
+from app.database.postgres_client import PostgresClient
 from app.database.repositories import YouTubeRepository
 from app.analytics.outlier_engine import is_test_video
 
@@ -72,20 +72,23 @@ def run_provenance_finalization():
     print("PRYTB — SPRINT 12 GATE 2A PROVENANCE FINALIZATION")
     print("=" * 60)
 
-    # 1. INSFORGE PRE-FLIGHT
-    print("\n1. InsForge Pre-flight...")
-    client = InsForgeClient()
-
-    if not client.url or not client.api_key:
-        print("[FAIL] InsForge client missing credentials.")
+    # 1. POSTGRESQL PRE-FLIGHT
+    print("\n1. PostgreSQL pre-flight...")
+    client = PostgresClient()
+    connection = client.check_connection()
+    if connection.get("status") != "connected":
+        print("[FAIL] PostgreSQL connection unavailable.")
         sys.exit(1)
 
-    print(f"INSFORGE CONNECTION: OK ({client.url})")
+    print("POSTGRESQL CONNECTION: OK")
     repo = YouTubeRepository(client)
 
     # 2. READ CURRENT RUN METADATA
     print("\n2. Reading Current Run Metadata for run_id:", EXPECTED_RUN_ID)
-    runs = repo._get_records("run_metadata", params={"run_id": f"eq.{EXPECTED_RUN_ID}"})
+    runs = client.execute(
+        "SELECT * FROM public.run_metadata WHERE run_id = %s",
+        [EXPECTED_RUN_ID],
+    )
     if not runs:
         print(f"[FAIL] No run_metadata record found for run_id '{EXPECTED_RUN_ID}'.")
         sys.exit(1)
@@ -132,7 +135,7 @@ def run_provenance_finalization():
     )
 
     if needs_repair:
-        print("\n4. Repairing run_metadata in InsForge...")
+        print("\n4. Repairing run_metadata in PostgreSQL...")
         repaired_payload = {
             "run_id": EXPECTED_RUN_ID,
             "run_type": EXPECTED_RUN_TYPE,
@@ -149,9 +152,12 @@ def run_provenance_finalization():
     else:
         print("\n4. run_metadata is already fully compliant with Gate 2 contract.")
 
-    # 5. INSFORGE READ-BACK FOR METADATA
-    print("\n5. InsForge Read-back Verification for run_metadata...")
-    runs_after = repo._get_records("run_metadata", params={"run_id": f"eq.{EXPECTED_RUN_ID}"})
+    # 5. POSTGRESQL READ-BACK FOR METADATA
+    print("\n5. PostgreSQL read-back verification for run_metadata...")
+    runs_after = client.execute(
+        "SELECT * FROM public.run_metadata WHERE run_id = %s",
+        [EXPECTED_RUN_ID],
+    )
     assert len(runs_after) == 1, f"Expected 1 run_metadata record, got {len(runs_after)}"
     run_meta_after = runs_after[0]
 
@@ -170,8 +176,11 @@ def run_provenance_finalization():
 
     # 6. GATE 2 ANALYTICAL PROVENANCE CHECK
     print("\n6. Gate 2 Analytical Provenance Verification...")
-    outlier_records = repo._get_records("video_outlier_analyses", params={"run_id": f"eq.{EXPECTED_RUN_ID}"})
-    print(f"  Retrieved {len(outlier_records)} outlier analysis rows from InsForge.")
+    outlier_records = repo.get_outlier_analysis_by_run_id(EXPECTED_RUN_ID)
+    print(
+        f"  Retrieved {len(outlier_records)} "
+        "outlier analysis rows from PostgreSQL."
+    )
 
     assert len(outlier_records) == EXPECTED_VIDEO_COUNT, f"Expected {EXPECTED_VIDEO_COUNT} outlier rows, got {len(outlier_records)}"
 

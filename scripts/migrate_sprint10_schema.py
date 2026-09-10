@@ -1,13 +1,11 @@
-"""Create and verify the Sprint 10 schema through the InsForge migration API."""
+"""Create and verify the Sprint 10 schema in PostgreSQL."""
 import sys
 from pathlib import Path
 from typing import Any, Dict, List
 
-import httpx
-
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from app.database.insforge_client import InsForgeClient, InsForgeClientError
+from app.database.postgres_client import PostgresClient
 
 MIGRATION_VERSION = "20260907000200"
 MIGRATION_NAME = "complete-sprint10-validator-schema"
@@ -45,69 +43,22 @@ CREATE INDEX IF NOT EXISTS cluster_validation_source_profitability_run_idx
 """.strip()
 
 
-def execute_migration(client: InsForgeClient) -> Dict[str, Any]:
-    if not client.url:
-        raise InsForgeClientError("INSFORGE_URL is not configured.")
-    try:
-        response = httpx.post(
-            f"{client.url}/api/database/migrations",
-            headers=client._get_headers(),
-            json={"version": MIGRATION_VERSION, "name": MIGRATION_NAME, "sql": MIGRATION_SQL},
-            timeout=client.timeout,
-        )
-    except httpx.RequestError as exc:
-        raise InsForgeClientError(f"Sprint 10 migration network error: {exc}") from exc
-    if response.status_code != 201:
-        raise InsForgeClientError(
-            f"Sprint 10 migration failed (HTTP {response.status_code}): {response.text}"
-        )
-    try:
-        body = response.json()
-    except ValueError as exc:
-        raise InsForgeClientError("Invalid Sprint 10 migration JSON response.") from exc
-    if (
-        not isinstance(body, dict)
-        or body.get("version") != MIGRATION_VERSION
-        or not body.get("statements")
-        or not body.get("message")
-    ):
-        raise InsForgeClientError(f"Invalid Sprint 10 migration response: {body}")
-    return body
+def execute_migration(client: PostgresClient) -> Dict[str, Any]:
+    client.execute(MIGRATION_SQL)
+    return {"version": MIGRATION_VERSION, "name": MIGRATION_NAME, "message": "Migration applied"}
 
 
-def verify_tables(client: InsForgeClient) -> List[str]:
-    if not client.url:
-        raise InsForgeClientError("INSFORGE_URL is not configured.")
+def verify_tables(client: PostgresClient) -> List[str]:
     table = "cluster_validation_analyses"
-    try:
-        response = httpx.get(
-            f"{client.url}/api/database/records/{table}",
-            headers=client._get_headers(),
-            params={"limit": 1},
-            timeout=client.timeout,
-        )
-    except httpx.RequestError as exc:
-        raise InsForgeClientError(
-            f"Sprint 10 table verification network error: {exc}"
-        ) from exc
-    if response.status_code != 200:
-        raise InsForgeClientError(
-            f"Sprint 10 table {table} is not accessible (HTTP {response.status_code}): {response.text}"
-        )
+    client.execute(f"SELECT 1 FROM public.{table} LIMIT 1")
     return [table]
 
 
 def main() -> None:
-    client = InsForgeClient()
-    print("Executing Sprint 10 InsForge migration...")
-    try:
-        res = execute_migration(client)
-        print(f"Migration response: {res['message']}")
-    except InsForgeClientError as err:
-        if "409" in str(err) or "ALREADY_EXISTS" in str(err):
-            print("Migration version already applied on InsForge. Verifying tables...")
-        else:
-            raise err
+    client = PostgresClient()
+    print("Executing Sprint 10 PostgreSQL migration...")
+    res = execute_migration(client)
+    print(f"Migration response: {res['message']}")
     tables = verify_tables(client)
     print(f"Verified tables: {tables}")
 

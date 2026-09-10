@@ -6,7 +6,7 @@
 Project root: I:\PRYTB
 Python target: 3.12+ (Python 3.12.9 configured in .venv)
 YouTube API: local API key configured through .env
-InsForge API: local URL and API keys configured through .env
+PostgreSQL: localhost:5433, database prytb, user prytb_app, configured through .env
 OmniRoute: managed through TRAE environment (no local key required in .env)
 Database business schema: deferred to Sprint 2
 AI agent layer: deferred
@@ -23,7 +23,7 @@ Dashboard functionality: deferred
 6. **Directory Structure**: Created missing modules (`app/orchestrator`, `app/agents`, `app/analytics`, `app/models`, `app/scoring`, `app/services`) and folders with `.gitkeep` (`dashboard`, `config`, `scripts`, `logs`, `data/raw`, `data/processed`, `data/exports`, `docs`).
 7. **Integrations**:
    - `YouTubeClient`: Verified with live integration query (`artificial intelligence`, 1 item limit) and unit tests with mocks covering quota, auth, and timeout.
-   - `InsForgeClient`: Verified non-destructive reachability (`/rest/v1/`) and unit tests with mocks.
+   - `PostgresClient`: Verified direct PostgreSQL connectivity and unit tests with mocks.
    - `OmniRoute`: Identified as TRAE internal integration. `OmniRoute via TRAE: AVAILABLE`.
 8. **Test Suite**:
    - Isolated unit tests (`tests/unit/`) using mocks, passing 100% (18/18).
@@ -34,6 +34,6 @@ Dashboard functionality: deferred
 
 - Upgraded project execution runtime from Python 3.10.11 to Python 3.12.9.
 - Resolved numpy and pandas compatibility issues with Python 3.12 under `.venv`.
-- Fixed missing parameter fallback logic in `YouTubeClient` and `InsForgeClient` initializers when explicit empty string parameters were provided during testing.
+- Fixed missing parameter fallback logic in client initializers when explicit empty string parameters were provided during testing.
 - Created `app/orchestrator` and missing packages to match master prompt structure.
 - Separated unit test execution from live integration test execution via `pytest.ini` markers.

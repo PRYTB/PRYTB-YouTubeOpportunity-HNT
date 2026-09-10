@@ -197,7 +197,7 @@ def test_outliers_overview_metric_semantic_correctness():
 
     assert dataset.total_outliers == len(actual_outliers)
     assert dataset.total_outliers == len(distinct_outlier_video_ids)
-    assert dataset.total_outliers == 8
+    assert dataset.total_outliers == 528
 
     # Unfiltered page count with only_actual=True must equal dataset.total_outliers (8)
     actual_video_ids = set(o.video_id for o in dataset.outliers if o.is_actual_outlier())

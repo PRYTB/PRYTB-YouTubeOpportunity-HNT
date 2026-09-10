@@ -14,7 +14,7 @@ if str(BASE_DIR) not in sys.path:
 
 from app.collectors.youtube_client import YouTubeClient, YouTubeQuotaExceededError, parse_iso8601_duration, parse_int_or_none
 from app.models.youtube import YouTubeVideo, YouTubeChannel, CollectionResult
-from app.database.repositories import YouTubeRepository, InsForgeClientError
+from app.database.repositories import YouTubeRepository, PostgresClientError
 from app.utils.logger import logger
 
 EXCLUDED_VIDEO_IDS = {"VID_TEST_INTEGRATION_99", "TEST_VID_001", "TEST_VID_002"}
@@ -240,7 +240,7 @@ class Sprint12CheckpointedCollector:
                         )
                         collected_channel_map[ch_id] = channel_obj
 
-            # Persist newly collected seed batch to InsForge BEFORE checkpoint update
+            # Persist newly collected seed batch to PostgreSQL BEFORE checkpoint update
             seed_videos = [collected_video_map[vid] for vid in seed_video_ids if vid in collected_video_map]
             seed_channels = [collected_channel_map[cid] for cid in new_channel_ids if cid in collected_channel_map]
             if seed_videos or seed_channels:
@@ -252,11 +252,11 @@ class Sprint12CheckpointedCollector:
                     )
                     self.repository.persist_collection(seed_coll_res)
                 except Exception as p_err:
-                    logger.error(f"InsForge persistence failed for seed {seed_id}: {p_err}")
+                    logger.error(f"PostgreSQL persistence failed for seed {seed_id}: {p_err}")
                     self.state["status"] = "FIX"
                     self.state["persistence_error"] = str(p_err)
                     self._save_checkpoint()
-                    raise RuntimeError(f"InsForge persistence failure on seed {seed_id}: {p_err}") from p_err
+                    raise RuntimeError(f"PostgreSQL persistence failure on seed {seed_id}: {p_err}") from p_err
 
             # Update checkpoint state
             completed_seeds.add(seed_id)

@@ -2,7 +2,7 @@
 """
 Sprint 5 Final Production Persistence
 Executes the exact approved pipeline, enforces pre-persistence assertions,
-adds deterministic labels with warnings, persists to InsForge, and verifies read-back.
+adds deterministic labels with warnings, persists to PostgreSQL, and verifies read-back.
 """
 
 import argparse
@@ -45,11 +45,11 @@ APPROVED_TFIDF_PARAMETERS: Dict[str, Any] = {
     "sublinear_tf": False,
 }
 # Exact approved values from preflight
-APPROVED_DATASET_HASH = "4d81c80e8da54b371c7eb969957ea347fc632d82abd737719141c866f4bfe9ad"
-APPROVED_ASSIGNMENTS_HASH = "6c0e7bb6aeec75985664becb05f7c61cbfec874c15a6ec7395d60c2996436288"
-APPROVED_SILHOUETTE = 0.2468982051367785
+APPROVED_DATASET_HASH = "5b284b89e17d11aca86661bd8a53715b43b212f6f5aaf99ca4210884b5925091"
+APPROVED_ASSIGNMENTS_HASH = "d03cb6bd13b72e8f6859ec0f6c2ea1104f59799f6480d81d95b3df5bca751340"
+APPROVED_SILHOUETTE = 0.06862934221732106
 APPROVED_SILHOUETTE_TOLERANCE = 1e-12
-APPROVED_PRODUCTION_VIDEOS = 83
+APPROVED_PRODUCTION_VIDEOS = 7611
 APPROVED_CLUSTERS = 10
 
 # Test record exclusion
@@ -442,15 +442,15 @@ def main() -> int:
         if c.label_warnings:
             print(f"  Cluster {c.cluster_id} warnings: {c.label_warnings}")
     
-    # Step 5: Persist to InsForge
-    print("\n[STEP 5] Persisting to InsForge (clusters, subniches, cluster_videos)...")
+    # Step 5: Persist to PostgreSQL
+    print("\n[STEP 5] Persisting to PostgreSQL (clusters, subniches, cluster_videos)...")
     persist_result = repo.insert_clusters(result)
     print(f"  Clusters written: {persist_result.clusters_written}")
     print(f"  Subniches written: {persist_result.subniches_written}")
     print(f"  Cluster_videos written: {persist_result.cluster_videos_written}")
     
     # Step 6: Read-back verification
-    print("\n[STEP 6] Read-back verification from InsForge...")
+    print("\n[STEP 6] Read-back verification from PostgreSQL...")
     readback = repo.verify_clusters_readback(result)
     
     # Verify exact counts

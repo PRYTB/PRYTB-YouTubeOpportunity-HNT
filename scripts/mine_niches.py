@@ -33,7 +33,7 @@ def main():
     parser.add_argument("--limit", type=int, default=None, help="Limit number of videos to analyze.")
     parser.add_argument("--algorithm", type=str, default="kmeans", choices=["kmeans", "agglomerative"], help="Clustering algorithm.")
     parser.add_argument("--min-cluster-size", type=int, default=2, help="Minimum videos per valid cluster.")
-    parser.add_argument("--persist", action="store_true", help="Persist generated clusters into InsForge DB.")
+    parser.add_argument("--persist", action="store_true", help="Persist generated clusters into PostgreSQL DB.")
     args = parser.parse_args()
 
     print("=" * 80)
@@ -173,10 +173,10 @@ def main():
 
     # Persist if flag provided
     if args.persist:
-        print("Persisting clusters, subniches, and cluster_videos to InsForge backend DB...")
+        print("Persisting clusters, subniches, and cluster_videos to PostgreSQL...")
         try:
             write_result = repo.insert_clusters(result)
-            print("Executing InsForge Read-Back verification...")
+            print("Executing PostgreSQL read-back verification...")
             readback = repo.verify_clusters_readback(result)
             print(f"  clusters:       {readback.actual_clusters}/{readback.expected_clusters}")
             print(f"  subniches:      {readback.actual_subniches}/{readback.expected_subniches}")

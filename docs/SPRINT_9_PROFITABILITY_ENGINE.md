@@ -91,7 +91,7 @@ Total component weights sum strictly to 1.0 (100%).
 
 ---
 
-## 7. Data Provenance & InsForge Persistence
+## 7. Data Provenance & PostgreSQL Persistence
 
 Persisted in `public.cluster_profitability_analyses`:
 - Canonical contract hashes (`dataset_hash`, `assignments_hash`).

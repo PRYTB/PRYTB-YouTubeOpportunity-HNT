@@ -9,7 +9,7 @@ Motor privado de inteligencia para descubrir, analizar y validar oportunidades r
 ```text
 Sprint 0: Environment / Infrastructure (COMPLETE)
 Sprint 1: YouTube Data Collector (COMPLETE)
-Sprint 2: InsForge Persistence (COMPLETE)
+Sprint 2: PostgreSQL Persistence (COMPLETE)
 Sprint 3: Historical Metrics (COMPLETE)
 Sprint 4: Outlier Engine (COMPLETE)
 Sprint 5: Niche Miner (COMPLETE)
@@ -29,7 +29,6 @@ Ruta raíz oficial y definitiva: `I:\PRYTB`
 Python 3.12+
 YouTube Data API v3
 PostgreSQL Local (Primary Runtime DB: localhost:5433, db prytb, user prytb_app)
-InsForge Backend (Legacy / Historical migration source only)
 OmniRoute (Administrado vía entorno TRAE)
 Streamlit (Dashboard)
 Pytest (Testing suite)
@@ -77,9 +76,11 @@ Copiar `.env.example` a `.env` y configurar las claves necesarias:
 
 ```env
 YOUTUBE_API_KEY=
-INSFORGE_URL=
-INSFORGE_API_KEY=
-INSFORGE_ANON_KEY=
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5433
+POSTGRES_DB=prytb
+POSTGRES_USER=prytb_app
+POSTGRES_PASSWORD=
 
 APP_ENV=development
 LOG_LEVEL=INFO
@@ -124,7 +125,7 @@ El análisis de competencia, accesibilidad de entrada, profundidad de contenido 
 .\.venv\Scripts\python.exe scripts\analyze_market_structure.py --json
 ```
 
-Para habilitar persistencia explícita en InsForge, aplicar primero la migración y usar `--persist`; la ejecución exige read-back exacto:
+Para habilitar persistencia explícita en PostgreSQL, aplicar primero la migración y usar `--persist`; la ejecución exige read-back exacto:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\migrate_sprint7_schema.py
@@ -214,7 +215,7 @@ I:\PRYTB
 │   ├── analytics\     # Motores estadísticos
 │   ├── collectors\    # YouTubeClient y colectores
 │   ├── config\        # Configuración analítica
-│   ├── database\      # InsForgeClient y persistencia
+│   ├── database\      # PostgresClient y persistencia
 │   ├── models\        # Modelos de datos
 │   ├── scoring\       # Motores de scoring
 │   ├── services\      # Servicios de negocio
@@ -246,7 +247,7 @@ I:\PRYTB
 ## Sprints completados
 
 - **Sprint 1:** YouTube Data Collector
-- **Sprint 2:** InsForge Persistence
+- **Sprint 2:** PostgreSQL Persistence
 - **Sprint 3:** Historical Metrics & Velocity
 - **Sprint 4:** Outlier Engine
 - **Sprint 5:** Niche Miner

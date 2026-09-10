@@ -38,7 +38,7 @@ def update_metrics_snapshots(
         target_channel_ids.add(channel_id)
 
     if not video_id and not channel_id:
-        # Fetch existing IDs from InsForge
+        # Fetch existing IDs from PostgreSQL
         db_video_ids = repo.get_all_video_ids()
         db_channel_ids = repo.get_all_channel_ids()
 
@@ -126,7 +126,7 @@ def update_metrics_snapshots(
             )
             channel_list.append(channel_model)
 
-    # 3. Persist new snapshots to InsForge
+    # 3. Persist new snapshots to PostgreSQL
     now_iso = datetime.now(timezone.utc).isoformat()
     coll_result = CollectionResult(
         query="metrics_update_snapshot",

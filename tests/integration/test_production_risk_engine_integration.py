@@ -14,7 +14,7 @@ from scripts.sprint5_reproducibility_runner import (
 
 
 @pytest.mark.integration
-def test_production_risk_analyzes_approved_insforge_data_without_writes():
+def test_production_risk_analyzes_approved_postgres_data_without_writes():
     with patch("httpx.Client.post") as post:
         report = run_analysis()
 

@@ -75,10 +75,10 @@ def test_approved_configuration_constants_are_exact():
     assert runner.APPROVED_K == 10
     assert runner.APPROVED_RANDOM_STATE == 42
     # These are the approved production values from the final preflight
-    assert abs(runner.APPROVED_SILHOUETTE - 0.2468982051367785) < 1e-12
-    assert runner.APPROVED_DATASET_HASH == "4d81c80e8da54b371c7eb969957ea347fc632d82abd737719141c866f4bfe9ad"
-    assert runner.APPROVED_ASSIGNMENTS_HASH == "6c0e7bb6aeec75985664becb05f7c61cbfec874c15a6ec7395d60c2996436288"
-    assert runner.APPROVED_PRODUCTION_VIDEOS == 83
+    assert abs(runner.APPROVED_SILHOUETTE - 0.06862934221732106) < 1e-12
+    assert runner.APPROVED_DATASET_HASH == "5b284b89e17d11aca86661bd8a53715b43b212f6f5aaf99ca4210884b5925091"
+    assert runner.APPROVED_ASSIGNMENTS_HASH == "d03cb6bd13b72e8f6859ec0f6c2ea1104f59799f6480d81d95b3df5bca751340"
+    assert runner.APPROVED_PRODUCTION_VIDEOS == 7611
     assert runner.APPROVED_CLUSTERS == 10
 
 

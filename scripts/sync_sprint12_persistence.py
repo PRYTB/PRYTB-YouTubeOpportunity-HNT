@@ -52,7 +52,7 @@ def main():
     print(f"DB Videos total before: {v_db_before}")
     print(f"DB Channels total before: {c_db_before}")
 
-    # Chunked upsert to InsForge (CHANNELS FIRST due to FK constraint on videos.channel_id)
+    # Chunked upsert to PostgreSQL (CHANNELS FIRST due to FK constraint on videos.channel_id)
     batch_size = 500
     for i in range(0, len(channels), batch_size):
         batch = channels[i:i + batch_size]

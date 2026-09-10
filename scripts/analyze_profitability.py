@@ -175,7 +175,7 @@ def run_analysis(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Sprint 9 Profitability Analysis CLI")
-    parser.add_argument("--persist", action="store_true", help="Persist analysis results to InsForge DB")
+    parser.add_argument("--persist", action="store_true", help="Persist analysis results to PostgreSQL DB")
     parser.add_argument("--json", action="store_true", help="Output results in JSON format")
     args = parser.parse_args()
 

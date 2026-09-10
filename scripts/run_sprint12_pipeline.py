@@ -10,7 +10,7 @@ Orchestrates:
 7. Profitability Engine (Sprint 9)
 8. Opportunity Validator Engine (Sprint 10)
 9. Non-Obviousness Gate check & Top Outputs generation
-10. Persistence to InsForge database + exact readback verification
+10. Persistence to PostgreSQL database + exact readback verification
 """
 
 import json
@@ -46,6 +46,7 @@ from app.analytics.semantic_provider import TFIDFLocalSemanticProvider
 from app.analytics.text_normalizer import clean_text_for_embedding
 from app.database.repositories import YouTubeRepository
 from app.models.outliers import VideoOutlierResult
+from app.models.youtube import YouTubeChannel, YouTubeVideo
 from app.models.niche import NicheMiningResult, NicheCluster, ClusterHierarchy
 from app.models.market_structure import Sprint7AnalysisResult, ClusterMarketStructure
 from app.models.production_risk import Sprint8AnalysisResult, ClusterProductionRisk
@@ -532,14 +533,15 @@ def main():
     for cand in top_candidates:
         print(f"  - [{cand['validation_status']}] {cand['label']} (Viability: {cand['viability_score']:.2f}, Videos: {cand['videos']}, Channels: {cand['channels']})")
 
-    # 10. Persistence Attempt to InsForge Database
+    # 10. Persistence attempt to PostgreSQL
     print("\n--- STAGE 9: PERSISTENCE & READBACK VERIFICATION ---")
     real_repo = YouTubeRepository()
     db_persisted = False
     try:
-        if real_repo.client and real_repo.client.url:
-            print("InsForge DB connection available. Persisting analytical runs...")
-            # Insert production videos and channels into InsForge to satisfy FK constraints
+        connection = real_repo.client.check_connection()
+        if connection.get("status") == "connected":
+            print("PostgreSQL connection available. Persisting analytical runs...")
+            # Insert production videos and channels to satisfy FK constraints
             raw_vids_path = RAW_DIR / "sprint12_prod_run_01_videos.json"
             raw_chans_path = RAW_DIR / "sprint12_prod_run_01_channels.json"
             if raw_vids_path.exists() and raw_chans_path.exists():
@@ -548,36 +550,32 @@ def main():
                 with open(raw_chans_path, "r", encoding="utf-8") as f:
                     chans_data = json.load(f)
                 
-                # Convert to DB dict records
-                chan_records = [{
-                    "channel_id": c.get("channel_id"),
-                    "title": c.get("title", ""),
-                    "description": c.get("description", ""),
-                    "custom_url": c.get("custom_url"),
-                    "country": c.get("country"),
-                    "default_language": c.get("default_language"),
-                    "subscriber_count": c.get("subscriber_count", 0),
-                    "video_count": c.get("video_count", 0),
-                    "view_count": c.get("view_count", 0),
-                    "created_at": c.get("published_at") or datetime.now(timezone.utc).isoformat()
-                } for c in chans_data if c.get("channel_id")]
-                
-                vid_records = [{
-                    "video_id": v.get("video_id"),
-                    "channel_id": v.get("channel_id"),
-                    "title": v.get("title", ""),
-                    "description": v.get("description", ""),
-                    "published_at": v.get("published_at"),
-                    "duration_seconds": v.get("duration_seconds", 0),
-                    "default_language": v.get("default_audio_language") or v.get("default_language"),
-                    "category_id": str(v.get("category_id", "")),
-                    "created_at": datetime.now(timezone.utc).isoformat()
-                } for v in vids_data if v.get("video_id") in repo._videos_map]
+                channel_records = [
+                    YouTubeChannel(
+                        channel_id=c["channel_id"],
+                        channel_title=c.get("channel_title") or c.get("title", ""),
+                        channel_description=(
+                            c.get("channel_description") or c.get("description", "")
+                        ),
+                        published_at=c.get("published_at"),
+                        country=c.get("country"),
+                        subscriber_count=c.get("subscriber_count"),
+                        video_count=c.get("video_count"),
+                        view_count=c.get("view_count"),
+                    )
+                    for c in chans_data
+                    if c.get("channel_id")
+                ]
+                video_records = [
+                    YouTubeVideo(**v)
+                    for v in vids_data
+                    if v.get("video_id") in repo._videos_map
+                ]
 
                 try:
                     real_repo.verify_niche_schema()
-                    real_repo._post_records("channels", chan_records, upsert=True)
-                    real_repo._post_records("videos", vid_records, upsert=True)
+                    real_repo.upsert_channels(channel_records)
+                    real_repo.upsert_videos(video_records)
                 except Exception as e_seed:
                     print(f"Video/Channel seed persistence notice: {e_seed}")
 
@@ -595,11 +593,11 @@ def main():
             val_rb = real_repo.verify_validation_readback(validation_result)
 
             db_persisted = c_rb.verified and ms_rb.verified and pr_rb.verified and pf_rb.verified and val_rb.verified
-            print(f"InsForge Persistence & Readback Verified: {db_persisted}")
+            print(f"PostgreSQL persistence and read-back verified: {db_persisted}")
         else:
-            print("InsForge URL not configured; saving full analytical lineage to local JSON artifacts.")
+            print("PostgreSQL unavailable; saving full analytical lineage to local JSON artifacts.")
     except Exception as exc:
-        print(f"InsForge persistence warning (continuing with JSON persistence): {exc}")
+        print(f"PostgreSQL persistence warning (continuing with JSON persistence): {exc}")
 
     # 11. Save Pipeline Results Artifacts
     pipeline_total_runtime = time.time() - pipeline_start_time

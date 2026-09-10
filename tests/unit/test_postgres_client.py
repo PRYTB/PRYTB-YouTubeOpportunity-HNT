@@ -36,10 +36,10 @@ def test_postgres_client_failure_raises_explicit_error():
             pass
 
 
-def test_no_insforge_or_supabase_fallback_on_postgres_failure():
+def test_no_http_or_json_fallback_on_postgres_failure():
     """
     Verify that when PostgreSQL connection fails, it raises PostgresClientError explicitly
-    and DOES NOT trigger InsForge, Supabase, or local JSON fallbacks.
+    and does not trigger HTTP or local JSON fallbacks.
     """
     client = PostgresClient(host="invalid_host", port=5433)
     repo = YouTubeRepository(client=client)
@@ -47,7 +47,6 @@ def test_no_insforge_or_supabase_fallback_on_postgres_failure():
     with patch("httpx.Client.post") as mock_httpx_post:
         with pytest.raises(PostgresClientError):
             repo.get_all_videos()
-        # Verify no HTTP request to InsForge or Supabase occurred
         mock_httpx_post.assert_not_called()
 
 

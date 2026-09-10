@@ -14,7 +14,7 @@ from app.database.repositories import YouTubeRepository
 from app.utils.logger import logger
 
 def main():
-    parser = argparse.ArgumentParser(description="PRYTB — Collect and Persist YouTube Data to InsForge")
+    parser = argparse.ArgumentParser(description="PRYTB — Collect and Persist YouTube Data to PostgreSQL")
     parser.add_argument("--query", type=str, required=True, help="Search query keyword")
     parser.add_argument("--max-videos", type=int, default=50, help="Maximum number of videos to collect")
     parser.add_argument("--export", action="store_true", help="Export collected data to data/exports/")

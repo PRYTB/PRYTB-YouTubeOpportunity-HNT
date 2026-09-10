@@ -1,12 +1,10 @@
 """Tests for Sprint 8 repository persistence, CLI helpers, and migration."""
 
 from copy import deepcopy
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
-import httpx
 import pytest
 
-from app.database.insforge_client import InsForgeClient, InsForgeClientError
 from app.database.postgres_client import PostgresClient, PostgresClientError
 from app.database.repositories import YouTubeRepository
 from app.models.production_risk import (
@@ -145,63 +143,29 @@ def test_production_risk_readback_rejects_integrity_differences(client, result, 
     assert repo.verify_production_risk_readback(result).verified is False
 
 
-@patch("scripts.migrate_sprint8_schema.httpx.post")
-def test_sprint8_migration_uses_official_endpoint(mock_post):
-    legacy_client = InsForgeClient(url="http://localhost", api_key="key")
-    response = MagicMock(status_code=201)
-    response.json.return_value = {
+def test_sprint8_migration_executes_direct_postgres(client):
+    result = execute_migration(client)
+
+    assert result == {
         "version": MIGRATION_VERSION,
         "name": MIGRATION_NAME,
-        "statements": ["CREATE TABLE"],
-        "message": "ok",
+        "message": "Migration applied",
     }
-    mock_post.return_value = response
-
-    assert execute_migration(legacy_client)["version"] == MIGRATION_VERSION
-    _, kwargs = mock_post.call_args
-    assert kwargs["json"] == {
-        "version": MIGRATION_VERSION,
-        "name": MIGRATION_NAME,
-        "sql": MIGRATION_SQL,
-    }
-    assert mock_post.call_args.args[0].endswith("/api/database/migrations")
+    client.execute.assert_called_once_with(MIGRATION_SQL)
 
 
-@pytest.mark.parametrize("failure", ["http", "json", "semantic", "network"])
-@patch("scripts.migrate_sprint8_schema.httpx.post")
-def test_sprint8_migration_rejects_failures(mock_post, failure):
-    legacy_client = InsForgeClient(url="http://localhost", api_key="key")
-    if failure == "network":
-        mock_post.side_effect = httpx.TimeoutException("timeout")
-    else:
-        response = MagicMock(status_code=400 if failure == "http" else 201, text="failure")
-        if failure == "json":
-            response.json.side_effect = ValueError("invalid")
-        elif failure == "semantic":
-            response.json.return_value = {"version": "wrong"}
-        mock_post.return_value = response
+def test_sprint8_migration_propagates_postgres_failure(client):
+    client.execute.side_effect = PostgresClientError("database unavailable")
 
-    with pytest.raises(InsForgeClientError):
-        execute_migration(legacy_client)
+    with pytest.raises(PostgresClientError, match="database unavailable"):
+        execute_migration(client)
 
 
-@patch("scripts.migrate_sprint8_schema.httpx.get")
-def test_sprint8_migration_verifies_table_and_reports_missing(mock_get):
-    legacy_client = InsForgeClient(url="http://localhost", api_key="key")
-    mock_get.return_value = MagicMock(status_code=200)
-    assert verify_tables(legacy_client) == ["production_risk_analyses"]
-
-    mock_get.return_value = MagicMock(status_code=404, text="missing")
-    with pytest.raises(InsForgeClientError, match="not accessible"):
-        verify_tables(legacy_client)
-
-
-def test_sprint8_migration_requires_url():
-    missing_url_client = InsForgeClient(url="", api_key="key")
-    with pytest.raises(InsForgeClientError, match="INSFORGE_URL"):
-        execute_migration(missing_url_client)
-    with pytest.raises(InsForgeClientError, match="INSFORGE_URL"):
-        verify_tables(missing_url_client)
+def test_sprint8_migration_verifies_table(client):
+    assert verify_tables(client) == ["production_risk_analyses"]
+    client.execute.assert_called_once_with(
+        "SELECT 1 FROM public.production_risk_analyses LIMIT 1"
+    )
 
 
 def test_functional_validation_accepts_unknowns_without_false_failures():

@@ -200,7 +200,7 @@ def run_validation(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Sprint 10 Opportunity Validator CLI")
-    parser.add_argument("--persist", action="store_true", help="Persist analysis results to InsForge DB")
+    parser.add_argument("--persist", action="store_true", help="Persist analysis results to PostgreSQL")
     parser.add_argument("--json", action="store_true", help="Output results in JSON format")
     args = parser.parse_args()
 

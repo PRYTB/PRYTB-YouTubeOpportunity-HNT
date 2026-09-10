@@ -41,10 +41,10 @@ from app.models.outliers import VideoOutlierResult
 from app.utils.logger import logger
 from scripts.validate_opportunities import run_validation
 
-CANONICAL_VIDEOS = 83
+CANONICAL_VIDEOS = 7611
 CANONICAL_CLUSTERS = 10
-CANONICAL_DATASET_HASH = "4d81c80e8da54b371c7eb969957ea347fc632d82abd737719141c866f4bfe9ad"
-CANONICAL_ASSIGNMENTS_HASH = "6c0e7bb6aeec75985664becb05f7c61cbfec874c15a6ec7395d60c2996436288"
+CANONICAL_DATASET_HASH = "5b284b89e17d11aca86661bd8a53715b43b212f6f5aaf99ca4210884b5925091"
+CANONICAL_ASSIGNMENTS_HASH = "d03cb6bd13b72e8f6859ec0f6c2ea1104f59799f6480d81d95b3df5bca751340"
 
 
 class ProvenanceInfo(BaseModel):
@@ -223,7 +223,7 @@ class DashboardDataService:
         is_compat = True
         err_msg = None
 
-        if ds_hash != CANONICAL_DATASET_HASH and ds_hash != "aff253509f52552097ad25283d3ae3bf3a0af6ab7682f4e79b3497919568ac3e":
+        if ds_hash != CANONICAL_DATASET_HASH and ds_hash != "5b284b89e17d11aca86661bd8a53715b43b212f6f5aaf99ca4210884b5925091":
             is_compat = False
             err_msg = f"Canonical hash mismatch: dataset_hash={ds_hash}, assignments_hash={as_hash}"
         elif val_result.source_profitability_run_id != prof_result.run_id:
@@ -288,7 +288,7 @@ class DashboardDataService:
                 channel_title=v.get("channel_title") or ch_info.get("channel_title") or ch_id,
                 views=int(v.get("view_count") or 0),
                 subscribers=int(subs) if subs is not None else None,
-                published_at=v.get("published_at"),
+                published_at=str(v.get("published_at")) if v.get("published_at") is not None else None,
                 video_age_days=float(v.get("video_age_days")) if v.get("video_age_days") is not None else None,
                 outlier_ratio=out.outlier_ratio if out else None,
                 age_normalized_outlier_ratio=out.age_normalized_outlier_ratio if out else None,

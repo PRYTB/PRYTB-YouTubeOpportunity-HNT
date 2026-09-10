@@ -2,13 +2,13 @@
 
 ## Estado
 
-Completo. Sprint 8 analiza la viabilidad de producción y el riesgo de los clusters aprobados en Sprint 5. Añade complejidad de producción, estimación de horas, costos de producción, **faceless feasibility, AI assistance potential, expertise requirement, repeatability**, análisis de riesgo completo (copyright, plataforma, precisión, carga de actualización, dependencia de fuentes) y **Production Attractiveness Score**. Persistencia opcional en InsForge con read-back exacto. No calcula Opportunity Score ni rentabilidad.
+Completo. Sprint 8 analiza la viabilidad de producción y el riesgo de los clusters aprobados en Sprint 5. Añade complejidad de producción, estimación de horas, costos de producción, **faceless feasibility, AI assistance potential, expertise requirement, repeatability**, análisis de riesgo completo (copyright, plataforma, precisión, carga de actualización, dependencia de fuentes) y **Production Attractiveness Score**. Persistencia opcional en PostgreSQL con read-back exacto. No calcula Opportunity Score ni rentabilidad.
 
 ## Límites de evidencia
 
 El resultado mantiene separadas cuatro clases de información:
 
-- **Observada:** membresía del cluster, títulos, descripciones y duraciones de videos disponibles en InsForge.
+- **Observada:** membresía del cluster, títulos, descripciones y duraciones de videos disponibles en PostgreSQL.
 - **Inferida:** scores de complejidad (investigación, footage, edición), costos de producción, horas estimadas, scores de riesgo y clasificaciones.
 - **Supuestos:** umbrales y pesos editables en `app/config/production_risk_config.py`. Los scores son heurísticas basadas en señales de texto en metadatos, no costos cotizados ni análisis legal.
 - **Desconocida:** evidencia ausente, inválida o insuficiente permanece como `UNKNOWN` o warning; no se imputa.
@@ -163,7 +163,7 @@ Combina completitud de datos (títulos, descripciones, duraciones) y tamaño de 
 - Clusters con < 5 videos: penalización de confianza (90% base)
 - Campos desconocidos reducen confianza proporcionalmente
 
-## Contrato aprobado de Sprint 5
+## Contrato approved de Sprint 5
 
 La CLI reutiliza sin modificar el pipeline determinista aprobado:
 
@@ -190,7 +190,7 @@ $env:PYTHONIOENCODING='utf-8'
 
 La ejecución audita videos de producción, valida el contrato de Sprint 5, enriquece con métricas de Sprint 7, ejecuta el motor de riesgo y valida funcionalmente. Sin `--persist` no realiza escrituras.
 
-## Persistencia InsForge
+## Persistencia PostgreSQL
 
 Primero se aplica la migración controlada:
 
@@ -206,7 +206,7 @@ Persistencia explícita:
 .\.venv\Scripts\python.exe scripts\analyze_production_risk.py --json --persist
 ```
 
-Se escribe un registro por cluster con payload completo en JSONB. Antes del POST se verifica el esquema. Después se leen todos los registros del `run_id` y se exige igualdad exacta: cantidad, clusters únicos, duplicados, orphans, missing y payload normalizado. Una discrepancia hace fallar la ejecución.
+Se escribe un registro por cluster con payload completo en JSONB. Antes de la transacción se verifica el esquema. Después se leen todos los registros del `run_id` y se exige igualdad exacta: cantidad, clusters únicos, duplicados, orphans, missing y payload normalizado. Una discrepancia hace fallar la ejecución.
 
 ## Métricas reportadas por cluster
 
@@ -246,14 +246,5 @@ Calculadas desde outputs finales reales. 10/10 UNKNOWN reporta 100.0%, no 0%.
 ## Limitaciones conocidas
 
 1. **Costos monetarios:** No se inventan. `cost_class` es derivada ordinal del Production Cost Score.
-2. **Tabla InsForge:** Nombre real `production_risk_analyses` (no `cluster_production_risk_analyses`).
+2. **Tabla PostgreSQL:** Nombre real `production_risk_analyses` (no `cluster_production_risk_analyses`).
 3. **Múltiples runs persistidos:** Durante validación se crearon varios runs.
-
-## Pruebas
-
-```powershell
-.\.venv\Scripts\python.exe -m pytest -m "not integration" -v
-.\.venv\Scripts\python.exe -m pytest -m integration -v
-```
-
-Cubren validación de modelos, configuración, clasificación complejidad/riesgo, estimación horas, señales de texto, **faceless, AI assistance, expertise, repeatability, todos los risk components, attractiveness coverage, UNKNOWN handling, quality unknown-rate correctness, cluster 9 hours calculation**, persistencia, read-back exacto, validación funcional, contrato Sprint 5, exclusión test record, fallos HTTP/JSON/semánticos.

@@ -9,15 +9,15 @@ from dashboard.data_service import DashboardDataService
 
 @pytest.mark.integration
 def test_dashboard_data_service_integration():
-    """Verify data service reads real InsForge data and produces compatible dataset without writes."""
+    """Verify the service reads PostgreSQL data and builds a compatible dataset without writes."""
     service = DashboardDataService()
     dataset = service.get_dashboard_data()
 
     assert dataset.provenance.is_compatible is True
-    assert dataset.total_videos == 83
+    assert dataset.total_videos == 7611
     assert dataset.total_clusters == 10
     assert len(dataset.candidates) == 10
-    assert len(dataset.videos) == 83
+    assert len(dataset.videos) == 7611
 
 
 @pytest.mark.integration

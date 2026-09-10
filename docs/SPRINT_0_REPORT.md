@@ -15,7 +15,7 @@ Se ha configurado exitosamente el entorno base para el proyecto `PRYTB-YouTubeOp
 ```text
 app/
   ├── collectors/ (youtube_client.py)
-  ├── database/ (insforge_client.py)
+  ├── database/ (postgres_client.py)
   ├── agents/
   ├── analytics/
   ├── scoring/
@@ -25,7 +25,7 @@ app/
 dashboard/
 tests/
   ├── unit/ (test_config.py)
-  └── integration/ (test_youtube_connection.py, test_insforge_connection.py)
+  └── integration/ (test_youtube_connection.py, PostgreSQL persistence tests)
 data/ (raw, processed, exports)
 logs/ (prytb.log)
 scripts/
@@ -46,19 +46,19 @@ Se instalaron exitosamente todas las dependencias mínimas requeridas sin framew
 * **Settings (`app/utils/config.py`):** Configuración centralizada basada en `pydantic-settings` con enmascaramiento estricto de credenciales (`SecretStr`).
 * **Logger (`app/utils/logger.py`):** Logging formateado con timestamps, salida dual a consola y `logs/prytb.log`.
 * **YouTubeClient (`app/collectors/youtube_client.py`):** Integración con YouTube Data API v3, manejo de cuota (`quotaExceeded`), timeouts y normalización de respuesta.
-* **InsForgeClient (`app/database/insforge_client.py`):** Capa reusable de conexión HTTP/REST a InsForge con verificación de salud segura no destructiva.
+* **PostgresClient (`app/database/postgres_client.py`):** Capa reusable de conexión directa a PostgreSQL con verificación segura de conectividad.
 
 ---
 
 ## 4. PRUEBAS Y HEALTHCHECK
 
 * **Unit Tests:** 3 passed (`tests/unit/test_config.py`).
-* **Integration Tests:** pasados contra YouTube Data API v3 e InsForge backend.
+* **Integration Tests:** pasados contra YouTube Data API v3 y PostgreSQL local.
 * **Healthcheck (`run_healthcheck.py`):**
   - Python: OK
   - Configuration: OK
   - YouTube Data API: OK
-  - InsForge: OK
+  - PostgreSQL: OK
   - Filesystem: OK
   - Logging: OK
   - Status: READY

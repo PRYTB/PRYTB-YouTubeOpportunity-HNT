@@ -2,13 +2,13 @@
 
 ## Estado
 
-Completo. Sprint 7 analiza la estructura de mercado de los clusters de producción aprobados en Sprint 5. Añade competencia, accesibilidad realista de entrada, profundidad de contenido y persistencia opcional en InsForge. No calcula Opportunity Score, costos ni riesgo.
+Completo. Sprint 7 analiza la estructura de mercado de los clusters de producción aprobados en Sprint 5. Añade competencia, accesibilidad realista de entrada, profundidad de contenido y persistencia opcional en PostgreSQL. No calcula Opportunity Score, costos ni riesgo.
 
 ## Límites de evidencia
 
 El resultado mantiene separadas cuatro clases de información:
 
-- **Observada:** membresía del cluster, distribución de canales, vistas, suscriptores y fechas disponibles en InsForge.
+- **Observada:** membresía del cluster, distribución de canales, vistas, suscriptores y fechas disponibles en PostgreSQL.
 - **Inferida:** scores, bandas de profundidad, clasificación evergreen y clasificación funcional.
 - **Supuestos:** umbrales y pesos editables en `app/config/market_structure_config.py`.
 - **Desconocida:** evidencia ausente, inválida, futura o insuficiente permanece como `None`, `UNKNOWN` o warning; no se imputa.
@@ -114,7 +114,7 @@ $env:PYTHONIOENCODING='utf-8'
 
 La ejecución reúne metadatos estáticos y selecciona el snapshot cronológicamente más reciente de `video_metrics` y `channel_metrics`. Sin `--persist` no realiza escrituras.
 
-## Persistencia InsForge
+## Persistencia PostgreSQL
 
 Primero se aplica la migración controlada:
 
@@ -128,11 +128,11 @@ Persistencia explícita:
 .\.venv\Scripts\python.exe scripts\analyze_market_structure.py --json --persist
 ```
 
-Se escribe un registro por cluster en `market_structure_analyses`, con unicidad `(run_id, cluster_id)`, scores desnormalizados y payload completo en JSONB. Antes del POST se verifica el esquema. Después se leen todos los registros del `run_id` y se exige igualdad exacta, incluyendo cantidad, clusters únicos, duplicados y payload normalizado. Una discrepancia hace fallar la ejecución.
+Se escribe un registro por cluster en `market_structure_analyses`, con unicidad `(run_id, cluster_id)`, scores desnormalizados y payload completo en JSONB. Antes de la transacción se verifica el esquema. Después se leen todos los registros del `run_id` y se exige igualdad exacta, incluyendo cantidad, clusters únicos, duplicados y payload normalizado. Una discrepancia hace fallar la ejecución.
 
 ## Pruebas
 
-Las pruebas cubren validación de modelos y configuración, HHI y concentración, baseline por identidad, muestra insuficiente, bandas 20/50/100+, fechas inválidas/futuras, clasificaciones evergreen y funcionales, unknowns, snapshots ISO/UTC, enriquecimiento sin mutación, persistencia por cluster, preflight, read-back exacto, diferencias de integridad, endpoint de migración y fallos HTTP, JSON, semánticos o de red. La integración usa datos reales aprobados y verifica cero POST en modo read-only.
+Las pruebas cubren validación de modelos y configuración, HHI y concentración, baseline por identidad, muestra insuficiente, bandas 20/50/100+, fechas inválidas/futuras, clasificaciones evergreen y funcionales, unknowns, snapshots ISO/UTC, enriquecimiento sin mutación, persistencia por cluster, preflight, read-back exacto, diferencias de integridad, migración y fallos SQL, semánticos o de red. La integración usa datos reales aprobados y verifica cero escrituras en modo read-only.
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -m "not integration" -v

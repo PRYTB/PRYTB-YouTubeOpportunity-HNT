@@ -4,13 +4,13 @@ from app.analytics.historical_metrics import HistoricalMetricsAnalyzer
 
 
 @pytest.mark.integration
-def test_insforge_historical_metrics_integration():
+def test_postgres_historical_metrics_integration():
     repo = YouTubeRepository()
 
     # Get all video IDs in DB
     video_ids = repo.get_all_video_ids()
     if not video_ids:
-        pytest.skip("No videos found in InsForge DB to perform historical integration test.")
+        pytest.skip("No videos found in PostgreSQL for the historical integration test.")
 
     analyzer = HistoricalMetricsAnalyzer(repository=repo)
 

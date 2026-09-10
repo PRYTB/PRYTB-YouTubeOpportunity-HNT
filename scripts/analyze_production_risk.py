@@ -158,7 +158,7 @@ def main() -> None:
     parser.add_argument(
         "--persist",
         action="store_true",
-        help="Persist to InsForge and require exact read-back verification.",
+        help="Persist to PostgreSQL and require exact read-back verification.",
     )
     args = parser.parse_args()
     report = run_analysis(persist=args.persist)

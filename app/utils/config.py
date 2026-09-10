@@ -9,9 +9,6 @@ ENV_FILE = BASE_DIR / ".env"
 
 class Settings(BaseSettings):
     YOUTUBE_API_KEY: Optional[SecretStr] = Field(default=None, alias="YOUTUBE_API_KEY")
-    INSFORGE_URL: Optional[str] = Field(default=None, alias="INSFORGE_URL")
-    INSFORGE_API_KEY: Optional[SecretStr] = Field(default=None, alias="INSFORGE_API_KEY")
-    INSFORGE_ANON_KEY: Optional[SecretStr] = Field(default=None, alias="INSFORGE_ANON_KEY")
 
     POSTGRES_HOST: str = Field(default="localhost", alias="POSTGRES_HOST")
     POSTGRES_PORT: int = Field(default=5433, alias="POSTGRES_PORT")

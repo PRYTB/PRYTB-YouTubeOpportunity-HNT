@@ -2,9 +2,7 @@
 ## YouTube Opportunity Hunter
 
 **Ruta del proyecto:** `I:\PRYTB`
-**Base de datos principal actual:** PostgreSQL local (`localhost:5433`, DB `prytb`, User `prytb_app`)
-**InsForge:** legacy/fuente histórica únicamente
-**Supabase:** no usado
+**Base de datos única:** PostgreSQL local (`localhost:5433`, DB `prytb`, User `prytb_app`)
 **Inicio:** Sprint 0  
 **Metodología:** Sprint gated — no avanzar con defectos críticos  
 
@@ -18,7 +16,7 @@
 |---|---:|---|---|
 | Setup | 0 | Entorno PRYTB operativo | GO/FIX |
 | Datos | 1 | YouTube API funcionando | GO/FIX |
-| Datos | 2 | InsForge conectado | GO/FIX |
+| Datos | 2 | PostgreSQL conectado | GO/FIX |
 | Datos | 3 | Históricos + velocity | GO/FIX |
 | Inteligencia | 4 | Outlier Engine | GO/FIX |
 | Inteligencia | 5 | Niche Miner | GO/FIX |
@@ -44,7 +42,7 @@ SPRINT / BLOQUE                               01 02 03 04 05 06 07 08 09 10 11 1
 ------------------------------------------------------------------------------------------------
 S0  Setup                                   ██
 S1  YouTube API                                ██
-S2  InsForge                                      ██
+S2  PostgreSQL                                    ██
 S3  Historical Metrics                              ██
 S4  Outlier Engine                                    ██
 S5  Niche Miner                                          ██
@@ -130,15 +128,15 @@ Traer al menos 50 videos reales y sus canales asociados sin errores críticos.
 
 ---
 
-# 5. SPRINT 2 — INSFORGE
+# 5. SPRINT 2 — POSTGRESQL
 
 ## Objetivo
 Persistir datos reales.
 
 ## Tareas
 
-- [ ] Crear proyecto InsForge
-- [ ] Obtener URL/credenciales
+- [ ] Crear base local `prytb`
+- [ ] Configurar `localhost:5433` y usuario `prytb_app`
 - [ ] Crear esquema inicial
 - [ ] Crear tablas `channels`
 - [ ] Crear tablas `videos`
@@ -478,7 +476,7 @@ Sólo entonces abrir documento de comercialización futura.
 | Riesgo | Mitigación |
 |---|---|
 | Cuota YouTube API | cache, batches, control quota |
-| InsForge Free limitado | esquema compacto, upgrade sólo con necesidad real |
+| Capacidad PostgreSQL local limitada | esquema compacto, ampliar recursos sólo con necesidad real |
 | Costos IA | OmniRoute abstraction + tracking |
 | Clustering mediocre | iterar embeddings/features |
 | Nichos triviales | Validator + data thresholds |
@@ -560,7 +558,7 @@ crear Google Cloud Project
 ↓
 activar YouTube Data API v3
 ↓
-configurar InsForge
+configurar PostgreSQL local
 ↓
 configurar OmniRoute
 ```

@@ -1,5 +1,5 @@
 """
-Integration test for NicheMiner with real InsForge database.
+Integration test for NicheMiner with the real PostgreSQL database.
 """
 import pytest
 from app.analytics.niche_miner import NicheMiner

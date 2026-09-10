@@ -191,7 +191,7 @@ Sprint 6 is intentionally in memory:
 - Read-back/count verification: not applicable.
 - Backend migration: not required.
 
-The integration test reads real InsForge production data and patches HTTP POST to assert that Sprint 6 performs no writes.
+The integration test reads real PostgreSQL production data and verifies that Sprint 6 performs no writes.
 
 ## Tests
 

@@ -77,7 +77,7 @@ $env:PYTHONIOENCODING='utf-8'
 .\.venv\Scripts\python.exe scripts\validate_opportunities.py --json
 ```
 
-Apply database migration and persist to InsForge DB:
+Apply the database migration and persist to PostgreSQL:
 
 ```powershell
 $env:PYTHONDONTWRITEBYTECODE='1'
@@ -86,7 +86,7 @@ $env:PYTHONIOENCODING='utf-8'
 .\.venv\Scripts\python.exe scripts\validate_opportunities.py --persist
 ```
 
-### InsForge Persistence & Read-Back Verification
+### PostgreSQL Persistence & Read-Back Verification
 
 The persistence engine writes to `public.cluster_validation_analyses` and performs strict read-back verification:
 - Writes: **10** records

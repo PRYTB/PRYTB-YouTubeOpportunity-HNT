@@ -2,7 +2,7 @@
 
 ## Overview
 
-Sprint 3 implements the historical layer for YouTube Opportunity Hunter (`PRYTB`). This layer allows calculating metrics evolution, view velocity, and view acceleration across temporal snapshots stored in InsForge PostgreSQL without mutating database schemas or saving unneeded derived columns.
+Sprint 3 implements the historical layer for YouTube Opportunity Hunter (`PRYTB`). This layer allows calculating metrics evolution, view velocity, and view acceleration across temporal snapshots stored in PostgreSQL without mutating database schemas or saving unneeded derived columns.
 
 ---
 

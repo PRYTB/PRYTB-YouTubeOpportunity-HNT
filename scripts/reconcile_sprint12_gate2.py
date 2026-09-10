@@ -18,7 +18,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
-from app.database.insforge_client import InsForgeClient
+from app.database.postgres_client import PostgresClient
 from app.database.repositories import YouTubeRepository
 from app.analytics.outlier_engine import OutlierEngine
 from app.models.outliers import VideoOutlierResult
@@ -41,12 +41,12 @@ def run_gate2_reconciliation():
     print("Sprint 4 approved rules loaded: True")
     print("Gate 1 contract verified: True")
 
-    # 1. InsForge Pre-flight
-    print("\n--- 1. INSFORGE PRE-FLIGHT ---")
-    client = InsForgeClient()
+    # 1. PostgreSQL pre-flight
+    print("\n--- 1. POSTGRESQL PRE-FLIGHT ---")
+    client = PostgresClient()
     conn_info = client.check_connection()
     conn_ok = conn_info.get("status") == "connected"
-    print(f"INSFORGE CONNECTION: {'OK' if conn_ok else 'FAIL'}")
+    print(f"POSTGRESQL CONNECTION: {'OK' if conn_ok else 'FAIL'}")
 
     repo = YouTubeRepository(client)
     
@@ -57,9 +57,9 @@ def run_gate2_reconciliation():
     channel_metrics_raw = repo.get_all_channel_metrics()
 
     tables_ok = bool(videos_raw and channels_raw and video_metrics_raw and channel_metrics_raw)
-    print(f"INSFORGE REQUIRED TABLES: {'OK' if tables_ok else 'FAIL'}")
-    print(f"INSFORGE REAL READ: OK ({len(videos_raw)} videos, {len(channels_raw)} channels, {len(video_metrics_raw)} video_metrics, {len(channel_metrics_raw)} channel_metrics)")
-    print("INSFORGE FALLBACK ACTIVE: NO")
+    print(f"POSTGRESQL REQUIRED TABLES: {'OK' if tables_ok else 'FAIL'}")
+    print(f"POSTGRESQL REAL READ: OK ({len(videos_raw)} videos, {len(channels_raw)} channels, {len(video_metrics_raw)} video_metrics, {len(channel_metrics_raw)} channel_metrics)")
+    print("POSTGRESQL FALLBACK ACTIVE: NO")
 
     # 2. Gate 1 Dataset Guard
     print("\n--- 2. GATE 1 DATASET GUARD ---")
@@ -283,7 +283,7 @@ def run_gate2_reconciliation():
 
     # 8. Persistence with Exact Provenance
     print("\n--- 8. PERSISTENCE CHECK / VERIFICATION ---")
-    db_records = repo._get_records("video_outlier_analyses", params={"run_id": f"eq.{expected_run_id}"})
+    db_records = repo.get_outlier_analysis_by_run_id(expected_run_id)
     print(f"DB records currently for run_id '{expected_run_id}': {len(db_records)}")
 
     # Check if we need to re-persist
@@ -323,17 +323,18 @@ def run_gate2_reconciliation():
             filtered_rec = {k: v for k, v in r.items() if k in valid_schema_keys}
             filtered_records_to_insert.append(filtered_rec)
 
-        print(f"Persisting {len(filtered_records_to_insert)} records to InsForge...")
-        for i in range(0, len(filtered_records_to_insert), 500):
-            batch = filtered_records_to_insert[i:i+500]
-            repo._post_records("video_outlier_analyses", batch, upsert=True)
+        print(
+            f"Persisting {len(filtered_records_to_insert)} "
+            "records to PostgreSQL..."
+        )
+        repo.insert_outlier_analysis(filtered_records_to_insert)
 
-        db_records = repo._get_records("video_outlier_analyses", params={"run_id": f"eq.{expected_run_id}"})
+        db_records = repo.get_outlier_analysis_by_run_id(expected_run_id)
         print(f"Post-persistence DB record count: {len(db_records)}")
 
-    # 9. InsForge Read-Back
-    print("\n--- 9. INSFORGE READ-BACK ---")
-    readback_records = repo._get_records("video_outlier_analyses", params={"run_id": f"eq.{expected_run_id}"})
+    # 9. PostgreSQL read-back
+    print("\n--- 9. POSTGRESQL READ-BACK ---")
+    readback_records = repo.get_outlier_analysis_by_run_id(expected_run_id)
     readback_actuals = [r for r in readback_records if r.get("is_strong_outlier") or r.get("is_major_outlier") or r.get("is_extreme_outlier")]
     readback_small_actuals = [r for r in readback_actuals if r.get("is_small_channel")]
 
@@ -377,7 +378,9 @@ def run_gate2_reconciliation():
 
     # 11. Cross-Run Contamination
     print("\n--- 11. CROSS-RUN CONTAMINATION ---")
-    all_outlier_table_records = repo._get_records("video_outlier_analyses")
+    all_outlier_table_records = client.execute(
+        "SELECT * FROM public.video_outlier_analyses"
+    )
     sprint5_mixed = sum(1 for r in all_outlier_table_records if "sprint5" in str(r.get("run_id", "")).lower())
     old_sprint12_mixed = sum(1 for r in all_outlier_table_records if r.get("run_id") != expected_run_id)
     wrong_prov = wrong_run_id + wrong_dataset_hash
@@ -403,9 +406,9 @@ def run_gate2_reconciliation():
     unit_pass = pytest_res.returncode == 0
     print(f"Unit tests pass: {unit_pass} ({pytest_res.stdout.strip().splitlines()[-1] if pytest_res.stdout.strip() else ''})")
 
-    print("Running InsForge integration checks...")
+    print("Running PostgreSQL integration checks...")
     integration_pass = conn_ok and tables_ok and len(readback_records) == len(all_outlier_results)
-    print(f"InsForge integration checks pass: {integration_pass}")
+    print(f"PostgreSQL integration checks pass: {integration_pass}")
 
     print("Running git diff --check...")
     git_diff_res = subprocess.run(["git", "diff", "--check"], capture_output=True, text=True)
@@ -424,8 +427,8 @@ def run_gate2_reconciliation():
         ("Gantt loaded", gantt_exists),
         ("Sprint 4 approved rules loaded", True),
         ("Gate 1 contract verified", True),
-        ("InsForge connection OK", conn_ok),
-        ("InsForge real read OK", tables_ok),
+        ("PostgreSQL connection OK", conn_ok),
+        ("PostgreSQL real read OK", tables_ok),
         ("No fallback", True),
         ("Gate 1 dataset hash unchanged", hash_match),
         ("Dataset counts reconciled", len(prod_videos) == 7611),
@@ -445,18 +448,18 @@ def run_gate2_reconciliation():
         ("Top100 rows validated", len(top100) == 100),
         ("Gate 2 rows persisted with exact run_id", len(readback_records) == len(all_outlier_results)),
         ("Gate 2 rows persisted with exact dataset_hash", wrong_dataset_hash == 0),
-        ("InsForge read-back exact", missing == 0 and duplicates == 0),
+        ("PostgreSQL read-back exact", missing == 0 and duplicates == 0),
         ("Actual read-back count matches recomputation", len(readback_actuals) == len(actual_outliers)),
         ("Small-channel read-back count matches recomputation", len(readback_small_actuals) == len(small_channel_actuals)),
         ("Missing rows = 0", missing == 0),
         ("Duplicate rows = 0", duplicates == 0),
         ("Orphans = 0", orphans == 0),
         ("Wrong provenance = 0", wrong_prov == 0),
-        ("Outlier hash derived from InsForge read-back", True),
+        ("Outlier hash derived from PostgreSQL read-back", True),
         ("Hash independently reproduced", hashes_equal),
         ("Cross-run contamination = 0", sprint5_mixed == 0 and old_sprint12_mixed == 0),
         ("Unit tests pass", unit_pass),
-        ("Gate 2 InsForge integration checks pass", integration_pass),
+        ("Gate 2 PostgreSQL integration checks pass", integration_pass),
         ("git diff --check passes", git_diff_pass),
         ("Working tree clean", working_tree_clean)
     ]

@@ -76,7 +76,7 @@ The dashboard includes full bilingual localization:
 
 ## 4. Architecture & Data Service Layer
 
-- **Service Layer**: `dashboard/data_service.py` (`DashboardDataService`) wraps InsForge reads and Sprint 5–10 pipeline execution in read-only mode (`persist=False`).
+- **Service Layer**: `dashboard/data_service.py` (`DashboardDataService`) wraps PostgreSQL reads and Sprint 5–10 pipeline execution in read-only mode (`persist=False`).
 - **View Models**: Strong Pydantic data models (`OpportunityCandidateViewModel`, `VideoViewModel`, `ChannelViewModel`, `DashboardDataset`, `ProvenanceInfo`).
 - **Data Provenance & Safety**: Enforces canonical contract validation (`dataset_hash = 4d81c80e8da54b371c7eb969957ea347fc632d82abd737719141c866f4bfe9ad`, `assignments_hash = 6c0e7bb6aeec75985664becb05f7c61cbfec874c15a6ec7395d60c2996436288`). If a mismatch occurs, analytical ranking rendering is blocked and a visible error is raised.
 - **Caching**: Streamlit `@st.cache_data` caches read-only dataset structures, with a **Refresh Data** control in the sidebar to safely clear and reload.

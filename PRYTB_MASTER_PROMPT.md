@@ -4,9 +4,7 @@
 **Versión:** 1.0  
 **Ruta raíz obligatoria:** `I:\PRYTB`
 **IDE / agente de desarrollo:** TRAE
-**Backend de datos principal:** PostgreSQL local (`localhost:5433`, DB `prytb`, User `prytb_app`)
-**Backend de datos histórico:** InsForge (fuente de migración legacy únicamente)
-**Supabase:** No usado
+**Base de datos única:** PostgreSQL local (`localhost:5433`, DB `prytb`, User `prytb_app`)
 **Sprint 12 Estado:** Gate 1 GO, Gate 1A GO, Gate 2A (PostgreSQL Provenance Reconciliation) GO. Canonical run_id stored unambiguously in `analytical_runs` (`sprint12_interim_reconciled_20260908_202912`, 7611 videos, 4773 channels, dataset_hash `6b0ac147d9aae34551c6db0a450ae778d22c6c5132feb89c8878eafeacf69919`). Stale Gate1 metadata superseded. Gate3 remains BLOCKED until explicitly unblocked.
 **Fuente principal de datos:** YouTube Data API v3  
 **Proveedor de modelos IA:** OmniRoute  
@@ -177,8 +175,11 @@ Crear `.env.example` con al menos:
 
 ```env
 YOUTUBE_API_KEY=
-INSFORGE_URL=
-INSFORGE_API_KEY=
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5433
+POSTGRES_DB=prytb
+POSTGRES_USER=prytb_app
+POSTGRES_PASSWORD=
 OMNIROUTE_API_KEY=
 OMNIROUTE_BASE_URL=
 OMNIROUTE_MODEL_FAST=
@@ -205,7 +206,7 @@ Responsable de:
 - títulos;
 - descripciones;
 - likes/comentarios cuando estén disponibles;
-- persistencia en InsForge.
+- persistencia en PostgreSQL.
 
 Debe respetar cuotas y registrar consumo aproximado.
 
@@ -582,9 +583,9 @@ Implementar fallback sólo si está explícitamente configurado.
 
 ---
 
-# 13. BASE DE DATOS — INSFORGE
+# 13. BASE DE DATOS — POSTGRESQL
 
-InsForge será la fuente de verdad principal.
+PostgreSQL local será la fuente de verdad única.
 
 Tablas mínimas iniciales:
 
@@ -741,7 +742,7 @@ Commits sugeridos por sprint:
 ```text
 feat: initialize PRYTB project structure
 feat: add YouTube API collector
-feat: persist YouTube data to InsForge
+feat: persist YouTube data to PostgreSQL
 feat: add outlier detection engine
 feat: add niche clustering
 feat: add profitability scoring
@@ -760,7 +761,7 @@ Crear estructura, entorno, Git, configuración y conectividad.
 ## Sprint 1 — YouTube API
 Traer datos reales.
 
-## Sprint 2 — InsForge
+## Sprint 2 — PostgreSQL
 Persistir y consultar.
 
 ## Sprint 3 — Historical Metrics
@@ -817,7 +818,7 @@ YouTube API
 ↓
 canales
 ↓
-InsForge
+PostgreSQL
 ↓
 outlier ratios
 ↓

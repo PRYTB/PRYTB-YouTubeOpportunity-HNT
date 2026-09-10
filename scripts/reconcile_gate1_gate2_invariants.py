@@ -11,14 +11,14 @@ from typing import Dict, Any, List
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
-from app.database.insforge_client import InsForgeClient
+from app.database.postgres_client import PostgresClient
 from app.database.repositories import YouTubeRepository
 from app.analytics.outlier_engine import OutlierEngine
 from app.models.outliers import VideoOutlierResult
 from scripts.create_sprint12_dataset_contract import clean_text_for_embedding, is_test_video, compute_dataset_hash
 
 def run_invariant_audit():
-    client = InsForgeClient()
+    client = PostgresClient()
     repo = YouTubeRepository(client)
 
     videos_raw = repo.get_all_videos()
