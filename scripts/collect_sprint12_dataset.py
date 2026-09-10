@@ -97,6 +97,8 @@ class Sprint12CheckpointedCollector:
             with open(videos_dump_file, "r", encoding="utf-8") as f:
                 v_list = json.load(f)
                 for item in v_list:
+                    if isinstance(item.get("caption"), bool):
+                        item["caption"] = str(item["caption"]).lower()
                     v_obj = YouTubeVideo(**item)
                     collected_video_map[v_obj.video_id] = v_obj
 
@@ -104,6 +106,8 @@ class Sprint12CheckpointedCollector:
             with open(channels_dump_file, "r", encoding="utf-8") as f:
                 c_list = json.load(f)
                 for item in c_list:
+                    if "channel_title" not in item:
+                        item["channel_title"] = item.get("title") or item.get("name") or "Unknown Channel"
                     c_obj = YouTubeChannel(**item)
                     collected_channel_map[c_obj.channel_id] = c_obj
 
@@ -192,6 +196,10 @@ class Sprint12CheckpointedCollector:
                     duration_iso = content.get("duration")
                     duration_sec = parse_iso8601_duration(duration_iso)
 
+                    caption_val = content.get("caption")
+                    if isinstance(caption_val, bool):
+                        caption_val = str(caption_val).lower()
+
                     video_obj = YouTubeVideo(
                         video_id=vid,
                         channel_id=ch_id,
@@ -205,7 +213,7 @@ class Sprint12CheckpointedCollector:
                         duration_iso=duration_iso,
                         duration_seconds=duration_sec,
                         definition=content.get("definition"),
-                        caption=content.get("caption"),
+                        caption=caption_val,
                         licensed_content=content.get("licensedContent"),
                         default_language=snippet.get("defaultLanguage"),
                         default_audio_language=snippet.get("defaultAudioLanguage")
