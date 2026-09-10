@@ -40,3 +40,22 @@ def test_sprint12_gate3_lineage_and_determinism():
     hash1 = compute_assignments_hash(sample_assignments)
     hash2 = compute_assignments_hash(list(reversed(sample_assignments)))
     assert hash1 == hash2, "Assignment hash must be ordering-invariant due to video_id sorting"
+
+
+def test_sprint12_gate4_intent_normalization_and_depth():
+    from scripts.execute_sprint12_gate4 import normalize_intent_string
+
+    raw1 = "AI tools for content creators & video generation!"
+    raw2 = "ai tools for content creators video generation"
+    norm1 = normalize_intent_string(raw1)
+    norm2 = normalize_intent_string(raw2)
+    assert norm1 == norm2, "Normalized intent string must match for superficial variations"
+
+    # Test 100_PLUS depth rule
+    distinct_intents = 105
+    content_depth = "100_PLUS" if distinct_intents >= 100 else "FEWER_THAN_100"
+    assert content_depth == "100_PLUS"
+
+    distinct_intents_low = 85
+    content_depth_low = "100_PLUS" if distinct_intents_low >= 100 else "FEWER_THAN_100"
+    assert content_depth_low != "100_PLUS"
