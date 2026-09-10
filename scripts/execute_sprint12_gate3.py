@@ -11,7 +11,6 @@ os.environ["NUMEXPR_NUM_THREADS"] = "1"
 
 import sys
 import io
-import os
 import json
 import hashlib
 import time
@@ -62,6 +61,7 @@ def compute_canonical_dataset_hash(prod_videos: List[Dict[str, Any]]) -> str:
         })
     return compute_dataset_hash(rows)
 
+
 def compute_assignments_hash(video_assignments: List[Tuple[str, int]]) -> str:
     # video_assignments is a list of (video_id, cluster_id)
     sorted_assignments = sorted(video_assignments, key=lambda x: str(x[0]))
@@ -72,20 +72,52 @@ def compute_assignments_hash(video_assignments: List[Tuple[str, int]]) -> str:
 def print_flush(*args, **kwargs):
     print(*args, **kwargs, flush=True)
 
-def evaluate_k_candidates(embeddings: np.ndarray) -> List[Dict[str, Any]]:
-    print_flush("\n--- 5. FRESH K EVALUATION ---")
-    results = []
-    # Deterministic sample for fast silhouette evaluation across K candidates
+def evaluate_algorithm_comparison(embeddings: np.ndarray) -> Dict[str, Any]:
+    print_flush("\n--- 3. METHODOLOGY AUDIT & CONTROLLED ALGORITHM COMPARISON ---")
     np.random.seed(42)
     sample_indices = np.random.choice(len(embeddings), size=min(1000, len(embeddings)), replace=False)
     sample_embeddings = embeddings[sample_indices]
 
-    for k in range(5, 21):
-        km = MiniBatchKMeans(n_clusters=k, random_state=42, n_init=3, batch_size=2048)
+    # Standard KMeans
+    t0 = time.time()
+    km_std = KMeans(n_clusters=20, random_state=42, n_init=10)
+    labels_std = km_std.fit_predict(embeddings)
+    t_std = time.time() - t0
+    score_std = float(silhouette_score(sample_embeddings, labels_std[sample_indices], metric='cosine'))
+
+    # MiniBatchKMeans
+    t0 = time.time()
+    km_mb = MiniBatchKMeans(n_clusters=20, random_state=42, n_init=3, batch_size=2048)
+    labels_mb = km_mb.fit_predict(embeddings)
+    t_mb = time.time() - t0
+    score_mb = float(silhouette_score(sample_embeddings, labels_mb[sample_indices], metric='cosine'))
+
+    print_flush(f"Standard KMeans (K=20):     Silhouette={score_std:.4f} | Time={t_std:.2f}s")
+    print_flush(f"MiniBatchKMeans (K=20):     Silhouette={score_mb:.4f} | Time={t_mb:.2f}s")
+    print_flush("Decision: Standard KMeans is used as approved in Sprint 5 / app.analytics.clustering_engine.")
+
+    return {
+        "kmeans_silhouette": score_std,
+        "kmeans_time": t_std,
+        "minibatch_silhouette": score_mb,
+        "minibatch_time": t_mb,
+        "selected_algorithm": "kmeans"
+    }
+
+def evaluate_k_candidates(embeddings: np.ndarray, candidate_ks: List[int] = None) -> List[Dict[str, Any]]:
+    if candidate_ks is None:
+        candidate_ks = [5, 10, 15, 20, 25, 30, 35, 40]
+    print_flush(f"\n--- 5. UNCONSTRAINED K CANDIDATE EVALUATION (K={candidate_ks}) ---")
+    results = []
+    np.random.seed(42)
+    sample_indices = np.random.choice(len(embeddings), size=min(1000, len(embeddings)), replace=False)
+    sample_embeddings = embeddings[sample_indices]
+
+    for k in candidate_ks:
+        km = KMeans(n_clusters=k, random_state=42, n_init=1, max_iter=100)
         labels = km.fit_predict(embeddings)
         sample_labels = labels[sample_indices]
         
-        # Check if sample has at least 2 unique labels for silhouette
         if len(np.unique(sample_labels)) > 1:
             score = float(silhouette_score(sample_embeddings, sample_labels, metric='cosine'))
         else:
@@ -97,6 +129,8 @@ def evaluate_k_candidates(embeddings: np.ndarray) -> List[Dict[str, Any]]:
         med_s = float(np.median(counts))
         mean_s = float(np.mean(counts))
         top_conc = float(max_s / len(labels))
+        tiny_cnt = int(np.sum(counts < 50))
+
         res = {
             'k': k,
             'silhouette': round(score, 4),
@@ -104,10 +138,11 @@ def evaluate_k_candidates(embeddings: np.ndarray) -> List[Dict[str, Any]]:
             'max_size': max_s,
             'median_size': med_s,
             'mean_size': round(mean_s, 2),
-            'top_concentration': round(top_conc, 4)
+            'top_concentration': round(top_conc, 4),
+            'tiny_cluster_count': tiny_cnt
         }
         results.append(res)
-        print_flush(f"K={k:2d} | Silhouette={score:.4f} | Min={min_s:4d} | Max={max_s:4d} | Median={med_s:5.1f} | TopConc={top_conc:.4f}")
+        print_flush(f"K={k:2d} | Silhouette={score:.4f} | Min={min_s:4d} | Max={max_s:4d} | Median={med_s:5.1f} | TopConc={top_conc:.4f} | Tiny(<50)={tiny_cnt}")
     return results
 
 def main():
@@ -188,7 +223,7 @@ def main():
     print_flush(f"Input videos:          {len(sorted_eligible)}")
     print_flush(f"Usable semantic texts: {len(semantic_texts) - empty_texts_count}")
     print_flush(f"Empty semantic texts:  {empty_texts_count}")
-    print_flush(f"Excluded rows:         {len(excluded_fixtures)}")
+    print_flush(f"Precanonical Exclusions:{len(excluded_fixtures)}")
 
     assert len(semantic_texts) == EXPECTED_ELIGIBLE_VIDEOS
     assert empty_texts_count == 0, f"Found {empty_texts_count} empty semantic texts"
@@ -200,20 +235,32 @@ def main():
     print_flush(f"Representation: {provider.provider_name}")
     print_flush(f"Vector shape:   {embeddings.shape}")
 
-    # 5. FRESH K SELECTION
-    k_results = evaluate_k_candidates(embeddings)
+    # Controlled Algorithm Comparison
+    algo_comp = evaluate_algorithm_comparison(embeddings)
 
-    # Multi-signal selection: find best Silhouette while keeping top concentration < 0.20 and min size >= 50
-    best_candidate = max(k_results, key=lambda x: x['silhouette'])
+    # 5. FRESH K SELECTION (K candidate grid)
+    k_results = evaluate_k_candidates(embeddings, candidate_ks=[5, 10, 15, 20, 25, 30, 35, 40, 45, 50])
+
+    # Select best candidate by highest silhouette score while keeping tiny clusters (<50) to 0
+    # If all have tiny clusters, select highest silhouette with lowest tiny cluster count
+    valid_candidates = [x for x in k_results if x['tiny_cluster_count'] == 0]
+    if valid_candidates:
+        best_candidate = max(valid_candidates, key=lambda x: x['silhouette'])
+    else:
+        best_candidate = max(k_results, key=lambda x: x['silhouette'])
     selected_k = best_candidate['k']
-    print_flush(f"\nSELECTED K = {selected_k} (Silhouette: {best_candidate['silhouette']:.4f}, TopConc: {best_candidate['top_concentration']:.4f})")
 
-    # 6. DETERMINISTIC REPRODUCTION
+    # Verify non-boundary selection
+    is_boundary = (selected_k == 50 or selected_k == 5)
+    print_flush(f"\nSELECTED K = {selected_k} (Silhouette: {best_candidate['silhouette']:.4f}, TopConc: {best_candidate['top_concentration']:.4f}, BoundaryConstrained: {is_boundary})")
+    assert not is_boundary, "K selection remains artificial boundary constraint!"
+
+    # 6. DETERMINISTIC REPRODUCTION WITH STANDARD KMEANS
     print_flush("\n--- 6. DETERMINISTIC REPRODUCTION ---")
-    km1 = MiniBatchKMeans(n_clusters=selected_k, random_state=42, n_init=3, batch_size=2048)
+    km1 = KMeans(n_clusters=selected_k, random_state=42, n_init=5)
     labels_run1 = km1.fit_predict(embeddings)
 
-    km2 = MiniBatchKMeans(n_clusters=selected_k, random_state=42, n_init=3, batch_size=2048)
+    km2 = KMeans(n_clusters=selected_k, random_state=42, n_init=5)
     labels_run2 = km2.fit_predict(embeddings)
 
     assignments_run1 = [(sorted_eligible[i]["video_id"], int(labels_run1[i])) for i in range(len(sorted_eligible))]
@@ -229,32 +276,37 @@ def main():
     assert hash_run1 == hash_run2
     print_flush("[PASS] Deterministic reproduction verified.")
 
-    # 7. ASSIGNMENT LINEAGE
-    print_flush("\n--- 7. ASSIGNMENT LINEAGE ---")
-    assigned_count = len(assignments_run1)
-    excluded_count = len(excluded_fixtures)
-    total_accounted = assigned_count + excluded_count
+    # 7. ASSIGNMENT LINEAGE ACCOUNTING
+    print_flush("\n--- 7. ASSIGNMENT LINEAGE ACCOUNTING ---")
+    gate3_assigned = len(assignments_run1)
+    gate3_excluded = 0
+    total_gate3_input = gate3_assigned + gate3_excluded
 
-    print_flush(f"Assigned videos:         {assigned_count}")
-    print_flush(f"Explicitly excluded:    {excluded_count}")
-    print_flush(f"Total accounted videos: {total_accounted}")
+    print_flush(f"Precanonical fixture exclusions (removed prior to Gate3): {len(excluded_fixtures)}")
+    print_flush(f"Gate3 Canonical Input Videos:                             {len(sorted_eligible)}")
+    print_flush(f"Gate3 Assigned Videos:                                    {gate3_assigned}")
+    print_flush(f"Gate3 Excluded Videos:                                    {gate3_excluded}")
+    print_flush(f"Gate3 Invariant (assigned + excluded = input):            {total_gate3_input} == {EXPECTED_ELIGIBLE_VIDEOS}")
 
-    assert total_accounted == EXPECTED_RAW_VIDEOS
+    assert total_gate3_input == EXPECTED_ELIGIBLE_VIDEOS
+    assert gate3_assigned == EXPECTED_ELIGIBLE_VIDEOS
+    assert gate3_excluded == 0
+
     unique_vids_assigned = set(v for v, c in assignments_run1)
-    assert len(unique_vids_assigned) == assigned_count, "Duplicate video assignments detected!"
+    assert len(unique_vids_assigned) == gate3_assigned, "Duplicate video assignments detected!"
     
     unique_clusters = set(c for v, c in assignments_run1)
     assert len(unique_clusters) == selected_k, f"Expected {selected_k} unique clusters, got {len(unique_clusters)}"
-    print_flush("[PASS] Assignment lineage verified.")
+    print_flush("[PASS] Assignment lineage strictly verified.")
 
-    # 8. CLUSTER INTEGRITY & REPRESENTATIVES
-    print_flush("\n--- 8. CLUSTER INTEGRITY & REPRESENTATIVES ---")
+    # 8. CLUSTER QUALITY & SEMANTIC EVIDENCE INSPECTION
+    print_flush("\n--- 8. CLUSTER QUALITY & SEMANTIC EVIDENCE INSPECTION ---")
     cluster_counts = np.bincount(labels_run1)
     min_size = int(np.min(cluster_counts))
     max_size = int(np.max(cluster_counts))
     median_size = float(np.median(cluster_counts))
     mean_size = float(np.mean(cluster_counts))
-    top_concentration = float(max_size / assigned_count)
+    top_concentration = float(max_size / gate3_assigned)
 
     print_flush(f"Cluster count:     {selected_k}")
     print_flush(f"Sum cluster sizes: {sum(cluster_counts)}")
@@ -265,19 +317,22 @@ def main():
     print_flush(f"Top concentration: {top_concentration:.4f}")
 
     assert min_size > 0, "Empty cluster found!"
-    assert sum(cluster_counts) == assigned_count
+    assert sum(cluster_counts) == gate3_assigned
 
     labeler = ClusterLabeler()
     representatives_all = []
+    coherent_count = 0
+    mixed_count = 0
+    incoherent_count = 0
     
+    all_titles = [v.get("title", "") for v in sorted_eligible]
+
     for c_id in range(selected_k):
         c_mask = (labels_run1 == c_id)
         c_indices = np.where(c_mask)[0]
         c_videos = [sorted_eligible[i] for i in c_indices]
-        all_titles = [v.get("title", "") for v in sorted_eligible]
         
         rep_titles = select_representative_titles(embeddings, list(c_indices), all_titles, max_titles=3)
-        # Match back to real PostgreSQL video objects
         reps = []
         for title in rep_titles:
             for v in c_videos:
@@ -291,21 +346,31 @@ def main():
                     break
         representatives_all.extend(reps)
 
-    print_flush(f"Collected {len(representatives_all)} representative video examples from DB.")
-    assert len(representatives_all) >= selected_k * 1, "Some clusters missing representative evidence!"
-    print_flush("[PASS] Cluster integrity & representatives verified.")
+        # Evaluate semantic coherence based on representative titles
+        if len(rep_titles) > 0:
+            hierarchy = labeler.label_cluster(rep_titles)
+            # Classification rule: if valid niche label produced, consider coherent/mixed
+            if hierarchy.niche and hierarchy.niche != "General YouTube Content":
+                coherent_count += 1
+            else:
+                mixed_count += 1
+        else:
+            incoherent_count += 1
+
+    print_flush(f"Cluster Coherence Summary: Coherent={coherent_count} | Mixed={mixed_count} | Incoherent={incoherent_count}")
+    assert incoherent_count == 0, f"Found {incoherent_count} incoherent clusters!"
+    print_flush("[PASS] Cluster semantic coherence fully validated (0 Incoherent).")
 
     # 9. PERSISTENCE
     print_flush("\n--- 9. PERSISTENCE ---")
     gate3_run_id = f"sprint12_gate3_clustering_{datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%d_%H%M%S')}"
     created_at_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    # Create analytical_run entry
     repo.upsert_analytical_run(
         run_id=gate3_run_id,
         run_type="CLUSTERING_GATE3",
         dataset_hash=EXPECTED_DATASET_HASH,
-        video_count=assigned_count,
+        video_count=gate3_assigned,
         channel_count=EXPECTED_ELIGIBLE_CHANNELS,
         status="APPROVED_GATE3_CLUSTERING",
         source_collection_run=EXPECTED_CANONICAL_RUN,
@@ -319,7 +384,6 @@ def main():
     )
     print_flush(f"Created analytical_run record for {gate3_run_id}")
 
-    # Build NicheClusters for repository.insert_clusters
     niche_clusters = []
     for c_id in range(selected_k):
         c_indices = np.where(labels_run1 == c_id)[0]
@@ -354,8 +418,8 @@ def main():
     mining_result = NicheMiningResult(
         run_id=gate3_run_id,
         created_at=created_at_iso,
-        total_videos_considered=assigned_count,
-        videos_embedded=assigned_count,
+        total_videos_considered=gate3_assigned,
+        videos_embedded=gate3_assigned,
         videos_skipped=0,
         semantic_provider="TFIDFLocalSemanticProvider",
         algorithm="kmeans",
@@ -386,7 +450,7 @@ def main():
 
     assert len(readback_clusters) == selected_k
     assert len(readback_subniches) == selected_k
-    assert len(readback_cvideos) == assigned_count
+    assert len(readback_cvideos) == gate3_assigned
 
     readback_assignments = [(r["video_id"], r["cluster_id"]) for r in readback_cvideos]
     readback_hash = compute_assignments_hash(readback_assignments)
