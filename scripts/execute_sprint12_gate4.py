@@ -384,6 +384,11 @@ def main():
 
         s["rank_score"] = outlier_score + diversity_score + intent_score + spec_bonus
 
+    # Ensure all normalized subniches have a default rank_score (0.0 if incoherent)
+    for s in normalized_subniches:
+        if "rank_score" not in s:
+            s["rank_score"] = 0.0
+
     sorted_subniches = sorted(valid_subniches, key=lambda x: x["rank_score"], reverse=True)
     top20_subniches = sorted_subniches[:20]
     print_flush(f"Top20 subniches selected: {len(top20_subniches)}")
@@ -473,24 +478,27 @@ def main():
     print_flush(f"Persisted {len(characterized_clusters)} characterized clusters under {gate4_run_id}.")
 
     # Persist subniches to PostgreSQL `subniches` table
-    # Group Top20 subniches by parent_cluster_id to comply with subniches_run_cluster_key (run_id, cluster_id)
-    cluster_top_subniches = {}
-    for idx, s in enumerate(top20_subniches):
-        cid = s["parent_cluster_id"]
-        if cid not in cluster_top_subniches:
-            cluster_top_subniches[cid] = (idx + 1, s)
+    # Persist all normalized subniches for full candidate definition lineage and explicit rank tracking for Top20
+    top20_ids = set(s["subniche_id"] for s in top20_subniches)
+    top20_rank_map = {s["subniche_id"]: idx + 1 for idx, s in enumerate(top20_subniches)}
 
     subniche_records = []
-    for cid, (rank, s) in cluster_top_subniches.items():
+    for s in normalized_subniches:
+        sub_id = s["subniche_id"]
+        is_top20 = sub_id in top20_ids
+        rank = top20_rank_map.get(sub_id, None)
+
         subniche_records.append({
             "run_id": gate4_run_id,
-            "cluster_id": cid,
-            "niche": f"Cluster {cid}",
+            "cluster_id": s["parent_cluster_id"],
+            "niche": f"Cluster {s['parent_cluster_id']}",
             "subniche": s["label"],
             "microniche": s["normalized_intent"],
             "summary": json.dumps({
-                "subniche_id": s["subniche_id"],
-                "rank": rank,
+                "subniche_id": sub_id,
+                "is_top20": is_top20,
+                "top20_rank": rank,
+                "disposition": "TOP20" if is_top20 else "NON_TOP20",
                 "evidence_count": s["evidence_count"],
                 "distinct_channels": s["distinct_channels"],
                 "actual_outliers": s["actual_outliers"],
@@ -521,11 +529,14 @@ def main():
     # 10. READBACK INVARIANTS VERIFICATION
     print_flush("\n--- 10. READBACK INVARIANTS VERIFICATION ---")
     rb_subniches = client.execute("SELECT * FROM public.subniches WHERE run_id = %s", [gate4_run_id])
-    assert len(rb_subniches) == len(subniche_records), f"Expected {len(subniche_records)} subniches, got {len(rb_subniches)}"
+    assert len(rb_subniches) == 56, f"Expected 56 subniches persisted, got {len(rb_subniches)}"
     
+    rb_top20 = [r for r in rb_subniches if json.loads(r["summary"]).get("is_top20") is True]
+    assert len(rb_top20) == 20, f"Expected 20 Top20 subniches in readback, got {len(rb_top20)}"
+
     rb_intents = [r["microniche"] for r in rb_subniches]
     assert len(rb_intents) == len(set(rb_intents)), "Duplicate normalized final intents in readback!"
-    print_flush(f"[PASS] Exact readback verified for Gate4 run {gate4_run_id}.")
+    print_flush(f"[PASS] Exact readback verified: 56 normalized subniches, 20 Top20 candidates for Gate4 run {gate4_run_id}.")
 
     # 11. PROTECT PRIOR DATA & INVARIANTS
     print_flush("\n--- 11. PROTECT PRIOR DATA & INVARIANTS ---")
