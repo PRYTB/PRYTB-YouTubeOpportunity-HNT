@@ -424,23 +424,13 @@ class YouTubeRepository:
             %(analyzed_at)s, %(config)s, %(quality)s, %(metrics)s, %(microniche)s, %(production_cost_score)s,
             %(estimated_hours_low)s, %(estimated_hours_high)s, %(production_complexity)s,
             %(overall_risk_score)s, %(risk_level)s, %(confidence)s
-        ) ON CONFLICT (run_id, cluster_id) DO UPDATE SET
-            source_market_structure_run_id = EXCLUDED.source_market_structure_run_id,
-            source_cluster_run_id = EXCLUDED.source_cluster_run_id,
-            analyzed_at = EXCLUDED.analyzed_at,
-            config = EXCLUDED.config,
-            quality = EXCLUDED.quality,
-            metrics = EXCLUDED.metrics,
-            microniche = EXCLUDED.microniche,
-            production_cost_score = EXCLUDED.production_cost_score,
-            estimated_hours_low = EXCLUDED.estimated_hours_low,
-            estimated_hours_high = EXCLUDED.estimated_hours_high,
-            production_complexity = EXCLUDED.production_complexity,
-            overall_risk_score = EXCLUDED.overall_risk_score,
-            risk_level = EXCLUDED.risk_level,
-            confidence = EXCLUDED.confidence;
+        );
         """
         with self.client.get_cursor() as cur:
+            cur.execute(
+                "DELETE FROM public.production_risk_analyses WHERE run_id = %s",
+                [result.run_id],
+            )
             for rec in records:
                 r = dict(rec)
                 for f in ("config", "quality", "metrics"):
@@ -547,31 +537,13 @@ class YouTubeRepository:
             %(rpm_available)s, %(revenue_available)s, %(cost_money_available)s, %(profit_available)s,
             %(base_score)s, %(risk_penalty)s, %(profitability_score)s, %(classification)s, %(confidence)s,
             %(component_coverage)s
-        ) ON CONFLICT (run_id, cluster_id) DO UPDATE SET
-            source_cluster_run_id = EXCLUDED.source_cluster_run_id,
-            source_revenue_run_id = EXCLUDED.source_revenue_run_id,
-            source_market_run_id = EXCLUDED.source_market_run_id,
-            source_production_run_id = EXCLUDED.source_production_run_id,
-            dataset_hash = EXCLUDED.dataset_hash,
-            assignments_hash = EXCLUDED.assignments_hash,
-            methodology_version = EXCLUDED.methodology_version,
-            analyzed_at = EXCLUDED.analyzed_at,
-            quality = EXCLUDED.quality,
-            metrics = EXCLUDED.metrics,
-            microniche = EXCLUDED.microniche,
-            expected_views_base = EXCLUDED.expected_views_base,
-            rpm_available = EXCLUDED.rpm_available,
-            revenue_available = EXCLUDED.revenue_available,
-            cost_money_available = EXCLUDED.cost_money_available,
-            profit_available = EXCLUDED.profit_available,
-            base_score = EXCLUDED.base_score,
-            risk_penalty = EXCLUDED.risk_penalty,
-            profitability_score = EXCLUDED.profitability_score,
-            classification = EXCLUDED.classification,
-            confidence = EXCLUDED.confidence,
-            component_coverage = EXCLUDED.component_coverage;
+        );
         """
         with self.client.get_cursor() as cur:
+            cur.execute(
+                "DELETE FROM public.cluster_profitability_analyses WHERE run_id = %s",
+                [result.run_id],
+            )
             for rec in records:
                 r = dict(rec)
                 for f in ("quality", "metrics", "component_coverage"):
@@ -638,27 +610,13 @@ class YouTubeRepository:
             %(methodology_version)s, %(cluster_id)s, %(analyzed_at)s, %(quality)s, %(metrics)s, %(microniche)s,
             %(profitability_score)s, %(validation_score)s, %(validation_status)s, %(validation_confidence)s,
             %(false_positive_risk)s, %(fragility_score)s
-        ) ON CONFLICT (run_id, cluster_id) DO UPDATE SET
-            source_profitability_run_id = EXCLUDED.source_profitability_run_id,
-            source_cluster_run_id = EXCLUDED.source_cluster_run_id,
-            source_revenue_run_id = EXCLUDED.source_revenue_run_id,
-            source_market_run_id = EXCLUDED.source_market_run_id,
-            source_production_run_id = EXCLUDED.source_production_run_id,
-            dataset_hash = EXCLUDED.dataset_hash,
-            assignments_hash = EXCLUDED.assignments_hash,
-            methodology_version = EXCLUDED.methodology_version,
-            analyzed_at = EXCLUDED.analyzed_at,
-            quality = EXCLUDED.quality,
-            metrics = EXCLUDED.metrics,
-            microniche = EXCLUDED.microniche,
-            profitability_score = EXCLUDED.profitability_score,
-            validation_score = EXCLUDED.validation_score,
-            validation_status = EXCLUDED.validation_status,
-            validation_confidence = EXCLUDED.validation_confidence,
-            false_positive_risk = EXCLUDED.false_positive_risk,
-            fragility_score = EXCLUDED.fragility_score;
+        );
         """
         with self.client.get_cursor() as cur:
+            cur.execute(
+                "DELETE FROM public.cluster_validation_analyses WHERE run_id = %s",
+                [result.run_id],
+            )
             for rec in records:
                 r = dict(rec)
                 for f in ("quality", "metrics"):
@@ -816,25 +774,13 @@ class YouTubeRepository:
             %(metrics)s, %(microniche)s, %(top_5_rank)s, %(market_structure_score)s, %(competition_score)s,
             %(accessibility_score)s, %(content_depth_score)s, %(trend_score)s, %(evergreen_score)s,
             %(evergreen_class)s, %(market_structure_class)s, %(confidence)s
-        ) ON CONFLICT (run_id, cluster_id) DO UPDATE SET
-            source_cluster_run_id = EXCLUDED.source_cluster_run_id,
-            analyzed_at = EXCLUDED.analyzed_at,
-            config = EXCLUDED.config,
-            quality = EXCLUDED.quality,
-            metrics = EXCLUDED.metrics,
-            microniche = EXCLUDED.microniche,
-            top_5_rank = EXCLUDED.top_5_rank,
-            market_structure_score = EXCLUDED.market_structure_score,
-            competition_score = EXCLUDED.competition_score,
-            accessibility_score = EXCLUDED.accessibility_score,
-            content_depth_score = EXCLUDED.content_depth_score,
-            trend_score = EXCLUDED.trend_score,
-            evergreen_score = EXCLUDED.evergreen_score,
-            evergreen_class = EXCLUDED.evergreen_class,
-            market_structure_class = EXCLUDED.market_structure_class,
-            confidence = EXCLUDED.confidence;
+        );
         """
         with self.client.get_cursor() as cur:
+            cur.execute(
+                "DELETE FROM public.market_structure_analyses WHERE run_id = %s",
+                [result.run_id],
+            )
             for rec in records:
                 r = dict(rec)
                 for f in ("config", "quality", "metrics"):
@@ -964,12 +910,7 @@ class YouTubeRepository:
             cluster_id, run_id, niche, subniche, microniche, summary, label_confidence, created_at
         ) VALUES (
             %(cluster_id)s, %(run_id)s, %(niche)s, %(subniche)s, %(microniche)s, %(summary)s, %(label_confidence)s, %(created_at)s
-        ) ON CONFLICT (run_id, cluster_id) DO UPDATE SET
-            niche = EXCLUDED.niche,
-            subniche = EXCLUDED.subniche,
-            microniche = EXCLUDED.microniche,
-            summary = EXCLUDED.summary,
-            label_confidence = EXCLUDED.label_confidence;
+        );
         """
 
         q_cvideos = """
@@ -983,6 +924,14 @@ class YouTubeRepository:
         """
 
         with self.client.get_cursor() as cur:
+            cur.execute(
+                "DELETE FROM public.subniches WHERE run_id = %s",
+                [result.run_id],
+            )
+            cur.execute(
+                "DELETE FROM public.cluster_videos WHERE run_id = %s",
+                [result.run_id],
+            )
             for rec in cluster_records:
                 r = dict(rec)
                 if isinstance(r.get("parameters"), (list, dict)):

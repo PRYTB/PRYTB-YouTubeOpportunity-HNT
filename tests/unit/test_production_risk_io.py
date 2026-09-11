@@ -94,7 +94,8 @@ def test_repository_persists_one_record_per_cluster(client, result):
     written = repo.insert_production_risk_analysis(result)
 
     assert written.records_written == 2
-    assert mock_cursor.execute.call_count == 2
+    # First call is DELETE WHERE run_id = %s, followed by 2 INSERT calls
+    assert mock_cursor.execute.call_count == 3
 
 
 def test_repository_rejects_empty_or_duplicate_clusters(client, result):
