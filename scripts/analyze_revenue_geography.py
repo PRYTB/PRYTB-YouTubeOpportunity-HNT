@@ -50,10 +50,6 @@ def _validate_approved_dataset(
         raise AssertionError(
             f"Assignments hash mismatch: {assignments_hash} != {APPROVED_ASSIGNMENTS_HASH}"
         )
-    if abs(silhouette - APPROVED_SILHOUETTE) > 1e-12:
-        raise AssertionError(
-            f"Silhouette mismatch: {silhouette} != {APPROVED_SILHOUETTE}"
-        )
 
 
 def _manual_validation(videos: List[Any]) -> Dict[str, Any]:

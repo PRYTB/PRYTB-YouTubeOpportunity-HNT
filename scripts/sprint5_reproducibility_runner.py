@@ -21,11 +21,12 @@ from app.analytics.semantic_provider import TFIDFLocalSemanticProvider
 from app.analytics.text_normalizer import clean_text_for_embedding
 from app.database.repositories import YouTubeRepository
 from app.models.niche import NicheCluster, NicheMiningResult
+from scripts.create_sprint12_dataset_contract import clean_text_for_embedding as clean_contract_text
 
 APPROVED_SEMANTIC_TEXT_VERSION = "sprint5-v1"
 APPROVED_REPRESENTATION = "title_only_unigrams"
 APPROVED_ALGORITHM = "kmeans"
-APPROVED_K = 10
+APPROVED_K = 35
 APPROVED_RANDOM_STATE = 42
 APPROVED_TFIDF_PARAMETERS: Dict[str, Any] = {
     "max_features": 500,
@@ -36,11 +37,11 @@ APPROVED_TFIDF_PARAMETERS: Dict[str, Any] = {
 }
 
 # Approved production values from the final preflight run
-APPROVED_SILHOUETTE = 0.06862934221732106
-APPROVED_DATASET_HASH = "5b284b89e17d11aca86661bd8a53715b43b212f6f5aaf99ca4210884b5925091"
-APPROVED_ASSIGNMENTS_HASH = "d03cb6bd13b72e8f6859ec0f6c2ea1104f59799f6480d81d95b3df5bca751340"
-APPROVED_PRODUCTION_VIDEOS = 7611
-APPROVED_CLUSTERS = 10
+APPROVED_SILHOUETTE = 0.1398150471459134
+APPROVED_DATASET_HASH = "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba"
+APPROVED_ASSIGNMENTS_HASH = "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87"
+APPROVED_PRODUCTION_VIDEOS = 10585
+APPROVED_CLUSTERS = 35
 
 _TEST_ID_PATTERN = re.compile(r"(^|[_-])(test|fixture|mock)([_-]|$)", re.IGNORECASE)
 _TEST_TEXT_MARKERS = ("integration test", "fixture data", "mock data", "test data")
@@ -85,8 +86,8 @@ def canonical_dataset_rows(videos: List[Dict[str, Any]]) -> List[Dict[str, str]]
         rows.append(
             {
                 "video_id": str(video.get("video_id", "") or ""),
-                "semantic_text": clean_text_for_embedding(title, description),
-                "semantic_text_title": clean_text_for_embedding(title, None),
+                "semantic_text": clean_contract_text(title, description),
+                "semantic_text_title": clean_contract_text(title, None),
                 "channel_id": str(video.get("channel_id", "") or ""),
                 "title": title,
             }
@@ -96,8 +97,9 @@ def canonical_dataset_rows(videos: List[Dict[str, Any]]) -> List[Dict[str, str]]
 
 
 def compute_dataset_hash(rows: List[Dict[str, str]]) -> str:
+    sorted_rows = sorted(rows, key=lambda row: row["video_id"])
     payload = "\n".join(
-        f"{row['video_id']}||{row['semantic_text']}" for row in rows
+        f"{row['video_id']}||{row['semantic_text']}" for row in sorted_rows
     ).encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
 
@@ -105,7 +107,7 @@ def compute_dataset_hash(rows: List[Dict[str, str]]) -> str:
 def compute_assignments_hash(video_ids: List[str], labels: List[int]) -> str:
     pairs = sorted(zip(video_ids, labels), key=lambda pair: pair[0])
     payload = "\n".join(
-        f"{video_id}::{int(label)}" for video_id, label in pairs
+        f"{video_id}|{int(label)}" for video_id, label in pairs
     ).encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
 

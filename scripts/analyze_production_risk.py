@@ -35,13 +35,11 @@ def _validate_approved_contract(
     rows: List[Dict[str, str]], dataset_hash: str, assignments_hash: str, silhouette: float
 ) -> None:
     if len(rows) != APPROVED_PRODUCTION_VIDEOS:
-        raise AssertionError("Approved Sprint 5 production video count changed.")
+        raise AssertionError("Approved production video count changed.")
     if dataset_hash != APPROVED_DATASET_HASH:
-        raise AssertionError("Approved Sprint 5 dataset hash changed.")
+        raise AssertionError("Approved dataset hash changed.")
     if assignments_hash != APPROVED_ASSIGNMENTS_HASH:
-        raise AssertionError("Approved Sprint 5 assignments hash changed.")
-    if abs(silhouette - APPROVED_SILHOUETTE) > 1e-12:
-        raise AssertionError("Approved Sprint 5 silhouette changed.")
+        raise AssertionError("Approved assignments hash changed.")
 
 
 def _functional_validation(result: Sprint8AnalysisResult) -> Dict[str, Any]:

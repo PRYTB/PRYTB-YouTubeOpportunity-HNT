@@ -292,6 +292,284 @@ class YouTubeRepository:
             return None
         return AnalyticalRunRecord(**records[0])
 
+    def get_approved_gate7_run(self) -> Optional[AnalyticalRunRecord]:
+        self.verify_analytical_runs_schema()
+        records = self.client.execute(
+            "SELECT * FROM public.analytical_runs WHERE status = 'SPRINT12_FINAL_ANALYTICS_APPROVED' ORDER BY updated_at DESC LIMIT 1"
+        )
+        if not records:
+            return None
+        return AnalyticalRunRecord(**records[0])
+
+    def finalize_gate7_run(
+        self,
+        run_id: str,
+        run_type: str,
+        dataset_hash: str,
+        video_count: int,
+        channel_count: int,
+        source_collection_run: Optional[str],
+        methodology_version: str,
+        notes: str,
+    ) -> AnalyticalRunRecord:
+        """Atomically approve the new Gate 7 run and supersede older runs."""
+        terminal_status = "SPRINT12_FINAL_ANALYTICS_APPROVED"
+        self.verify_analytical_runs_schema()
+        with self.client.get_cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO public.analytical_runs (
+                    run_id, run_type, dataset_hash, video_count, channel_count,
+                    status, created_at, updated_at, source_collection_run,
+                    methodology_version, notes
+                ) VALUES (
+                    %(run_id)s, %(run_type)s, %(dataset_hash)s,
+                    %(video_count)s, %(channel_count)s, %(status)s,
+                    NOW(), NOW(), %(source_collection_run)s,
+                    %(methodology_version)s, %(notes)s
+                ) ON CONFLICT (run_id) DO UPDATE SET
+                    run_type = EXCLUDED.run_type,
+                    dataset_hash = EXCLUDED.dataset_hash,
+                    video_count = EXCLUDED.video_count,
+                    channel_count = EXCLUDED.channel_count,
+                    status = EXCLUDED.status,
+                    updated_at = NOW(),
+                    source_collection_run = EXCLUDED.source_collection_run,
+                    methodology_version = EXCLUDED.methodology_version,
+                    notes = EXCLUDED.notes
+                RETURNING *
+                """,
+                {
+                    "run_id": run_id,
+                    "run_type": run_type,
+                    "dataset_hash": dataset_hash,
+                    "video_count": video_count,
+                    "channel_count": channel_count,
+                    "status": terminal_status,
+                    "source_collection_run": source_collection_run,
+                    "methodology_version": methodology_version,
+                    "notes": notes,
+                },
+            )
+            record = cur.fetchone()
+            cur.execute(
+                """
+                UPDATE public.analytical_runs
+                SET status = 'SUPERSEDED', updated_at = NOW()
+                WHERE run_id <> %s
+                  AND (
+                    run_type = 'GATE7_FINAL_ANALYTICAL_RERUN'
+                    OR run_id LIKE 'sprint12_gate7%%'
+                  )
+                  AND status <> 'SUPERSEDED'
+                """,
+                [run_id],
+            )
+            cur.execute(
+                """
+                SELECT COUNT(*) AS count
+                FROM public.analytical_runs
+                WHERE status = 'SPRINT12_FINAL_ANALYTICS_APPROVED'
+                """
+            )
+            terminal_count = int(cur.fetchone()["count"])
+            if terminal_count != 1:
+                raise RuntimeError(
+                    f"Expected one terminal Gate 7 run, found {terminal_count}"
+                )
+        return AnalyticalRunRecord(**record)
+
+    def insert_gate7_top100_outliers(
+        self,
+        run_id: str,
+        dataset_hash: str,
+        ranking_hash: str,
+        records: List[Dict[str, Any]],
+    ) -> bool:
+        if not records:
+            return True
+        query = """
+        INSERT INTO public.gate7_top100_outliers (
+            run_id, dataset_hash, outlier_rank, video_id, channel_id, outlier_score,
+            is_strong_outlier, is_major_outlier, is_extreme_outlier, small_channel_outlier,
+            channel_median_views, channel_mean_views, baseline_video_count,
+            baseline_confidence, ranking_hash
+        ) VALUES (
+            %(run_id)s, %(dataset_hash)s, %(outlier_rank)s, %(video_id)s, %(channel_id)s, %(outlier_score)s,
+            %(is_strong_outlier)s, %(is_major_outlier)s, %(is_extreme_outlier)s, %(small_channel_outlier)s,
+            %(channel_median_views)s, %(channel_mean_views)s, %(baseline_video_count)s,
+            %(baseline_confidence)s, %(ranking_hash)s
+        ) ON CONFLICT (run_id, outlier_rank) DO UPDATE SET
+            dataset_hash = EXCLUDED.dataset_hash,
+            video_id = EXCLUDED.video_id,
+            channel_id = EXCLUDED.channel_id,
+            outlier_score = EXCLUDED.outlier_score,
+            is_strong_outlier = EXCLUDED.is_strong_outlier,
+            is_major_outlier = EXCLUDED.is_major_outlier,
+            is_extreme_outlier = EXCLUDED.is_extreme_outlier,
+            small_channel_outlier = EXCLUDED.small_channel_outlier,
+            channel_median_views = EXCLUDED.channel_median_views,
+            channel_mean_views = EXCLUDED.channel_mean_views,
+            baseline_video_count = EXCLUDED.baseline_video_count,
+            baseline_confidence = EXCLUDED.baseline_confidence,
+            ranking_hash = EXCLUDED.ranking_hash;
+        """
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                r["run_id"] = run_id
+                r["dataset_hash"] = dataset_hash
+                r["ranking_hash"] = ranking_hash
+                cur.execute(query, r)
+        return True
+
+    def get_gate7_top100_outliers(self, run_id: str) -> List[Dict[str, Any]]:
+        return self.client.execute(
+            "SELECT * FROM public.gate7_top100_outliers WHERE run_id = %s ORDER BY outlier_rank ASC",
+            [run_id],
+        )
+
+    def insert_gate7_raw_semantic_patterns(
+        self, run_id: str, records: List[Dict[str, Any]]
+    ) -> bool:
+        if not records:
+            return True
+        query = """
+        INSERT INTO public.gate7_raw_semantic_patterns (
+            run_id, pattern_id, parent_cluster_id, raw_pattern, normalized_intent,
+            frequency, sample_video_ids
+        ) VALUES (
+            %(run_id)s, %(pattern_id)s, %(parent_cluster_id)s, %(raw_pattern)s, %(normalized_intent)s,
+            %(frequency)s, %(sample_video_ids)s
+        ) ON CONFLICT (run_id, pattern_id) DO UPDATE SET
+            parent_cluster_id = EXCLUDED.parent_cluster_id,
+            raw_pattern = EXCLUDED.raw_pattern,
+            normalized_intent = EXCLUDED.normalized_intent,
+            frequency = EXCLUDED.frequency,
+            sample_video_ids = EXCLUDED.sample_video_ids;
+        """
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                r["run_id"] = run_id
+                if isinstance(r.get("sample_video_ids"), (list, dict)):
+                    r["sample_video_ids"] = json.dumps(r["sample_video_ids"])
+                cur.execute(query, r)
+        return True
+
+    def get_gate7_raw_semantic_patterns(self, run_id: str) -> List[Dict[str, Any]]:
+        return self.client.execute(
+            "SELECT * FROM public.gate7_raw_semantic_patterns WHERE run_id = %s ORDER BY pattern_id",
+            [run_id],
+        )
+
+    def insert_gate7_semantic_definitions(
+        self, run_id: str, records: List[Dict[str, Any]]
+    ) -> bool:
+        if not records:
+            return True
+        query = """
+        INSERT INTO public.gate7_semantic_definitions (
+            run_id, definition_id, parent_cluster_id, analytical_ordinal, niche,
+            subniche, microniche, normalized_intent, distinct_intents_count, content_depth,
+            video_count, outlier_count, small_channel_outliers, channel_count, evidence_payload
+        ) VALUES (
+            %(run_id)s, %(definition_id)s, %(parent_cluster_id)s, %(analytical_ordinal)s, %(niche)s,
+            %(subniche)s, %(microniche)s, %(normalized_intent)s, %(distinct_intents_count)s, %(content_depth)s,
+            %(video_count)s, %(outlier_count)s, %(small_channel_outliers)s, %(channel_count)s, %(evidence_payload)s
+        ) ON CONFLICT (run_id, definition_id) DO UPDATE SET
+            parent_cluster_id = EXCLUDED.parent_cluster_id,
+            analytical_ordinal = EXCLUDED.analytical_ordinal,
+            niche = EXCLUDED.niche,
+            subniche = EXCLUDED.subniche,
+            microniche = EXCLUDED.microniche,
+            normalized_intent = EXCLUDED.normalized_intent,
+            distinct_intents_count = EXCLUDED.distinct_intents_count,
+            content_depth = EXCLUDED.content_depth,
+            video_count = EXCLUDED.video_count,
+            outlier_count = EXCLUDED.outlier_count,
+            small_channel_outliers = EXCLUDED.small_channel_outliers,
+            channel_count = EXCLUDED.channel_count,
+            evidence_payload = EXCLUDED.evidence_payload;
+        """
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                r["run_id"] = run_id
+                if isinstance(r.get("evidence_payload"), (list, dict)):
+                    r["evidence_payload"] = json.dumps(r["evidence_payload"])
+                cur.execute(query, r)
+        return True
+
+    def get_gate7_semantic_definitions(self, run_id: str) -> List[Dict[str, Any]]:
+        return self.client.execute(
+            "SELECT * FROM public.gate7_semantic_definitions WHERE run_id = %s ORDER BY analytical_ordinal ASC",
+            [run_id],
+        )
+
+    def insert_gate7_semantic_memberships(
+        self, run_id: str, records: List[Dict[str, Any]]
+    ) -> bool:
+        if not records:
+            return True
+        query = """
+        INSERT INTO public.gate7_semantic_memberships (
+            run_id, definition_id, video_id, parent_cluster_id
+        ) VALUES (
+            %(run_id)s, %(definition_id)s, %(video_id)s, %(parent_cluster_id)s
+        ) ON CONFLICT (run_id, definition_id, video_id) DO NOTHING;
+        """
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                r["run_id"] = run_id
+                cur.execute(query, r)
+        return True
+
+    def get_gate7_semantic_memberships(self, run_id: str) -> List[Dict[str, Any]]:
+        return self.client.execute(
+            "SELECT * FROM public.gate7_semantic_memberships WHERE run_id = %s ORDER BY definition_id, video_id",
+            [run_id],
+        )
+
+    def insert_gate7_top20_definitions(
+        self, run_id: str, ranking_hash: str, records: List[Dict[str, Any]]
+    ) -> bool:
+        if not records:
+            return True
+        query = """
+        INSERT INTO public.gate7_top20_definitions (
+            run_id, rank, definition_id, analytical_ordinal, niche, subniche, microniche,
+            video_count, outlier_count, channel_count, distinct_intents_count, ranking_hash
+        ) VALUES (
+            %(run_id)s, %(rank)s, %(definition_id)s, %(analytical_ordinal)s, %(niche)s, %(subniche)s, %(microniche)s,
+            %(video_count)s, %(outlier_count)s, %(channel_count)s, %(distinct_intents_count)s, %(ranking_hash)s
+        ) ON CONFLICT (run_id, rank) DO UPDATE SET
+            definition_id = EXCLUDED.definition_id,
+            analytical_ordinal = EXCLUDED.analytical_ordinal,
+            niche = EXCLUDED.niche,
+            subniche = EXCLUDED.subniche,
+            microniche = EXCLUDED.microniche,
+            video_count = EXCLUDED.video_count,
+            outlier_count = EXCLUDED.outlier_count,
+            channel_count = EXCLUDED.channel_count,
+            distinct_intents_count = EXCLUDED.distinct_intents_count,
+            ranking_hash = EXCLUDED.ranking_hash;
+        """
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                r["run_id"] = run_id
+                r["ranking_hash"] = ranking_hash
+                cur.execute(query, r)
+        return True
+
+    def get_gate7_top20_definitions(self, run_id: str) -> List[Dict[str, Any]]:
+        return self.client.execute(
+            "SELECT * FROM public.gate7_top20_definitions WHERE run_id = %s ORDER BY rank ASC",
+            [run_id],
+        )
+
     def get_canonical_sprint12_run(self) -> Optional[AnalyticalRunRecord]:
         return self.get_canonical_run()
 
@@ -315,13 +593,19 @@ class YouTubeRepository:
             video_views, channel_median_views, outlier_ratio, age_normalized_outlier_ratio,
             velocity_ratio, subscriber_count, is_small_channel, is_strong_outlier,
             is_major_outlier, is_extreme_outlier, small_channel_outlier, confidence,
-            outlier_rank_score, warnings
+            outlier_rank_score, warnings,
+            channel_mean_views, channel_median_views_per_day, baseline_video_count,
+            baseline_confidence, latest_velocity, latest_acceleration,
+            views_to_subscribers_ratio, outlier_rank
         ) VALUES (
             %(run_id)s, %(dataset_hash)s, %(run_type)s, %(video_id)s, %(channel_id)s, %(video_title)s, %(channel_title)s,
             %(video_views)s, %(channel_median_views)s, %(outlier_ratio)s, %(age_normalized_outlier_ratio)s,
             %(velocity_ratio)s, %(subscriber_count)s, %(is_small_channel)s, %(is_strong_outlier)s,
             %(is_major_outlier)s, %(is_extreme_outlier)s, %(small_channel_outlier)s, %(confidence)s,
-            %(outlier_rank_score)s, %(warnings)s
+            %(outlier_rank_score)s, %(warnings)s,
+            %(channel_mean_views)s, %(channel_median_views_per_day)s, %(baseline_video_count)s,
+            %(baseline_confidence)s, %(latest_velocity)s, %(latest_acceleration)s,
+            %(views_to_subscribers_ratio)s, %(outlier_rank)s
         ) ON CONFLICT (run_id, video_id) DO UPDATE SET
             dataset_hash = EXCLUDED.dataset_hash,
             run_type = EXCLUDED.run_type,
@@ -341,7 +625,15 @@ class YouTubeRepository:
             small_channel_outlier = EXCLUDED.small_channel_outlier,
             confidence = EXCLUDED.confidence,
             outlier_rank_score = EXCLUDED.outlier_rank_score,
-            warnings = EXCLUDED.warnings;
+            warnings = EXCLUDED.warnings,
+            channel_mean_views = EXCLUDED.channel_mean_views,
+            channel_median_views_per_day = EXCLUDED.channel_median_views_per_day,
+            baseline_video_count = EXCLUDED.baseline_video_count,
+            baseline_confidence = EXCLUDED.baseline_confidence,
+            latest_velocity = EXCLUDED.latest_velocity,
+            latest_acceleration = EXCLUDED.latest_acceleration,
+            views_to_subscribers_ratio = EXCLUDED.views_to_subscribers_ratio,
+            outlier_rank = EXCLUDED.outlier_rank;
         """
 
         with self.client.get_cursor() as cur:
@@ -349,6 +641,15 @@ class YouTubeRepository:
                 r = dict(rec)
                 if isinstance(r.get("warnings"), (list, dict)):
                     r["warnings"] = json.dumps(r["warnings"])
+                # Ensure defaults for new fields if missing
+                r.setdefault("channel_mean_views", None)
+                r.setdefault("channel_median_views_per_day", None)
+                r.setdefault("baseline_video_count", 0)
+                r.setdefault("baseline_confidence", "VERY_LOW")
+                r.setdefault("latest_velocity", None)
+                r.setdefault("latest_acceleration", None)
+                r.setdefault("views_to_subscribers_ratio", None)
+                r.setdefault("outlier_rank", None)
                 cur.execute(query, r)
         return True
 
@@ -964,8 +1265,9 @@ class YouTubeRepository:
                         normalized[field] = json.loads(value)
                     except json.JSONDecodeError:
                         pass
-            if "created_at" in normalized:
-                normalized.pop("created_at")
+            for ts_field in ("created_at", "analyzed_at"):
+                if ts_field in normalized:
+                    normalized.pop(ts_field)
             return normalized
 
         expected_by_key = {
@@ -1097,6 +1399,170 @@ class YouTubeRepository:
             subniche_payload_mismatches=subniche_payload_mismatches,
             cluster_video_payload_mismatches=cluster_video_payload_mismatches,
             verified=verified
+        )
+
+    def get_approved_gate7_run(self) -> Optional[AnalyticalRunRecord]:
+        self.verify_analytical_runs_schema()
+        records = self.client.execute(
+            "SELECT * FROM public.analytical_runs WHERE status = 'SPRINT12_FINAL_ANALYTICS_APPROVED' ORDER BY updated_at DESC LIMIT 1"
+        )
+        if not records:
+            return None
+        return AnalyticalRunRecord(**records[0])
+
+    def insert_gate7_top100_outliers(
+        self, run_id: str, dataset_hash: str, ranking_hash: str, records: List[Dict[str, Any]]
+    ) -> bool:
+        if not records:
+            return True
+        query = """
+        INSERT INTO public.gate7_top100_outliers (
+            run_id, dataset_hash, outlier_rank, video_id, channel_id, outlier_score,
+            is_strong_outlier, is_major_outlier, is_extreme_outlier, small_channel_outlier,
+            channel_median_views, channel_mean_views, baseline_video_count,
+            baseline_confidence, ranking_hash
+        ) VALUES (
+            %(run_id)s, %(dataset_hash)s, %(outlier_rank)s, %(video_id)s, %(channel_id)s, %(outlier_score)s,
+            %(is_strong_outlier)s, %(is_major_outlier)s, %(is_extreme_outlier)s, %(small_channel_outlier)s,
+            %(channel_median_views)s, %(channel_mean_views)s, %(baseline_video_count)s,
+            %(baseline_confidence)s, %(ranking_hash)s
+        ) ON CONFLICT (run_id, outlier_rank) DO UPDATE SET
+            video_id = EXCLUDED.video_id,
+            channel_id = EXCLUDED.channel_id,
+            outlier_score = EXCLUDED.outlier_score,
+            ranking_hash = EXCLUDED.ranking_hash;
+        """
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                r["run_id"] = run_id
+                r["dataset_hash"] = dataset_hash
+                r["ranking_hash"] = ranking_hash
+                cur.execute(query, r)
+        return True
+
+    def get_gate7_top100_outliers(self, run_id: str) -> List[Dict[str, Any]]:
+        return self.client.execute(
+            "SELECT * FROM public.gate7_top100_outliers WHERE run_id = %s ORDER BY outlier_rank ASC",
+            [run_id]
+        )
+
+    def insert_gate7_raw_semantic_patterns(
+        self, run_id: str, records: List[Dict[str, Any]]
+    ) -> bool:
+        if not records:
+            return True
+        query = """
+        INSERT INTO public.gate7_raw_semantic_patterns (
+            run_id, pattern_id, parent_cluster_id, raw_pattern, normalized_intent,
+            frequency, sample_video_ids
+        ) VALUES (
+            %(run_id)s, %(pattern_id)s, %(parent_cluster_id)s, %(raw_pattern)s, %(normalized_intent)s,
+            %(frequency)s, %(sample_video_ids)s
+        ) ON CONFLICT (run_id, pattern_id) DO UPDATE SET
+            frequency = EXCLUDED.frequency,
+            sample_video_ids = EXCLUDED.sample_video_ids;
+        """
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                r["run_id"] = run_id
+                if isinstance(r.get("sample_video_ids"), (list, dict)):
+                    r["sample_video_ids"] = json.dumps(r["sample_video_ids"])
+                cur.execute(query, r)
+        return True
+
+    def insert_gate7_semantic_definitions(
+        self, run_id: str, records: List[Dict[str, Any]]
+    ) -> bool:
+        if not records:
+            return True
+        query = """
+        INSERT INTO public.gate7_semantic_definitions (
+            run_id, definition_id, parent_cluster_id, analytical_ordinal, niche, subniche,
+            microniche, normalized_intent, distinct_intents_count, content_depth,
+            video_count, outlier_count, small_channel_outliers, channel_count, evidence_payload
+        ) VALUES (
+            %(run_id)s, %(definition_id)s, %(parent_cluster_id)s, %(analytical_ordinal)s, %(niche)s, %(subniche)s,
+            %(microniche)s, %(normalized_intent)s, %(distinct_intents_count)s, %(content_depth)s,
+            %(video_count)s, %(outlier_count)s, %(small_channel_outliers)s, %(channel_count)s, %(evidence_payload)s
+        ) ON CONFLICT (run_id, definition_id) DO UPDATE SET
+            parent_cluster_id = EXCLUDED.parent_cluster_id,
+            analytical_ordinal = EXCLUDED.analytical_ordinal,
+            niche = EXCLUDED.niche,
+            subniche = EXCLUDED.subniche,
+            microniche = EXCLUDED.microniche,
+            normalized_intent = EXCLUDED.normalized_intent,
+            distinct_intents_count = EXCLUDED.distinct_intents_count,
+            content_depth = EXCLUDED.content_depth,
+            video_count = EXCLUDED.video_count,
+            outlier_count = EXCLUDED.outlier_count,
+            small_channel_outliers = EXCLUDED.small_channel_outliers,
+            channel_count = EXCLUDED.channel_count,
+            evidence_payload = EXCLUDED.evidence_payload;
+        """
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                r["run_id"] = run_id
+                if isinstance(r.get("evidence_payload"), (list, dict)):
+                    r["evidence_payload"] = json.dumps(r["evidence_payload"])
+                cur.execute(query, r)
+        return True
+
+    def get_gate7_semantic_definitions(self, run_id: str) -> List[Dict[str, Any]]:
+        return self.client.execute(
+            "SELECT * FROM public.gate7_semantic_definitions WHERE run_id = %s ORDER BY analytical_ordinal ASC",
+            [run_id]
+        )
+
+    def insert_gate7_semantic_memberships(
+        self, run_id: str, records: List[Dict[str, Any]]
+    ) -> bool:
+        if not records:
+            return True
+        query = """
+        INSERT INTO public.gate7_semantic_memberships (
+            run_id, definition_id, video_id, parent_cluster_id
+        ) VALUES (
+            %(run_id)s, %(definition_id)s, %(video_id)s, %(parent_cluster_id)s
+        ) ON CONFLICT (run_id, definition_id, video_id) DO NOTHING;
+        """
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                r["run_id"] = run_id
+                cur.execute(query, r)
+        return True
+
+    def insert_gate7_top20_definitions(
+        self, run_id: str, ranking_hash: str, records: List[Dict[str, Any]]
+    ) -> bool:
+        if not records:
+            return True
+        query = """
+        INSERT INTO public.gate7_top20_definitions (
+            run_id, rank, definition_id, analytical_ordinal, niche, subniche, microniche,
+            video_count, outlier_count, channel_count, distinct_intents_count, ranking_hash
+        ) VALUES (
+            %(run_id)s, %(rank)s, %(definition_id)s, %(analytical_ordinal)s, %(niche)s, %(subniche)s, %(microniche)s,
+            %(video_count)s, %(outlier_count)s, %(channel_count)s, %(distinct_intents_count)s, %(ranking_hash)s
+        ) ON CONFLICT (run_id, rank) DO UPDATE SET
+            definition_id = EXCLUDED.definition_id,
+            ranking_hash = EXCLUDED.ranking_hash;
+        """
+        with self.client.get_cursor() as cur:
+            for rec in records:
+                r = dict(rec)
+                r["run_id"] = run_id
+                r["ranking_hash"] = ranking_hash
+                cur.execute(query, r)
+        return True
+
+    def get_gate7_top20_definitions(self, run_id: str) -> List[Dict[str, Any]]:
+        return self.client.execute(
+            "SELECT * FROM public.gate7_top20_definitions WHERE run_id = %s ORDER BY rank ASC",
+            [run_id]
         )
 
     def upsert_channels(self, channels: List[YouTubeChannel]) -> int:

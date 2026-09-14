@@ -9,8 +9,7 @@ def test_postgres_historical_metrics_integration():
 
     # Get all video IDs in DB
     video_ids = repo.get_all_video_ids()
-    if not video_ids:
-        pytest.skip("No videos found in PostgreSQL for the historical integration test.")
+    assert len(video_ids) > 0, "No videos found in PostgreSQL for the historical integration test."
 
     analyzer = HistoricalMetricsAnalyzer(repository=repo)
 

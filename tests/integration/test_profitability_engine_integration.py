@@ -3,7 +3,11 @@ Integration tests for Sprint 9 Profitability Engine and PostgreSQL persistence.
 """
 
 import pytest
-from app.analytics.profitability_engine import ProfitabilityEngine
+from scripts.sprint12_reproducibility_constants import (
+    EXPECTED_ASSIGNMENTS_HASH,
+    EXPECTED_CLUSTERS,
+    EXPECTED_DATASET_HASH,
+)
 from app.database.repositories import YouTubeRepository
 from scripts.analyze_profitability import run_analysis
 
@@ -19,20 +23,20 @@ def test_profitability_pipeline_and_persistence():
     persisted = output["persisted"]
     readback = output["readback"]
 
-    # Verify 10 production clusters
-    assert len(result.clusters) == 10
-    assert result.dataset_hash == "4d81c80e8da54b371c7eb969957ea347fc632d82abd737719141c866f4bfe9ad"
-    assert result.assignments_hash == "6c0e7bb6aeec75985664becb05f7c61cbfec874c15a6ec7395d60c2996436288"
+    # Verify production clusters
+    assert len(result.clusters) == EXPECTED_CLUSTERS
+    assert result.dataset_hash == EXPECTED_DATASET_HASH
+    assert result.assignments_hash == EXPECTED_ASSIGNMENTS_HASH
 
     # Verify exact PostgreSQL persistence and read-back
     assert persisted is not None
-    assert persisted.records_written == 10
+    assert persisted.records_written == EXPECTED_CLUSTERS
 
     assert readback is not None
     assert readback.verified is True
-    assert readback.expected_records == 10
-    assert readback.actual_records == 10
-    assert readback.unique_clusters == 10
+    assert readback.expected_records == EXPECTED_CLUSTERS
+    assert readback.actual_records == EXPECTED_CLUSTERS
+    assert readback.unique_clusters == EXPECTED_CLUSTERS
     assert readback.duplicate_records == 0
     assert readback.payload_mismatches == 0
     assert readback.provenance_mismatches == 0

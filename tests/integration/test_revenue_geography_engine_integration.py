@@ -5,11 +5,11 @@ from unittest.mock import patch
 import pytest
 
 from scripts.analyze_revenue_geography import run_analysis
-from scripts.sprint5_reproducibility_runner import (
-    APPROVED_ASSIGNMENTS_HASH,
-    APPROVED_CLUSTERS,
-    APPROVED_DATASET_HASH,
-    APPROVED_PRODUCTION_VIDEOS,
+from scripts.sprint12_reproducibility_constants import (
+    EXPECTED_ASSIGNMENTS_HASH,
+    EXPECTED_CLUSTERS,
+    EXPECTED_DATASET_HASH,
+    EXPECTED_PROD_VIDEOS,
 )
 
 
@@ -20,10 +20,10 @@ def test_revenue_geography_engine_analyzes_approved_postgres_data_without_writes
 
     post.assert_not_called()
     assert report["dataset"] == {
-        "videos": APPROVED_PRODUCTION_VIDEOS,
-        "clusters": APPROVED_CLUSTERS,
-        "dataset_hash": APPROVED_DATASET_HASH,
-        "assignments_hash": APPROVED_ASSIGNMENTS_HASH,
+        "videos": EXPECTED_PROD_VIDEOS,
+        "clusters": EXPECTED_CLUSTERS,
+        "dataset_hash": EXPECTED_DATASET_HASH,
+        "assignments_hash": EXPECTED_ASSIGNMENTS_HASH,
     }
     assert report["manual_validation"]["videos_checked"] == 10
     assert report["manual_validation"]["status"] == "PASS"

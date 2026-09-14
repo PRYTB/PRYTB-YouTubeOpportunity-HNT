@@ -14,10 +14,10 @@ def test_dashboard_data_service_integration():
     dataset = service.get_dashboard_data()
 
     assert dataset.provenance.is_compatible is True
-    assert dataset.total_videos == 7611
-    assert dataset.total_clusters == 10
-    assert len(dataset.candidates) == 10
-    assert len(dataset.videos) == 7611
+    assert dataset.total_videos == 10585
+    assert dataset.total_clusters == 35
+    assert len(dataset.candidates) == 35
+    assert len(dataset.videos) == 10585
 
 
 @pytest.mark.integration

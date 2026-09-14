@@ -290,6 +290,33 @@ def test_verify_clusters_readback_requires_exact_integrity(mock_client, sample_n
     assert readback.verified is True
 
 
+def test_gate7_repository_methods_mock(mock_client):
+    repo = YouTubeRepository(client=mock_client)
+
+    # Test top100 insertion & get
+    mock_client.get_cursor.return_value.__enter__.return_value = MagicMock()
+    mock_client.execute.return_value = [{"outlier_rank": 1, "video_id": "vid1"}]
+    assert repo.insert_gate7_top100_outliers(
+        run_id="run1",
+        dataset_hash="hash1",
+        ranking_hash="rankhash1",
+        records=[{"outlier_rank": 1, "video_id": "vid1", "channel_id": "ch1", "outlier_score": 10.0, "is_strong_outlier": True, "is_major_outlier": False, "is_extreme_outlier": False, "small_channel_outlier": False, "channel_median_views": 100, "channel_mean_views": 100, "baseline_video_count": 5, "baseline_confidence": "HIGH"}]
+    ) is True
+    res_100 = repo.get_gate7_top100_outliers("run1")
+    assert len(res_100) == 1
+
+    # Test top20 insertion & get
+    mock_client.execute.return_value = [{"rank": 1, "definition_id": "def1"}]
+    assert repo.insert_gate7_top20_definitions(
+        run_id="run1",
+        ranking_hash="rankhash2",
+        records=[{"rank": 1, "definition_id": "def1", "analytical_ordinal": 1, "niche": "n", "subniche": "s", "microniche": "m", "video_count": 10, "outlier_count": 2, "channel_count": 5, "distinct_intents_count": 3}]
+    ) is True
+    res_20 = repo.get_gate7_top20_definitions("run1")
+    assert len(res_20) == 1
+
+
+
 @pytest.mark.parametrize(
     ("table", "field", "value", "mismatch_field"),
     [

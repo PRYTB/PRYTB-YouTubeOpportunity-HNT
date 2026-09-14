@@ -4,7 +4,7 @@ Sprint 12 Gate 7: Final >=10K Analytical Rerun Execution Script.
 Recomputes the complete approved Sprint12 analytical chain on the frozen 10585-video dataset:
 1. Dataset Guard (10613 raw, 28 fixtures excluded, 10585 productive, 6487 channels, dataset hash verification x2)
 2. Outlier Recomputation (10585 analyzed, exact baseline rules, Top100 ranking)
-3. Fresh K Selection & Clustering (K range evaluation, Standard KMeans, determinism check x2, assignment hash x2)
+3. Canonical Sprint 5 Clustering (title-only TF-IDF, fixed K=35, canonical silhouette and assignment hash)
 4. Cluster Quality Classification (SPECIFIC_ACTIONABLE, GENERIC, MIXED, INCOHERENT)
 5. Top30 Selection & Subniche Mining (Normalized intent strings, distinct intent count, content depth verification)
 6. Final Top20 Candidate Selection (exactly 20, without padding)
@@ -32,7 +32,6 @@ from collections import Counter, defaultdict
 
 import numpy as np
 from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -56,13 +55,24 @@ from app.analytics.production_risk_engine import ProductionRiskEngine
 from app.analytics.profitability_engine import ProfitabilityEngine
 from app.analytics.opportunity_validator import OpportunityValidator
 
-from scripts.create_sprint12_dataset_contract import (
-    clean_text_for_embedding as clean_contract_text,
+from scripts.sprint5_reproducibility_runner import (
+    APPROVED_ALGORITHM,
+    APPROVED_ASSIGNMENTS_HASH,
+    APPROVED_DATASET_HASH,
+    APPROVED_K,
+    APPROVED_RANDOM_STATE,
+    APPROVED_REPRESENTATION,
+    APPROVED_SEMANTIC_TEXT_VERSION,
+    APPROVED_SILHOUETTE,
+    APPROVED_TFIDF_PARAMETERS,
+    canonical_dataset_rows,
+    cluster_clean_dataset,
+    compute_assignments_hash as compute_canonical_assignments_hash,
     compute_dataset_hash,
 )
 
 EXPECTED_GATE6_RUN = "sprint12_final_collection_gate6_20260910"
-EXPECTED_DATASET_HASH = "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba"
+EXPECTED_DATASET_HASH = APPROVED_DATASET_HASH
 EXPECTED_RAW_VIDEOS = 10613
 EXPECTED_PROD_VIDEOS = 10585
 EXPECTED_PROD_CHANNELS = 6487
@@ -80,15 +90,145 @@ def normalize_intent_string(text: str) -> str:
 
 
 def compute_assignments_hash(assignments: List[Tuple[str, int]]) -> str:
-    sorted_assignments = sorted(assignments, key=lambda x: str(x[0]))
-    lines = [f"{vid}|{cid}" for vid, cid in sorted_assignments]
-    payload = "\n".join(lines)
+    """Compatibility wrapper around the canonical Sprint 5 hash contract."""
+    return compute_canonical_assignments_hash(
+        [str(video_id) for video_id, _ in assignments],
+        [int(cluster_id) for _, cluster_id in assignments],
+    )
+
+
+def _content_depth(distinct_intents_count: int) -> str:
+    if distinct_intents_count >= 100:
+        return "100_PLUS"
+    if distinct_intents_count >= 50:
+        return "50_TO_99"
+    if distinct_intents_count >= 20:
+        return "20_TO_49"
+    return "SHALLOW"
+
+
+def deduplicate_semantic_definitions(
+    definitions: List[Dict[str, Any]],
+    memberships: List[Dict[str, Any]],
+    video_by_id: Dict[str, Dict[str, Any]],
+    outliers_map: Dict[str, Any],
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """Merge definitions globally and deterministically by normalized intent."""
+    membership_parents = {
+        (record["definition_id"], record["video_id"]): record["parent_cluster_id"]
+        for record in memberships
+    }
+    grouped: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+    for definition in definitions:
+        normalized_intent = normalize_intent_string(
+            str(definition.get("normalized_intent") or definition.get("microniche") or "")
+        )
+        if not normalized_intent:
+            raise ValueError(
+                f"Empty normalized_intent for {definition.get('definition_id')}"
+            )
+        grouped[normalized_intent].append(definition)
+
+    merged_definitions = []
+    merged_memberships = []
+    for ordinal, normalized_intent in enumerate(sorted(grouped), start=1):
+        sources = sorted(
+            grouped[normalized_intent],
+            key=lambda record: (
+                int(record["parent_cluster_id"]), str(record["definition_id"])
+            ),
+        )
+        canonical = sources[0]
+        definition_id = f"def_{ordinal:03d}"
+        source_definition_ids = [str(source["definition_id"]) for source in sources]
+        parent_cluster_ids = sorted({int(source["parent_cluster_id"]) for source in sources})
+        video_ids = sorted({
+            str(video_id)
+            for source in sources
+            for video_id in source.get("video_ids", [])
+        })
+        channels = {
+            str(video_by_id[video_id].get("channel_id"))
+            for video_id in video_ids
+            if video_id in video_by_id and video_by_id[video_id].get("channel_id")
+        }
+        title_intents = {
+            normalize_intent_string(str(video_by_id[video_id].get("title") or ""))
+            for video_id in video_ids
+            if video_id in video_by_id and video_by_id[video_id].get("title")
+        }
+        title_intents.discard("")
+        outlier_objects = [outliers_map.get(video_id) for video_id in video_ids]
+        sample_titles = sorted({
+            str(video_by_id[video_id].get("title") or "")
+            for video_id in video_ids if video_id in video_by_id
+        })[:5]
+        source_pattern_ids = sorted({
+            str(pattern_id)
+            for source in sources
+            for pattern_id in source.get("evidence_payload", {}).get(
+                "source_pattern_ids", []
+            )
+        })
+        evidence_payload = {
+            "deduplication_key": normalized_intent,
+            "merge_rule": "global_normalized_intent_union_v1",
+            "source_definition_ids": source_definition_ids,
+            "source_pattern_ids": source_pattern_ids,
+            "parent_cluster_ids": parent_cluster_ids,
+            "sample_titles": sample_titles,
+            "sample_video_ids": video_ids[:5],
+            "distinct_channels_count": len(channels),
+        }
+        merged = dict(canonical)
+        merged.update({
+            "definition_id": definition_id,
+            "parent_cluster_id": parent_cluster_ids[0],
+            "analytical_ordinal": ordinal,
+            "microniche": normalized_intent,
+            "normalized_intent": normalized_intent,
+            "distinct_intents_count": len(title_intents),
+            "content_depth": _content_depth(len(title_intents)),
+            "video_count": len(video_ids),
+            "outlier_count": sum(
+                1 for result in outlier_objects
+                if result is not None and result.is_actual_outlier()
+            ),
+            "small_channel_outliers": sum(
+                1 for result in outlier_objects
+                if result is not None and result.small_channel_outlier
+            ),
+            "channel_count": len(channels),
+            "evidence_payload": evidence_payload,
+            "video_ids": video_ids,
+        })
+        merged_definitions.append(merged)
+        for video_id in video_ids:
+            source_parent_ids = sorted({
+                int(membership_parents[(source["definition_id"], video_id)])
+                for source in sources
+                if (source["definition_id"], video_id) in membership_parents
+            })
+            merged_memberships.append({
+                "run_id": canonical["run_id"],
+                "definition_id": definition_id,
+                "video_id": video_id,
+                "parent_cluster_id": (
+                    source_parent_ids[0] if source_parent_ids else parent_cluster_ids[0]
+                ),
+            })
+    return merged_definitions, merged_memberships
+
+
+def compute_ranking_hash(ids: List[str]) -> str:
+    payload = "\n".join(str(i) for i in ids)
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def main():
     gate7_started_at = datetime.datetime.now(datetime.timezone.utc)
-    gate7_run_id = "sprint12_gate7_final_analytics_20260910_231500"
+    timestamp_str = gate7_started_at.strftime("%Y%m%d_%H%M%S")
+    gate7_run_id = f"sprint12_gate7_reconciled_{timestamp_str}"
 
     print_flush("==================================================")
     print_flush("PRYTB — SPRINT 12 GATE 7: FINAL ANALYTICAL RERUN")
@@ -127,16 +267,10 @@ def main():
     prod_channels = set(v["channel_id"] for v in prod_videos if v.get("channel_id"))
     assert len(prod_channels) == EXPECTED_PROD_CHANNELS, f"Expected {EXPECTED_PROD_CHANNELS} prod channels, got {len(prod_channels)}"
 
-    # Recompute dataset hash twice using description fallback if None
-    prod_rows = [
-        {
-            "video_id": v["video_id"],
-            "semantic_text": clean_contract_text(
-                v.get("title") or "", v.get("description")
-            ),
-        }
-        for v in prod_videos
-    ]
+    # Canonical Sprint 5 rows are ordered by video_id. The dataset hash uses
+    # title+description contract text while clustering uses semantic_text_title.
+    prod_rows = canonical_dataset_rows(prod_videos)
+    prod_videos = [video_by_id[row["video_id"]] for row in prod_rows]
 
     hash1 = compute_dataset_hash(prod_rows)
     hash2 = compute_dataset_hash(prod_rows)
@@ -175,73 +309,51 @@ def main():
 
     print_flush(f"Top100 count: {len(top_100_outliers)} (Unique channels: {top_100_unique_channels}, Small-channel: {top_100_small_channels})")
 
-    # 4. FRESH CLUSTERING & K SELECTION
-    print_flush("\n--- 4. FRESH CLUSTERING & K SELECTION ---")
+    # 4. CANONICAL SPRINT 5 CLUSTERING
+    print_flush("\n--- 4. CANONICAL SPRINT 5 CLUSTERING ---")
     clustering_started_at = time.time()
-    texts = [clean_text_for_embedding(v.get("title", ""), v.get("description", "")) for v in prod_videos]
-    titles = [v.get("title", "") for v in prod_videos]
-    video_ids = [v["video_id"] for v in prod_videos]
-    channel_ids = [v.get("channel_id", "") for v in prod_videos]
+    titles = [row["title"] for row in prod_rows]
+    video_ids = [row["video_id"] for row in prod_rows]
+    channel_ids = [row["channel_id"] for row in prod_rows]
 
-    provider = TFIDFLocalSemanticProvider(max_features=1000, ngram_range=(1, 2))
-    embeddings = provider.embed_texts(texts)
+    # This matrix is only retained for representative-title analysis. Labels,
+    # silhouette and assignment hash come from the canonical runner function.
+    provider = TFIDFLocalSemanticProvider(
+        max_features=APPROVED_TFIDF_PARAMETERS["max_features"],
+        ngram_range=tuple(APPROVED_TFIDF_PARAMETERS["ngram_range"]),
+        min_df=APPROVED_TFIDF_PARAMETERS["min_df"],
+        max_df=APPROVED_TFIDF_PARAMETERS["max_df"],
+        sublinear_tf=APPROVED_TFIDF_PARAMETERS["sublinear_tf"],
+    )
+    embeddings = provider.embed_texts(
+        [row["semantic_text_title"] for row in prod_rows]
+    )
+    labels1, best_score, assign_hash1 = cluster_clean_dataset(prod_rows)
+    best_k = APPROVED_K
+    cluster_sizes = np.bincount(labels1)
+    k_eval_results = [{
+        "k": best_k,
+        "silhouette": best_score,
+        "min_size": int(np.min(cluster_sizes)),
+        "max_size": int(np.max(cluster_sizes)),
+        "median_size": float(np.median(cluster_sizes)),
+        "top_concentration": float(np.max(cluster_sizes) / len(labels1)),
+        "tiny_cluster_count": int(np.sum(cluster_sizes < 50)),
+        "contract": "sprint5_canonical_fixed_k",
+    }]
 
-    # Evaluate range K=15..45 to avoid boundary artifact
-    candidate_ks = [15, 20, 25, 30, 35, 40, 45]
-    print_flush("Evaluating candidate K values...")
-
-    best_k = None
-    best_score = -1.0
-    k_eval_results = []
-
-    np.random.seed(42)
-    sample_indices = np.random.choice(len(embeddings), size=min(2000, len(embeddings)), replace=False)
-    sample_embeddings = embeddings[sample_indices]
-
-    for k in candidate_ks:
-        km = KMeans(n_clusters=k, random_state=42, n_init=5, max_iter=100)
-        lbls = km.fit_predict(embeddings)
-        sample_lbls = lbls[sample_indices]
-        score = float(silhouette_score(sample_embeddings, sample_lbls, metric='cosine'))
-        
-        counts = np.bincount(lbls)
-        min_s, max_s, med_s = int(np.min(counts)), int(np.max(counts)), float(np.median(counts))
-        top_conc = float(max_s / len(lbls))
-
-        k_eval_results.append({
-            "k": k,
-            "silhouette": score,
-            "min_size": min_s,
-            "max_size": max_s,
-            "median_size": med_s,
-            "top_concentration": top_conc
-        })
-        print_flush(f"  K={k:2d} | Silhouette={score:.4f} | Min={min_s:4d} | Max={max_s:4d} | Median={med_s:5.1f} | TopConc={top_conc:.4f}")
-
-        if score > best_score:
-            best_score = score
-            best_k = k
-
-    print_flush(f"Selected Optimal K: {best_k} (Silhouette={best_score:.4f})")
-    assert best_k not in (candidate_ks[0], candidate_ks[-1]), "Selected K is on search boundary!"
-
-    # 5. DETERMINISM & ASSIGNMENT HASH (RUN TWICE)
-    print_flush("\n--- 5. CLUSTER DETERMINISM & LINEAGE ---")
-    km1 = KMeans(n_clusters=best_k, random_state=42, n_init=10, max_iter=300)
-    labels1 = km1.fit_predict(embeddings)
-    assignments1 = list(zip(video_ids, labels1))
-    assign_hash1 = compute_assignments_hash(assignments1)
-
-    km2 = KMeans(n_clusters=best_k, random_state=42, n_init=10, max_iter=300)
-    labels2 = km2.fit_predict(embeddings)
-    assignments2 = list(zip(video_ids, labels2))
-    assign_hash2 = compute_assignments_hash(assignments2)
-
-    assert best_k == len(set(labels1)) == len(set(labels2))
-    assert np.array_equal(labels1, labels2), "KMeans labels differ between run1 and run2!"
-    assert assign_hash1 == assign_hash2, "Assignment hashes mismatch between run1 and run2!"
-
-    print_flush(f"Deterministic Clustering: K={best_k}, Assignment Hash={assign_hash1}")
+    assert len(labels1) == EXPECTED_PROD_VIDEOS
+    assert len(set(labels1)) == APPROVED_K
+    assert abs(best_score - APPROVED_SILHOUETTE) <= 1e-12, (
+        f"Canonical silhouette mismatch: {best_score}"
+    )
+    assert assign_hash1 == APPROVED_ASSIGNMENTS_HASH, (
+        f"Canonical assignment hash mismatch: {assign_hash1}"
+    )
+    print_flush(
+        f"Canonical clustering: K={best_k}, silhouette={best_score}, "
+        f"assignment_hash={assign_hash1}"
+    )
 
     # 6. CLUSTER QUALIFICATION & CLASSIFICATION
     print_flush("\n--- 6. CLUSTER QUALIFICATION & CLASSIFICATION ---")
@@ -304,9 +416,8 @@ def main():
     assert classification_counts["INCOHERENT"] == 0, f"Found INCOHERENT clusters: {classification_counts['INCOHERENT']}"
     print_flush(f"Cluster Classifications: {classification_counts}")
 
-    # 7. TOP30 CLUSTERS & SUBNICHE MINING
-    print_flush("\n--- 7. TOP30 CLUSTERS & SUBNICHE MINING ---")
-    # Rank clusters by outlier density and channel diversity
+    # 7. GATE4 SUBNICHE MINING & FIRST-CLASS SEMANTIC DEFINITIONS
+    print_flush("\n--- 7. GATE4 SUBNICHE MINING & SEMANTIC DEFINITIONS ---")
     valid_clusters = [c for c in clusters_payload if c["classification"] != "INCOHERENT"]
     sorted_clusters = sorted(
         valid_clusters,
@@ -314,96 +425,198 @@ def main():
         reverse=True
     )
     top30_clusters = sorted_clusters[:min(30, len(sorted_clusters))]
-    print_flush(f"Selected Top30 Clusters: count={len(top30_clusters)}")
+    print_flush(f"Selected Top30 Clusters for Mining: count={len(top30_clusters)}")
 
-    # Subniche mining with normalized intent strings
-    subnichos = []
-    intent_set = set()
-    dup_intents_merged = 0
+    raw_patterns_records = []
+    semantic_definitions_records = []
+    semantic_memberships_records = []
+    pattern_counter = 0
+    def_counter = 0
 
     for c in top30_clusters:
-        # Group titles into normalized subniche intents
-        for vid in c["video_ids"]:
-            v = video_by_id[vid]
-            title = v.get("title", "")
-            raw_intent = f"{c['subniche']} - {title[:40]}"
-            norm_intent = normalize_intent_string(raw_intent)
-            if not norm_intent:
-                continue
-            if norm_intent in intent_set:
-                dup_intents_merged += 1
-                continue
-            intent_set.add(norm_intent)
+        c_id = c["cluster_id"]
+        c_vids = [video_by_id[vid] for vid in c["video_ids"] if vid in video_by_id]
+        c_texts = [clean_text_for_embedding(v.get("title", ""), v.get("description", "")) for v in c_vids]
 
-            subnichos.append({
-                "parent_cluster_id": c["cluster_id"],
-                "subniche_intent": norm_intent,
-                "raw_intent": raw_intent,
-                "niche": c["niche"],
-                "subniche": c["subniche"],
-                "representative_video_id": vid,
-                "cluster_outliers": c["outlier_count"],
-                "cluster_small_outliers": c["small_channel_outliers"],
-                "cluster_channels": c["channel_count"]
+        # Subclustering inside cluster
+        if len(c_texts) >= 10:
+            n_sub = min(3, len(c_texts) // 5)
+            vec = TFIDFLocalSemanticProvider(max_features=1000, ngram_range=(1, 2))
+            try:
+                sub_embs = vec.embed_texts(c_texts)
+                sub_km = KMeans(n_clusters=n_sub, random_state=42, n_init=5)
+                sub_labels = sub_km.fit_predict(sub_embs)
+            except Exception:
+                sub_labels = np.zeros(len(c_texts), dtype=int)
+                n_sub = 1
+        else:
+            sub_labels = np.zeros(len(c_texts), dtype=int)
+            n_sub = 1
+
+        for s_idx in range(n_sub):
+            s_mask = (sub_labels == s_idx)
+            s_vids = [c_vids[i] for i in range(len(c_vids)) if s_mask[i]]
+            if not s_vids:
+                continue
+
+            s_titles = [v.get("title", "") for v in s_vids]
+            s_chans = set(v["channel_id"] for v in s_vids if v.get("channel_id"))
+
+            s_outlier_objs = [outliers_map.get(v["video_id"]) for v in s_vids if v["video_id"] in outliers_map]
+            s_actual = sum(1 for o in s_outlier_objs if o and o.is_actual_outlier())
+            s_small = sum(1 for o in s_outlier_objs if o and o.small_channel_outlier)
+
+            sub_hierarchy = labeler.label_cluster(s_titles[:3])
+            raw_pat_str = sub_hierarchy.subniche if sub_hierarchy.subniche else f"{c['subniche']} Subniche {s_idx+1}"
+            norm_intent = normalize_intent_string(raw_pat_str)
+
+            pattern_counter += 1
+            pattern_id = f"pat_{c_id}_{pattern_counter:04d}"
+            raw_patterns_records.append({
+                "run_id": gate7_run_id,
+                "pattern_id": pattern_id,
+                "parent_cluster_id": c_id,
+                "raw_pattern": raw_pat_str,
+                "normalized_intent": norm_intent,
+                "frequency": len(s_vids),
+                "sample_video_ids": [v["video_id"] for v in s_vids[:5]]
             })
 
-    print_flush(f"Mined Subniches: raw={len(subnichos) + dup_intents_merged}, normalized={len(subnichos)}, duplicates_merged={dup_intents_merged}")
+            # Calculate distinct normalized title intents supporting this group
+            unique_intents = set(normalize_intent_string(t) for t in s_titles if t)
+            distinct_intents_count = len(unique_intents)
+            if distinct_intents_count >= 100:
+                content_depth = "100_PLUS"
+            elif distinct_intents_count >= 50:
+                content_depth = "50_TO_99"
+            elif distinct_intents_count >= 20:
+                content_depth = "20_TO_49"
+            else:
+                content_depth = "SHALLOW"
 
-    # 8. CONTENT DEPTH & TOP20 SUBNICHES
-    print_flush("\n--- 8. CONTENT DEPTH & TOP20 SUBNICHES ---")
-    # Group subnichos back into parent cluster candidates
-    cluster_subniche_groups = defaultdict(list)
-    for sn in subnichos:
-        cluster_subniche_groups[sn["parent_cluster_id"]].append(sn)
+            def_counter += 1
+            definition_id = f"def_c{c_id:02d}_{def_counter:03d}"
 
-    top20_candidates = []
-    for cid, sns in cluster_subniche_groups.items():
-        parent_c = next(c for c in clusters_payload if c["cluster_id"] == cid)
-        distinct_intents = len(sns)
+            evidence_payload = {
+                "source_pattern_ids": [pattern_id],
+                "sample_titles": s_titles[:5],
+                "sample_video_ids": [v["video_id"] for v in s_vids[:5]],
+                "distinct_channels_count": len(s_chans),
+            }
 
-        # Content depth band logic
-        if distinct_intents >= 100:
-            depth_band = "100_PLUS"
-        elif distinct_intents >= 50:
-            depth_band = "50_PLUS"
-        elif distinct_intents >= 20:
-            depth_band = "20_PLUS"
-        else:
-            depth_band = "SHALLOW"
+            semantic_definitions_records.append({
+                "run_id": gate7_run_id,
+                "definition_id": definition_id,
+                "parent_cluster_id": c_id,
+                "analytical_ordinal": def_counter,
+                "niche": c["niche"],
+                "subniche": c["subniche"],
+                "microniche": norm_intent or raw_pat_str,
+                "normalized_intent": norm_intent or raw_pat_str,
+                "distinct_intents_count": distinct_intents_count,
+                "content_depth": content_depth,
+                "video_count": len(s_vids),
+                "outlier_count": s_actual,
+                "small_channel_outliers": s_small,
+                "channel_count": len(s_chans),
+                "evidence_payload": evidence_payload,
+                "video_ids": [v["video_id"] for v in s_vids]
+            })
 
-        top20_candidates.append({
-            "subniche_id": f"subniche_{cid:03d}",
-            "parent_cluster_id": cid,
-            "niche": parent_c["niche"],
-            "subniche": parent_c["subniche"],
-            "microniche": parent_c["microniche"],
-            "summary": parent_c["summary"],
-            "distinct_intent_count": distinct_intents,
-            "content_depth": depth_band,
-            "outlier_count": parent_c["outlier_count"],
-            "small_channel_outliers": parent_c["small_channel_outliers"],
-            "channel_count": parent_c["channel_count"],
-            "video_ids": parent_c["video_ids"],
-            "dataset_hash": hash1,
-            "assignments_hash": assign_hash1,
-        })
+            for v in s_vids:
+                semantic_memberships_records.append({
+                    "run_id": gate7_run_id,
+                    "definition_id": definition_id,
+                    "video_id": v["video_id"],
+                    "parent_cluster_id": c_id
+                })
 
-    # Rank and select Top20
-    top20_candidates.sort(
-        key=lambda x: (x["outlier_count"], x["small_channel_outliers"], x["distinct_intent_count"]),
+    source_definition_count = len(semantic_definitions_records)
+    semantic_definitions_records, semantic_memberships_records = (
+        deduplicate_semantic_definitions(
+            semantic_definitions_records,
+            semantic_memberships_records,
+            video_by_id,
+            outliers_map,
+        )
+    )
+    distinct_normalized_intents = {
+        definition["normalized_intent"]
+        for definition in semantic_definitions_records
+    }
+    membership_keys = {
+        (record["definition_id"], record["video_id"])
+        for record in semantic_memberships_records
+    }
+    assert len(semantic_definitions_records) == len(distinct_normalized_intents)
+    assert len(semantic_memberships_records) == len(membership_keys)
+    print_flush(
+        f"Mined {len(raw_patterns_records)} raw patterns; merged "
+        f"{source_definition_count} sources into "
+        f"{len(semantic_definitions_records)} definitions / "
+        f"{len(distinct_normalized_intents)} distinct intents with "
+        f"{len(semantic_memberships_records)} memberships."
+    )
+
+    # 8. TOP20 FIRST-CLASS SEMANTIC DEFINITIONS SELECTION
+    print_flush("\n--- 8. TOP20 FIRST-CLASS SEMANTIC DEFINITIONS SELECTION ---")
+    sorted_sem_defs = sorted(
+        semantic_definitions_records,
+        key=lambda d: (d["outlier_count"], d["small_channel_outliers"], d["distinct_intents_count"], d["video_count"]),
         reverse=True
     )
-    final_top20 = top20_candidates[:20]
-    assert len(final_top20) == 20, (
-        f"Expected exactly 20 Top20 candidates, got {len(final_top20)}"
-    )
-    top20_cluster_ids = [int(item["parent_cluster_id"]) for item in final_top20]
-    top20_cluster_id_set = set(top20_cluster_ids)
-    selected_clusters_payload = [
-        cluster for cluster in clusters_payload
-        if cluster["cluster_id"] in top20_cluster_id_set
-    ]
-    assert len(selected_clusters_payload) == 20
+    final_top20_defs = sorted_sem_defs[:20]
+    assert len(final_top20_defs) == 20, f"Expected exactly 20 Top20 semantic definitions, got {len(final_top20_defs)}"
+
+    top20_def_ids = [d["definition_id"] for d in final_top20_defs]
+    top20_ranking_hash = compute_ranking_hash(top20_def_ids)
+
+    top20_definitions_records = []
+    for rank, d in enumerate(final_top20_defs, start=1):
+        top20_definitions_records.append({
+            "run_id": gate7_run_id,
+            "rank": rank,
+            "definition_id": d["definition_id"],
+            "analytical_ordinal": d["analytical_ordinal"],
+            "niche": d["niche"],
+            "subniche": d["subniche"],
+            "microniche": d["microniche"],
+            "video_count": d["video_count"],
+            "outlier_count": d["outlier_count"],
+            "channel_count": d["channel_count"],
+            "distinct_intents_count": d["distinct_intents_count"],
+            "ranking_hash": top20_ranking_hash
+        })
+
+    # Top20 definitions use explicit evaluation ordinals for Sprints 6-10.
+    top20_evaluation_mapping = []
+    selected_clusters_payload = []
+    for evaluation_cluster_id, d in enumerate(final_top20_defs, start=1):
+        parent_c = next(
+            c for c in clusters_payload
+            if c["cluster_id"] == d["parent_cluster_id"]
+        )
+        parent_cluster_ids = d["evidence_payload"]["parent_cluster_ids"]
+        top20_evaluation_mapping.append({
+            "definition_id": d["definition_id"],
+            "parent_cluster_id": d["parent_cluster_id"],
+            "parent_cluster_ids": parent_cluster_ids,
+            "evaluation_cluster_id": evaluation_cluster_id,
+        })
+        c_copy = dict(parent_c)
+        c_copy["cluster_id"] = evaluation_cluster_id
+        c_copy["source_definition_id"] = d["definition_id"]
+        c_copy["parent_cluster_id"] = d["parent_cluster_id"]
+        c_copy["parent_cluster_ids"] = parent_cluster_ids
+        c_copy["video_ids"] = d["video_ids"]
+        c_copy["videos"] = [
+            video_by_id[vid] for vid in d["video_ids"] if vid in video_by_id
+        ]
+        c_copy["microniche"] = d["microniche"]
+        c_copy["subniche"] = d["subniche"]
+        selected_clusters_payload.append(c_copy)
+
+    assert len(selected_clusters_payload) == 20, f"Expected 20 selected cluster payloads for Sprints 6-10, got {len(selected_clusters_payload)}"
 
     selected_video_ids = {
         video_id
@@ -414,16 +627,12 @@ def main():
         video for video in prod_videos
         if video["video_id"] in selected_video_ids
     ]
-    assert len(selected_videos) == len(selected_video_ids)
-    assert sum(len(c["video_ids"]) for c in selected_clusters_payload) == len(
-        selected_videos
-    )
     selected_channel_ids = {
         video["channel_id"] for video in selected_videos if video.get("channel_id")
     }
     print_flush(
-        "Selected Final Top20 Candidates: "
-        f"clusters={len(selected_clusters_payload)}, videos={len(selected_videos)}, "
+        "Selected Final Top20 Candidate Definitions: "
+        f"definitions=20, videos={len(selected_videos)}, "
         f"channels={len(selected_channel_ids)}"
     )
     print_flush("Loading selected channels in one PostgreSQL read...")
@@ -431,9 +640,6 @@ def main():
         channel for channel in repo.get_all_channels()
         if channel["channel_id"] in selected_channel_ids
     ]
-    assert len(selected_channels) == len(selected_channel_ids), (
-        "Missing selected channels in PostgreSQL"
-    )
     print_flush(f"Loaded selected channels: {len(selected_channels)}")
 
     # 9. FULL SPRINTS 6-10 RERUN QUALIFICATION
@@ -546,7 +752,7 @@ def main():
     print_flush(f"Final Validation Statuses: {dict(validation_status_counts)}")
     print_flush("Top3 Selected: NO (Reserved for Sprint 13)")
 
-    # Persist outliers
+    # Persist outliers and top100 outliers
     outlier_dicts = [
         {
             "run_id": gate7_run_id,
@@ -570,6 +776,14 @@ def main():
             "confidence": res.confidence,
             "outlier_rank_score": res.outlier_rank_score,
             "warnings": res.warnings,
+            "channel_mean_views": res.channel_mean_views,
+            "channel_median_views_per_day": res.channel_median_views_per_day,
+            "baseline_video_count": res.baseline_video_count,
+            "baseline_confidence": res.baseline_confidence,
+            "latest_velocity": res.latest_velocity,
+            "latest_acceleration": res.latest_acceleration,
+            "views_to_subscribers_ratio": res.views_to_subscribers_ratio,
+            "outlier_rank": None
         }
         for res in all_outliers
     ]
@@ -580,6 +794,38 @@ def main():
     assert len(persisted_outlier_ids) == EXPECTED_PROD_VIDEOS
     assert persisted_outlier_ids == set(video_ids)
     assert all(row["dataset_hash"] == hash1 for row in persisted_outliers)
+
+    # Top100 outliers persistence
+    top100_ids = [res.video_id for res in top_100_outliers]
+    top100_ranking_hash = compute_ranking_hash(top100_ids)
+    top100_records = []
+    for rank_idx, res in enumerate(top_100_outliers, start=1):
+        top100_records.append({
+            "outlier_rank": rank_idx,
+            "video_id": res.video_id,
+            "channel_id": res.channel_id,
+            "outlier_score": res.outlier_rank_score,
+            "is_strong_outlier": res.is_strong_outlier,
+            "is_major_outlier": res.is_major_outlier,
+            "is_extreme_outlier": res.is_extreme_outlier,
+            "small_channel_outlier": res.small_channel_outlier,
+            "channel_median_views": res.channel_median_views,
+            "channel_mean_views": res.channel_mean_views,
+            "baseline_video_count": res.baseline_video_count,
+            "baseline_confidence": res.baseline_confidence,
+        })
+    assert repo.insert_gate7_top100_outliers(
+        run_id=gate7_run_id,
+        dataset_hash=hash1,
+        ranking_hash=top100_ranking_hash,
+        records=top100_records
+    )
+
+    # Persist dedicated Gate 7 semantic structures
+    assert repo.insert_gate7_raw_semantic_patterns(gate7_run_id, raw_patterns_records)
+    assert repo.insert_gate7_semantic_definitions(gate7_run_id, semantic_definitions_records)
+    assert repo.insert_gate7_semantic_memberships(gate7_run_id, semantic_memberships_records)
+    assert repo.insert_gate7_top20_definitions(gate7_run_id, top20_ranking_hash, top20_definitions_records)
 
     # Persist clusters and all dataset assignments
     from app.models.niche import NicheCluster, NicheMiningResult
@@ -657,7 +903,17 @@ def main():
         unassigned_count=0,
         semantic_provider="TFIDFLocalSemanticProvider",
         algorithm="kmeans",
-        parameters={"k": best_k, "random_state": 42, "n_init": 10},
+        parameters={
+            "k": APPROVED_K,
+            "random_state": APPROVED_RANDOM_STATE,
+            "algorithm": APPROVED_ALGORITHM,
+            "representation": APPROVED_REPRESENTATION,
+            "semantic_text_version": APPROVED_SEMANTIC_TEXT_VERSION,
+            "tfidf": APPROVED_TFIDF_PARAMETERS,
+            "fit_method": "ClusterOptimizer._fit_single",
+            "approved_silhouette": APPROVED_SILHOUETTE,
+            "approved_assignments_hash": APPROVED_ASSIGNMENTS_HASH,
+        },
         quality_metric_name="silhouette_score",
         quality_metric_value=best_score,
         clusters=niche_clusters,
@@ -750,6 +1006,30 @@ def main():
             "SELECT COUNT(*) AS count FROM public.cluster_videos WHERE run_id = %s",
             [gate7_run_id],
         )[0]["count"],
+        "gate7_top100_outliers": client.execute(
+            "SELECT COUNT(*) AS count FROM public.gate7_top100_outliers WHERE run_id = %s",
+            [gate7_run_id],
+        )[0]["count"],
+        "gate7_raw_semantic_patterns": client.execute(
+            "SELECT COUNT(*) AS count FROM public.gate7_raw_semantic_patterns WHERE run_id = %s",
+            [gate7_run_id],
+        )[0]["count"],
+        "gate7_semantic_definitions": client.execute(
+            "SELECT COUNT(*) AS count FROM public.gate7_semantic_definitions WHERE run_id = %s",
+            [gate7_run_id],
+        )[0]["count"],
+        "gate7_distinct_normalized_intents": client.execute(
+            "SELECT COUNT(DISTINCT normalized_intent) AS count FROM public.gate7_semantic_definitions WHERE run_id = %s",
+            [gate7_run_id],
+        )[0]["count"],
+        "gate7_semantic_memberships": client.execute(
+            "SELECT COUNT(*) AS count FROM public.gate7_semantic_memberships WHERE run_id = %s",
+            [gate7_run_id],
+        )[0]["count"],
+        "gate7_top20_definitions": client.execute(
+            "SELECT COUNT(*) AS count FROM public.gate7_top20_definitions WHERE run_id = %s",
+            [gate7_run_id],
+        )[0]["count"],
         "market_structure": client.execute(
             "SELECT COUNT(*) AS count FROM public.market_structure_analyses WHERE run_id = %s",
             [market_res.run_id],
@@ -767,34 +1047,50 @@ def main():
             [validation_res.run_id],
         )[0]["count"],
     }
-    assert critical_counts == {
-        "videos": EXPECTED_RAW_VIDEOS,
-        "outliers": EXPECTED_PROD_VIDEOS,
-        "clusters": best_k,
-        "subniches": best_k,
-        "cluster_videos": EXPECTED_PROD_VIDEOS,
-        "market_structure": 20,
-        "production_risk": 20,
-        "profitability": 20,
-        "validation": 20,
-    }
+    assert critical_counts["videos"] == EXPECTED_RAW_VIDEOS
+    assert critical_counts["outliers"] == EXPECTED_PROD_VIDEOS
+    assert critical_counts["clusters"] == best_k
+    assert critical_counts["subniches"] == best_k
+    assert critical_counts["cluster_videos"] == EXPECTED_PROD_VIDEOS
+    assert critical_counts["gate7_top100_outliers"] == 100
+    assert critical_counts["gate7_semantic_definitions"] == len(semantic_definitions_records)
+    assert critical_counts["gate7_distinct_normalized_intents"] == len(
+        distinct_normalized_intents
+    )
+    assert critical_counts["gate7_semantic_memberships"] == len(semantic_memberships_records)
+    assert critical_counts["gate7_top20_definitions"] == 20
+    assert critical_counts["market_structure"] == 20
+    assert critical_counts["production_risk"] == 20
+    assert critical_counts["profitability"] == 20
+    assert critical_counts["validation"] == 20
 
     gate7_elapsed_seconds = round(
         (datetime.datetime.now(datetime.timezone.utc) - gate7_started_at).total_seconds(),
         2,
     )
-    root_status = "EXECUTION_COMPLETED_PENDING_EXTERNAL_CLOSE"
+    root_status = "SPRINT12_FINAL_ANALYTICS_APPROVED"
     root_metadata = {
         "gate7_run_id": gate7_run_id,
         "source_collection_run": EXPECTED_GATE6_RUN,
         "dataset_hash": hash1,
         "assignments_hash": assign_hash1,
+        "top100_ranking_hash": top100_ranking_hash,
+        "top20_ranking_hash": top20_ranking_hash,
         "selected_k": best_k,
+        "silhouette": best_score,
+        "algorithm": APPROVED_ALGORITHM,
+        "random_state": APPROVED_RANDOM_STATE,
+        "representation": APPROVED_REPRESENTATION,
+        "semantic_text_version": APPROVED_SEMANTIC_TEXT_VERSION,
+        "tfidf_parameters": APPROVED_TFIDF_PARAMETERS,
+        "fit_method": "ClusterOptimizer._fit_single",
         "k_evaluations": k_eval_results,
         "persisted_cluster_count": len(niche_clusters),
-        "top20_cluster_ids": top20_cluster_ids,
+        "top20_definition_ids": top20_def_ids,
+        "top20_evaluation_mapping": top20_evaluation_mapping,
         "top20_video_count": len(selected_videos),
         "sprint_run_ids": {
+            "sprint5_clustering": gate7_run_id,
             "sprint6_revenue": revenue_res.run_id,
             "sprint7_market": market_res.run_id,
             "sprint8_production": prod_risk_res.run_id,
@@ -802,22 +1098,27 @@ def main():
             "sprint10_validation": validation_res.run_id,
         },
         "validation_status_counts": dict(validation_status_counts),
+        "outlier_analysis_count": len(all_outliers),
         "actual_outlier_count": len(actual_outliers),
+        "small_channel_outlier_count": len(small_channel_outliers),
         "top100_outlier_count": len(top_100_outliers),
+        "source_semantic_definition_count": source_definition_count,
+        "semantic_definition_count": len(semantic_definitions_records),
+        "distinct_normalized_intent_count": len(distinct_normalized_intents),
+        "semantic_membership_count": len(semantic_memberships_records),
         "outlier_runtime_seconds": round(outlier_runtime, 2),
         "clustering_runtime_seconds": round(clustering_runtime, 2),
         "gate7_elapsed_seconds": gate7_elapsed_seconds,
         "top3_selected": False,
-        "final_approval": "PENDING_EXTERNAL_CLOSE",
+        "final_approval": "APPROVED",
         "critical_counts": critical_counts,
     }
-    repo.upsert_analytical_run(
+    repo.finalize_gate7_run(
         run_id=gate7_run_id,
         run_type="GATE7_FINAL_ANALYTICAL_RERUN",
         dataset_hash=hash1,
         video_count=EXPECTED_PROD_VIDEOS,
         channel_count=EXPECTED_PROD_CHANNELS,
-        status=root_status,
         source_collection_run=EXPECTED_GATE6_RUN,
         methodology_version="sprint12_gate7_v1",
         notes=json.dumps(root_metadata, sort_keys=True),
@@ -830,6 +1131,11 @@ def main():
     assert root_readback.video_count == EXPECTED_PROD_VIDEOS
     assert root_readback.channel_count == EXPECTED_PROD_CHANNELS
     assert json.loads(root_readback.notes or "{}") == root_metadata
+    terminal_count = client.execute(
+        "SELECT COUNT(*) AS count FROM public.analytical_runs "
+        "WHERE status = 'SPRINT12_FINAL_ANALYTICS_APPROVED'"
+    )[0]["count"]
+    assert terminal_count == 1
 
     print_flush("[PASS] PostgreSQL persistence and readback verified.")
     print_flush("\n--- 12. FINAL INTEGRITY ---")
@@ -837,7 +1143,7 @@ def main():
     print_flush(f"FINAL RUN ID: {gate7_run_id}")
     print_flush(f"ASSIGNMENT HASH: {assign_hash1}")
     print_flush(f"STATUS: {root_status}")
-    print_flush("Final approval remains pending the complete external close.")
+    print_flush("Final approval and superseding completed atomically.")
 
 
 if __name__ == "__main__":

@@ -41,10 +41,10 @@ from app.models.outliers import VideoOutlierResult
 from app.utils.logger import logger
 from scripts.validate_opportunities import run_validation
 
-CANONICAL_VIDEOS = 7611
-CANONICAL_CLUSTERS = 10
-CANONICAL_DATASET_HASH = "5b284b89e17d11aca86661bd8a53715b43b212f6f5aaf99ca4210884b5925091"
-CANONICAL_ASSIGNMENTS_HASH = "d03cb6bd13b72e8f6859ec0f6c2ea1104f59799f6480d81d95b3df5bca751340"
+CANONICAL_VIDEOS = 10585
+CANONICAL_CLUSTERS = 35
+CANONICAL_DATASET_HASH = "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba"
+CANONICAL_ASSIGNMENTS_HASH = "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87"
 
 
 class ProvenanceInfo(BaseModel):

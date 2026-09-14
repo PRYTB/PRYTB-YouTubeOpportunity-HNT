@@ -32,25 +32,18 @@ from app.models.niche import NicheCluster, NicheMiningResult
 # ============================================================
 # APPROVED PRODUCTION CONFIGURATION (DO NOT CHANGE)
 # ============================================================
-APPROVED_SEMANTIC_TEXT_VERSION = "sprint5-v1"
-APPROVED_REPRESENTATION = "title_only_unigrams"
-APPROVED_ALGORITHM = "kmeans"
-APPROVED_K = 10
-APPROVED_RANDOM_STATE = 42
-APPROVED_TFIDF_PARAMETERS: Dict[str, Any] = {
-    "max_features": 500,
-    "ngram_range": [1, 1],
-    "min_df": 2,
-    "max_df": 0.9,
-    "sublinear_tf": False,
-}
-# Exact approved values from preflight
-APPROVED_DATASET_HASH = "5b284b89e17d11aca86661bd8a53715b43b212f6f5aaf99ca4210884b5925091"
-APPROVED_ASSIGNMENTS_HASH = "d03cb6bd13b72e8f6859ec0f6c2ea1104f59799f6480d81d95b3df5bca751340"
-APPROVED_SILHOUETTE = 0.06862934221732106
-APPROVED_SILHOUETTE_TOLERANCE = 1e-12
-APPROVED_PRODUCTION_VIDEOS = 7611
-APPROVED_CLUSTERS = 10
+from scripts.sprint5_reproducibility_runner import (
+    APPROVED_K,
+    APPROVED_PRODUCTION_VIDEOS,
+    APPROVED_DATASET_HASH,
+    APPROVED_ASSIGNMENTS_HASH,
+    APPROVED_SILHOUETTE,
+    APPROVED_SEMANTIC_TEXT_VERSION,
+    APPROVED_REPRESENTATION,
+    APPROVED_ALGORITHM,
+    APPROVED_RANDOM_STATE,
+    APPROVED_TFIDF_PARAMETERS,
+)
 
 # Test record exclusion
 _TEST_ID_PATTERN = re.compile(r"(^|[_-])(test|fixture|mock)([_-]|$)", re.IGNORECASE)
@@ -250,7 +243,7 @@ def build_final_result(
         )
 
     if len(clusters) != APPROVED_K or any(not cluster.video_ids for cluster in clusters):
-        raise ValueError("Clean preflight must produce exactly 10 non-empty clusters.")
+        raise ValueError(f"Clean preflight must produce exactly {APPROVED_K} non-empty clusters.")
     if sum(cluster.video_count for cluster in clusters) != len(rows):
         raise ValueError("Cluster video counts do not match the production dataset.")
 

@@ -56,6 +56,15 @@ def test_stopwords_and_bigrams():
     assert provider.embedding_dimension <= 50
 
 
+def test_tfidf_raises_error_on_invalid_inputs():
+    provider = TFIDFLocalSemanticProvider(max_features=50, ngram_range=(1, 2))
+    with pytest.raises(ValueError, match="is not a string"):
+        provider.embed_texts(["valid text", 123])
+
+    with pytest.raises(ValueError, match="is empty or blank"):
+        provider.embed_texts(["valid text", "   "])
+
+
 def test_label_quality_validation():
     score, warnings = validate_label_quality(
         niche="What Domain",

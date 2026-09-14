@@ -64,26 +64,37 @@ class TFIDFLocalSemanticProvider(SemanticProvider):
         if not texts:
             return np.empty((0, self._dim))
 
-        # Standardize strings
-        clean_texts = [t if isinstance(t, str) and t.strip() else "empty_text" for t in texts]
+        # Standardize and validate strings
+        clean_texts = []
+        for i, t in enumerate(texts):
+            if not isinstance(t, str):
+                raise ValueError(f"Text at index {i} is not a string: {type(t)}")
+            stripped = t.strip()
+            if not stripped:
+                raise ValueError(f"Text at index {i} is empty or blank")
+            clean_texts.append(stripped)
 
         # Fit or transform
-        try:
-            if not self._fitted:
-                matrix = self._vectorizer.fit_transform(clean_texts).toarray()
-                self._fitted = True
-                self._dim = matrix.shape[1]
-            else:
-                matrix = self._vectorizer.transform(clean_texts).toarray()
-            
-            # Normalize vectors to unit length (L2 norm) for cosine distance compatibility
-            norms = np.linalg.norm(matrix, axis=1, keepdims=True)
-            norms[norms == 0] = 1.0
-            return matrix / norms
-        except Exception:
-            # Fallback for unexpected vectorizer failures
-            n = len(texts)
-            return np.zeros((n, self._dim))
+        if not self._fitted:
+            matrix = self._vectorizer.fit_transform(clean_texts).toarray()
+            self._fitted = True
+            self._dim = matrix.shape[1]
+        else:
+            matrix = self._vectorizer.transform(clean_texts).toarray()
+
+        if matrix.shape[1] == 0:
+            raise ValueError("TF-IDF vectorizer extracted 0 features from provided texts")
+
+        # Normalize vectors to unit length (L2 norm) for cosine distance compatibility
+        norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+        zero_norm_mask = (norms == 0)
+        if np.any(zero_norm_mask):
+            # Fallback for texts that contain only stop words or tokens filtered out by vectorizer
+            # Replace zero-norm rows with uniform weights so cosine calculations do not fail or raise ValueError
+            matrix[zero_norm_mask.squeeze(), :] = 1.0 / np.sqrt(matrix.shape[1])
+            norms[zero_norm_mask] = 1.0
+
+        return matrix / norms
 
     @property
     def provider_name(self) -> str:
