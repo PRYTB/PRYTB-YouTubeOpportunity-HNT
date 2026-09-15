@@ -1,0 +1,845 @@
+{
+  "source_run_id": "sprint12_gate7_reconciled_20260914_211554",
+  "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+  "provenance": {
+    "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+    "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+    "source_collection_run": "sprint12_final_collection_gate6_20260910",
+    "methodology_version": "sprint12_gate7_v1",
+    "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+    "sprint_run_ids": {
+      "sprint10_validation": "sprint10_val_82cbe595a775",
+      "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+      "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+      "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "sprint9_profitability": "sprint9_prof_368e300e0c48"
+    }
+  },
+  "closed_loop": {
+    "read_count": 2,
+    "independent_clients": true,
+    "identical_reconstructions": true,
+    "first_read_hash": "b07c356610084acb96c74a811024e63c3d7263b60ba3ae71b1bf1a3638b09fc1",
+    "second_read_hash": "b07c356610084acb96c74a811024e63c3d7263b60ba3ae71b1bf1a3638b09fc1",
+    "ranking_hashes_equal": true
+  },
+  "ranking_hash": "decc570011b881414202cba3f0c03144c954f0be5c21c4167e756f5ff5780c77",
+  "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+  "items": [
+    {
+      "rank": 1,
+      "cluster_id": 23,
+      "labels": {
+        "niche": "Artificial Intelligence",
+        "subniche": "AI Safety & Risk Analysis",
+        "microniche": "Warnings and predictions about advanced AI",
+        "summary": "Thematic cluster focusing on ai safety & risk analysis supported by representative title: 'Programmer Desk Essentials'.",
+        "label_confidence": 60.0
+      },
+      "membership_counts": {
+        "videos": 1895,
+        "channels": 1397,
+        "actual_outliers": 166,
+        "small_channel_outliers": 34
+      },
+      "top100_support": {
+        "count": 20,
+        "video_ids": [
+          "IUU6OR8yHCc",
+          "T3q6QcCQZQg",
+          "k1RI5locZE4",
+          "WjwEh15M5Rw",
+          "zuxzE7--RYM",
+          "rcGrRfWo65Y",
+          "_bV7uLTxNSg",
+          "nCUwDeHw4rE",
+          "cmD2gn6s1Uo",
+          "umd_N8ms_ZE",
+          "QW79RdE9p5Q",
+          "7vIwRec0RLo",
+          "Z26FeKCbn5s",
+          "ADMaXqIWmww",
+          "_HQ2H_0Ayy0",
+          "9JPnN1Z_iSY",
+          "hGfwT3AJh30",
+          "IAb2QHdNe1A",
+          "Yzx7ihtCGBs",
+          "ro7aP-bg2WI"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 2,
+      "cluster_id": 29,
+      "labels": {
+        "niche": "Crear Overview",
+        "subniche": "Crear & Curso",
+        "microniche": "Cómo Crear un Curso en YouTube 📝 | 1net",
+        "summary": "Thematic cluster focusing on crear & curso supported by representative title: 'Cómo Crear un Curso en YouTube 📝 | 1net'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 787,
+        "channels": 586,
+        "actual_outliers": 71,
+        "small_channel_outliers": 23
+      },
+      "top100_support": {
+        "count": 12,
+        "video_ids": [
+          "qETg4cODLME",
+          "Z94DYoF5ufg",
+          "rcKY-8Y0atY",
+          "mXFV5FGb2NU",
+          "Wc5OBu6PaKQ",
+          "nLJ5YC6AuSo",
+          "CyGGt24CTNg",
+          "ijbCCGnzJfw",
+          "7TKY-jksHRQ",
+          "KeLbP-5eD7I",
+          "VOWK2TGkplM",
+          "u8Z0wikOkq8"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 3,
+      "cluster_id": 0,
+      "labels": {
+        "niche": "Computer Hardware & Operating Systems",
+        "subniche": "PC Hardware & System Optimization",
+        "microniche": "ejercicios de costura para principiantes",
+        "summary": "Thematic cluster focusing on pc hardware & system optimization supported by representative title: 'ejercicios de costura para principiantes'.",
+        "label_confidence": 75.0
+      },
+      "membership_counts": {
+        "videos": 557,
+        "channels": 422,
+        "actual_outliers": 40,
+        "small_channel_outliers": 8
+      },
+      "top100_support": {
+        "count": 5,
+        "video_ids": [
+          "icmJK-IWE6Q",
+          "9sCVcWD1Svs",
+          "PVICHKHRB34",
+          "smSzad5Cg_8",
+          "4yzQIFWNHSc"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 4,
+      "cluster_id": 6,
+      "labels": {
+        "niche": "Azure Overview",
+        "subniche": "Azure & Azure Devops",
+        "microniche": "Azure DevOps CI/CD Pipeline | Azure DevOps Tutorial | Azure ",
+        "summary": "Thematic cluster focusing on azure & azure devops supported by representative title: 'Azure DevOps CI/CD Pipeline | Azure DevOps Tutorial | Azure DevOps | Edureka | DevOps Rewind - 2'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 419,
+        "channels": 242,
+        "actual_outliers": 28,
+        "small_channel_outliers": 19
+      },
+      "top100_support": {
+        "count": 3,
+        "video_ids": [
+          "hQcFE0RD0cQ",
+          "MOZMw5_fBFA",
+          "0qANFAN2HPw"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 5,
+      "cluster_id": 2,
+      "labels": {
+        "niche": "Computer Hardware & Operating Systems",
+        "subniche": "PC Hardware & System Optimization",
+        "microniche": "Finanzas bíblicas, cambia tú y cambiarán tus finanzas | Tu c",
+        "summary": "Thematic cluster focusing on pc hardware & system optimization supported by representative title: 'Finanzas bíblicas, cambia tú y cambiarán tus finanzas | Tu corazón & el dinero'.",
+        "label_confidence": 75.0
+      },
+      "membership_counts": {
+        "videos": 282,
+        "channels": 160,
+        "actual_outliers": 28,
+        "small_channel_outliers": 6
+      },
+      "top100_support": {
+        "count": 4,
+        "video_ids": [
+          "OL5mljIfgR8",
+          "uyZQQ7mFaKs",
+          "2KGWCID1rSw",
+          "zegEZ3gMcO8"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 6,
+      "cluster_id": 7,
+      "labels": {
+        "niche": "2025 Overview",
+        "subniche": "2025 & In",
+        "microniche": "How to Import Notion Templates (In 1 Click)",
+        "summary": "Thematic cluster focusing on 2025 & in supported by representative title: 'How to Import Notion Templates (In 1 Click)'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 251,
+        "channels": 161,
+        "actual_outliers": 25,
+        "small_channel_outliers": 9
+      },
+      "top100_support": {
+        "count": 3,
+        "video_ids": [
+          "g1XSdDiBPvE",
+          "Dzidck96FGY",
+          "nUx2FMRuyGw"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 7,
+      "cluster_id": 12,
+      "labels": {
+        "niche": "Artificial Intelligence",
+        "subniche": "Artificial Intelligence Fundamentals",
+        "microniche": "✅¿QUÉ es B2B en MARKETING? 👌/ESTRATEGIAS📑 de VENTAS 🛍 B2B, M",
+        "summary": "Thematic cluster focusing on artificial intelligence fundamentals supported by representative title: '✅¿QUÉ es B2B en MARKETING? 👌/ESTRATEGIAS📑 de VENTAS 🛍 B2B, MARKETING 🤓 B2B EJEMPLOS ☑️'.",
+        "label_confidence": 75.0
+      },
+      "membership_counts": {
+        "videos": 268,
+        "channels": 155,
+        "actual_outliers": 24,
+        "small_channel_outliers": 18
+      },
+      "top100_support": {
+        "count": 3,
+        "video_ids": [
+          "d3j5hsw6CeE",
+          "o4mGdXRJ-dk",
+          "KtX1srhbC2k"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 8,
+      "cluster_id": 11,
+      "labels": {
+        "niche": "De Overview",
+        "subniche": "De & De Software",
+        "microniche": "Tipos y Niveles de Pruebas de Software.",
+        "summary": "Thematic cluster focusing on de & de software supported by representative title: 'Tipos y Niveles de Pruebas de Software.'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 306,
+        "channels": 210,
+        "actual_outliers": 24,
+        "small_channel_outliers": 16
+      },
+      "top100_support": {
+        "count": 2,
+        "video_ids": [
+          "9Vc5PcmqbVM",
+          "h6sZQgS_w_s"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 9,
+      "cluster_id": 31,
+      "labels": {
+        "niche": "Agencia Overview",
+        "subniche": "Agencia & Agencia De",
+        "microniche": "✅ Cómo Escalar tu Agencia de Marketing Digital",
+        "summary": "Thematic cluster focusing on agencia & agencia de supported by representative title: '✅ Cómo Escalar tu Agencia de Marketing Digital'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 242,
+        "channels": 148,
+        "actual_outliers": 22,
+        "small_channel_outliers": 16
+      },
+      "top100_support": {
+        "count": 3,
+        "video_ids": [
+          "QfIH_hZgfUc",
+          "27sqgjgGeM4",
+          "6wQsj3ri2EM"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 10,
+      "cluster_id": 1,
+      "labels": {
+        "niche": "Bootstrap Overview",
+        "subniche": "Bootstrap & Bootstrap Saas",
+        "microniche": "Bootstrap to Breakthrough: How Maropost Achieved A Rare 50% ",
+        "summary": "Thematic cluster focusing on bootstrap & bootstrap saas supported by representative title: 'Bootstrap to Breakthrough: How Maropost Achieved A Rare 50% EBITA in SaaS'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 349,
+        "channels": 232,
+        "actual_outliers": 21,
+        "small_channel_outliers": 15
+      },
+      "top100_support": {
+        "count": 1,
+        "video_ids": [
+          "gUUr4QfuzwA"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 11,
+      "cluster_id": 8,
+      "labels": {
+        "niche": "De Overview",
+        "subniche": "De & Hotmart",
+        "microniche": "La verdad de hotmart ❌️ #hotmart #negociosdigitales #product",
+        "summary": "Thematic cluster focusing on de & hotmart supported by representative title: 'La verdad de hotmart ❌️ #hotmart #negociosdigitales #productosdigitales #infoproductos'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 366,
+        "channels": 322,
+        "actual_outliers": 21,
+        "small_channel_outliers": 7
+      },
+      "top100_support": {
+        "count": 3,
+        "video_ids": [
+          "Znr31-X37HA",
+          "VKVu3_SLqwM",
+          "VFfdt2xHDxU"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 12,
+      "cluster_id": 15,
+      "labels": {
+        "niche": "Cybersecurity",
+        "subniche": "Cybersecurity Education",
+        "microniche": "Beginner cybersecurity training and certification",
+        "summary": "Thematic cluster focusing on cybersecurity education supported by representative title: '01-Network Security Basics Explained 🔐 | Information Security, Encryption & Decryption for Beginners'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 186,
+        "channels": 128,
+        "actual_outliers": 19,
+        "small_channel_outliers": 2
+      },
+      "top100_support": {
+        "count": 4,
+        "video_ids": [
+          "lpa8uy4DyMo",
+          "SW6AE76Pi50",
+          "3CiRs6WaWaU",
+          "v3iUx2SNspY"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 13,
+      "cluster_id": 28,
+      "labels": {
+        "niche": "Artificial Intelligence",
+        "subniche": "AI Automation & Autonomous Agents",
+        "microniche": "Autonomous AI agents and workflow automation",
+        "summary": "Thematic cluster focusing on ai automation & autonomous agents supported by representative title: 'Close-Range RPG vs Israel’s Heaviest Tank'.",
+        "label_confidence": 75.0
+      },
+      "membership_counts": {
+        "videos": 201,
+        "channels": 172,
+        "actual_outliers": 17,
+        "small_channel_outliers": 5
+      },
+      "top100_support": {
+        "count": 1,
+        "video_ids": [
+          "vgS7QSrpgMI"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 14,
+      "cluster_id": 30,
+      "labels": {
+        "niche": "Artificial Intelligence",
+        "subniche": "AI Safety & Risk Analysis",
+        "microniche": "Warnings and predictions about advanced AI",
+        "summary": "Thematic cluster focusing on ai safety & risk analysis supported by representative title: 'MIT Explains the 12 Possible Endings for AI'.",
+        "label_confidence": 60.0
+      },
+      "membership_counts": {
+        "videos": 227,
+        "channels": 194,
+        "actual_outliers": 17,
+        "small_channel_outliers": 4
+      },
+      "top100_support": {
+        "count": 0,
+        "video_ids": []
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 15,
+      "cluster_id": 25,
+      "labels": {
+        "niche": "Cybersecurity",
+        "subniche": "Network Security & Defense",
+        "microniche": "Network architecture and security fundamentals",
+        "summary": "Thematic cluster focusing on network security & defense supported by representative title: 'Understanding Firewall Architecture and Types #networkengineer #networksecurity #firewall'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 287,
+        "channels": 218,
+        "actual_outliers": 16,
+        "small_channel_outliers": 6
+      },
+      "top100_support": {
+        "count": 1,
+        "video_ids": [
+          "Vp6vCclHG8Q"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 16,
+      "cluster_id": 4,
+      "labels": {
+        "niche": "An Overview",
+        "subniche": "An & Course",
+        "microniche": "How To Deal with Online Course Piracy | Dan Henry",
+        "summary": "Thematic cluster focusing on an & course supported by representative title: 'How To Deal with Online Course Piracy | Dan Henry'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 244,
+        "channels": 185,
+        "actual_outliers": 16,
+        "small_channel_outliers": 6
+      },
+      "top100_support": {
+        "count": 1,
+        "video_ids": [
+          "hVei86spwxE"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 17,
+      "cluster_id": 10,
+      "labels": {
+        "niche": "Backend Overview",
+        "subniche": "Backend & Backend Frontend",
+        "microniche": "🤔 ¿Frontend o Backend?",
+        "summary": "Thematic cluster focusing on backend & backend frontend supported by representative title: '🤔 ¿Frontend o Backend?'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 318,
+        "channels": 202,
+        "actual_outliers": 15,
+        "small_channel_outliers": 10
+      },
+      "top100_support": {
+        "count": 6,
+        "video_ids": [
+          "qSyh-30NqAs",
+          "Yd7BX0u2Zvg",
+          "fGg47c4q9cU",
+          "olhCzhOyj_o",
+          "KDibFTi_rHM",
+          "UcGaicwNKVA"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 18,
+      "cluster_id": 24,
+      "labels": {
+        "niche": "Agency Overview",
+        "subniche": "Agency & Marketing",
+        "microniche": "Scale Your Marketing Agency While Cutting Payroll Costs by 6",
+        "summary": "Thematic cluster focusing on agency & marketing supported by representative title: 'Scale Your Marketing Agency While Cutting Payroll Costs by 60%'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 210,
+        "channels": 157,
+        "actual_outliers": 14,
+        "small_channel_outliers": 11
+      },
+      "top100_support": {
+        "count": 3,
+        "video_ids": [
+          "Eu2fWN8BZ6Y",
+          "KXH9PZeFFG4",
+          "zoyCrTj8mL8"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 19,
+      "cluster_id": 3,
+      "labels": {
+        "niche": "Computer Hardware & Operating Systems",
+        "subniche": "PC Hardware & System Optimization",
+        "microniche": "If you accept credit cards you must be PCI Compliant, are yo",
+        "summary": "Thematic cluster focusing on pc hardware & system optimization supported by representative title: 'If you accept credit cards you must be PCI Compliant, are you in the clear?'.",
+        "label_confidence": 75.0
+      },
+      "membership_counts": {
+        "videos": 190,
+        "channels": 158,
+        "actual_outliers": 14,
+        "small_channel_outliers": 2
+      },
+      "top100_support": {
+        "count": 1,
+        "video_ids": [
+          "okHkUIW46ks"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 20,
+      "cluster_id": 32,
+      "labels": {
+        "niche": "Artificial Intelligence",
+        "subniche": "Artificial Intelligence Fundamentals",
+        "microniche": "Overrated/Underrated: The second brain",
+        "summary": "Thematic cluster focusing on artificial intelligence fundamentals supported by representative title: 'Overrated/Underrated: The second brain'.",
+        "label_confidence": 75.0
+      },
+      "membership_counts": {
+        "videos": 247,
+        "channels": 187,
+        "actual_outliers": 14,
+        "small_channel_outliers": 1
+      },
+      "top100_support": {
+        "count": 0,
+        "video_ids": []
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 21,
+      "cluster_id": 19,
+      "labels": {
+        "niche": "Del Overview",
+        "subniche": "Del & Del Tiempo",
+        "microniche": "Matriz de administración del tiempo - Productividad",
+        "summary": "Thematic cluster focusing on del & del tiempo supported by representative title: 'Matriz de administración del tiempo - Productividad'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 226,
+        "channels": 162,
+        "actual_outliers": 13,
+        "small_channel_outliers": 6
+      },
+      "top100_support": {
+        "count": 3,
+        "video_ids": [
+          "ukwes5tUamI",
+          "Sn94E0VlYV0",
+          "Sk42ARzX9jw"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 22,
+      "cluster_id": 26,
+      "labels": {
+        "niche": "Computer Hardware & Operating Systems",
+        "subniche": "PC Hardware & System Optimization",
+        "microniche": "Inteligencia Artificial aplicada",
+        "summary": "Thematic cluster focusing on pc hardware & system optimization supported by representative title: 'Inteligencia Artificial aplicada'.",
+        "label_confidence": 75.0
+      },
+      "membership_counts": {
+        "videos": 223,
+        "channels": 202,
+        "actual_outliers": 13,
+        "small_channel_outliers": 5
+      },
+      "top100_support": {
+        "count": 2,
+        "video_ids": [
+          "JMUxmLyrhSk",
+          "HK07Ennc6xs"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 23,
+      "cluster_id": 18,
+      "labels": {
+        "niche": "Methods Overview",
+        "subniche": "Methods & Study",
+        "microniche": "Ranking College Study Methods",
+        "summary": "Thematic cluster focusing on methods & study supported by representative title: 'Ranking College Study Methods'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 211,
+        "channels": 139,
+        "actual_outliers": 13,
+        "small_channel_outliers": 4
+      },
+      "top100_support": {
+        "count": 0,
+        "video_ids": []
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 24,
+      "cluster_id": 16,
+      "labels": {
+        "niche": "Best Overview",
+        "subniche": "Best & Best Programming",
+        "microniche": "Best Programming Languages #programming #coding #javascript",
+        "summary": "Thematic cluster focusing on best & best programming supported by representative title: 'Best Programming Languages #programming #coding #javascript'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 132,
+        "channels": 96,
+        "actual_outliers": 13,
+        "small_channel_outliers": 3
+      },
+      "top100_support": {
+        "count": 4,
+        "video_ids": [
+          "BIlFTFrEFOI",
+          "kvS1Fx5231o",
+          "-lHQEZjWbLI",
+          "HIj8wU_rGIU"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 25,
+      "cluster_id": 22,
+      "labels": {
+        "niche": "De Overview",
+        "subniche": "De & Es",
+        "microniche": "¿Qué es Tauri?",
+        "summary": "Thematic cluster focusing on de & es supported by representative title: '¿Qué es Tauri?'.",
+        "label_confidence": 75.0
+      },
+      "membership_counts": {
+        "videos": 205,
+        "channels": 168,
+        "actual_outliers": 12,
+        "small_channel_outliers": 8
+      },
+      "top100_support": {
+        "count": 2,
+        "video_ids": [
+          "FeFSRPxj6KI",
+          "cfkjNQLHsdg"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 26,
+      "cluster_id": 34,
+      "labels": {
+        "niche": "Computer Hardware & Operating Systems",
+        "subniche": "PC Hardware & System Optimization",
+        "microniche": "PASO A PASO DESCARGA Y REGISTRO APLICACION MOVIL RED COOPCEN",
+        "summary": "Thematic cluster focusing on pc hardware & system optimization supported by representative title: 'PASO A PASO DESCARGA Y REGISTRO APLICACION MOVIL RED COOPCENTRAL'.",
+        "label_confidence": 75.0
+      },
+      "membership_counts": {
+        "videos": 137,
+        "channels": 122,
+        "actual_outliers": 12,
+        "small_channel_outliers": 5
+      },
+      "top100_support": {
+        "count": 3,
+        "video_ids": [
+          "WQjCjukbut8",
+          "EScw2bGFGFU",
+          "qzjLq3y0wtg"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 27,
+      "cluster_id": 33,
+      "labels": {
+        "niche": "20 Overview",
+        "subniche": "20 & Budget",
+        "microniche": "Budgeting 101 #503020 #budgeting #personalfinance #budget #c",
+        "summary": "Thematic cluster focusing on 20 & budget supported by representative title: 'Budgeting 101 #503020 #budgeting #personalfinance #budget #cashstuffing #debtfree #paybills #money'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 245,
+        "channels": 205,
+        "actual_outliers": 12,
+        "small_channel_outliers": 4
+      },
+      "top100_support": {
+        "count": 1,
+        "video_ids": [
+          "JTBsUlXtoC0"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 28,
+      "cluster_id": 17,
+      "labels": {
+        "niche": "Cybersecurity",
+        "subniche": "Information Security Fundamentals",
+        "microniche": "3 Cybersecurity Books to Read",
+        "summary": "Thematic cluster focusing on information security fundamentals supported by representative title: '3 Cybersecurity Books to Read'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 99,
+        "channels": 79,
+        "actual_outliers": 11,
+        "small_channel_outliers": 3
+      },
+      "top100_support": {
+        "count": 3,
+        "video_ids": [
+          "kpXc3qERFE4",
+          "ewtDKmovou4",
+          "xxDdwqwVlqc"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 29,
+      "cluster_id": 13,
+      "labels": {
+        "niche": "Artificial Intelligence",
+        "subniche": "Artificial Intelligence Fundamentals",
+        "microniche": "NODES 2023 - Fine-Tuning an Open-Source LLM for Text-to-Cyph",
+        "summary": "Thematic cluster focusing on artificial intelligence fundamentals supported by representative title: 'NODES 2023 - Fine-Tuning an Open-Source LLM for Text-to-Cypher Translation'.",
+        "label_confidence": 75.0
+      },
+      "membership_counts": {
+        "videos": 166,
+        "channels": 129,
+        "actual_outliers": 9,
+        "small_channel_outliers": 5
+      },
+      "top100_support": {
+        "count": 2,
+        "video_ids": [
+          "dlWZA96p6rs",
+          "U8Ylwt0iIx4"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 30,
+      "cluster_id": 5,
+      "labels": {
+        "niche": "By Overview",
+        "subniche": "By & By Step",
+        "microniche": "How I Research Stocks - Step-by-Step Fundamental Analysis",
+        "summary": "Thematic cluster focusing on by & by step supported by representative title: 'How I Research Stocks - Step-by-Step Fundamental Analysis'.",
+        "label_confidence": 100.0
+      },
+      "membership_counts": {
+        "videos": 127,
+        "channels": 112,
+        "actual_outliers": 8,
+        "small_channel_outliers": 6
+      },
+      "top100_support": {
+        "count": 1,
+        "video_ids": [
+          "4OweikRF7bg"
+        ]
+      },
+      "ranking_basis": "outlier_count, small_channel_outliers, channel_count descending; ascending cluster_id production order breaks ties",
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    }
+  ]
+}

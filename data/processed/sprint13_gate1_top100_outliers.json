@@ -1,0 +1,833 @@
+{
+  "source_run_id": "sprint12_gate7_reconciled_20260914_211554",
+  "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+  "provenance": {
+    "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+    "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+    "source_collection_run": "sprint12_final_collection_gate6_20260910",
+    "methodology_version": "sprint12_gate7_v1",
+    "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+    "sprint_run_ids": {
+      "sprint10_validation": "sprint10_val_82cbe595a775",
+      "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+      "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+      "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "sprint9_profitability": "sprint9_prof_368e300e0c48"
+    }
+  },
+  "closed_loop": {
+    "read_count": 2,
+    "independent_clients": true,
+    "identical_reconstructions": true,
+    "first_read_hash": "b07c356610084acb96c74a811024e63c3d7263b60ba3ae71b1bf1a3638b09fc1",
+    "second_read_hash": "b07c356610084acb96c74a811024e63c3d7263b60ba3ae71b1bf1a3638b09fc1",
+    "ranking_hashes_equal": true
+  },
+  "ranking_hash": "d2df88751980afb7af1e9ecadf145a2a0ff514a0dba6062f8d62e03d980426d2",
+  "persisted_ranking_hash": "d2df88751980afb7af1e9ecadf145a2a0ff514a0dba6062f8d62e03d980426d2",
+  "matches_persisted": true,
+  "ranking_basis": "outlier_rank_score descending; stable source id order breaks ties",
+  "items": [
+    {
+      "rank": 1,
+      "video_id": "d3j5hsw6CeE",
+      "channel_id": "UCDWRqc3XNLolILyzfUT5MyA",
+      "classification": "EXTREME",
+      "score": 76.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 2,
+      "video_id": "o4mGdXRJ-dk",
+      "channel_id": "UCA8dgtU5dV3-2x74zoD0POA",
+      "classification": "EXTREME",
+      "score": 76.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 3,
+      "video_id": "FeFSRPxj6KI",
+      "channel_id": "UCDyLZlHJyX78w7ZGiO8ybsQ",
+      "classification": "EXTREME",
+      "score": 75.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 4,
+      "video_id": "qETg4cODLME",
+      "channel_id": "UCDyLZlHJyX78w7ZGiO8ybsQ",
+      "classification": "EXTREME",
+      "score": 75.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 5,
+      "video_id": "Z94DYoF5ufg",
+      "channel_id": "UC5qGMBH9m63HQ9unI_W2giQ",
+      "classification": "EXTREME",
+      "score": 75.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 6,
+      "video_id": "wgMz1KuBsZ0",
+      "channel_id": "UCoot38Fva88TcLNK3EP9R0w",
+      "classification": "EXTREME",
+      "score": 75.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 7,
+      "video_id": "IUU6OR8yHCc",
+      "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+      "classification": "EXTREME",
+      "score": 75.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 8,
+      "video_id": "T3q6QcCQZQg",
+      "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+      "classification": "EXTREME",
+      "score": 75.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 9,
+      "video_id": "k1RI5locZE4",
+      "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+      "classification": "EXTREME",
+      "score": 75.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 10,
+      "video_id": "WjwEh15M5Rw",
+      "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+      "classification": "EXTREME",
+      "score": 75.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 11,
+      "video_id": "hQcFE0RD0cQ",
+      "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+      "classification": "EXTREME",
+      "score": 75.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 12,
+      "video_id": "JMUxmLyrhSk",
+      "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+      "classification": "EXTREME",
+      "score": 74.5,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 13,
+      "video_id": "zuxzE7--RYM",
+      "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+      "classification": "EXTREME",
+      "score": 74.305,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 14,
+      "video_id": "rcGrRfWo65Y",
+      "channel_id": "UCMQtriZHwNgXl6eff5dNTHQ",
+      "classification": "EXTREME",
+      "score": 74.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 15,
+      "video_id": "rcKY-8Y0atY",
+      "channel_id": "UCfQ3jdXh-T3QzIj0cqLnAYA",
+      "classification": "EXTREME",
+      "score": 74.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 16,
+      "video_id": "icmJK-IWE6Q",
+      "channel_id": "UCNEvKccqG6xyTIUHPg7KmuQ",
+      "classification": "EXTREME",
+      "score": 74.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 17,
+      "video_id": "Eu2fWN8BZ6Y",
+      "channel_id": "UChUw-CvnPnC6ZuMX7-a2EAQ",
+      "classification": "EXTREME",
+      "score": 74.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 18,
+      "video_id": "BIlFTFrEFOI",
+      "channel_id": "UCc-m3P54YDVTjtMUJlmAuow",
+      "classification": "EXTREME",
+      "score": 74.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 19,
+      "video_id": "qSyh-30NqAs",
+      "channel_id": "UCSEdxq0M1N_NpoFvbdWOjkg",
+      "classification": "EXTREME",
+      "score": 74.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 20,
+      "video_id": "mXFV5FGb2NU",
+      "channel_id": "UCz8-ATjE16uOL_2IH_jvCrg",
+      "classification": "EXTREME",
+      "score": 74.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 21,
+      "video_id": "_bV7uLTxNSg",
+      "channel_id": "UC9V0QYsWKz_OD2uooCtEtRg",
+      "classification": "EXTREME",
+      "score": 74.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 22,
+      "video_id": "Yd7BX0u2Zvg",
+      "channel_id": "UCM9JliH-L__BKUAeX_ay-Jg",
+      "classification": "EXTREME",
+      "score": 74.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 23,
+      "video_id": "nCUwDeHw4rE",
+      "channel_id": "UCIBtfSoaygdAxdxogd3xKnw",
+      "classification": "EXTREME",
+      "score": 74.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 24,
+      "video_id": "fGg47c4q9cU",
+      "channel_id": "UCW8R1yxQusJ38bIORSEgMDg",
+      "classification": "EXTREME",
+      "score": 74.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 25,
+      "video_id": "olhCzhOyj_o",
+      "channel_id": "UCm6NjoQQrJbb8JfGfUIrLig",
+      "classification": "EXTREME",
+      "score": 74.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 26,
+      "video_id": "Vp6vCclHG8Q",
+      "channel_id": "UCo5Pu3KJpcR8NWmLLPszz6A",
+      "classification": "EXTREME",
+      "score": 74.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 27,
+      "video_id": "WQjCjukbut8",
+      "channel_id": "UC69j9m2aPMtXw7Gh4MfB9BA",
+      "classification": "EXTREME",
+      "score": 74.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 28,
+      "video_id": "MOZMw5_fBFA",
+      "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+      "classification": "EXTREME",
+      "score": 74.1613,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 29,
+      "video_id": "lpa8uy4DyMo",
+      "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+      "classification": "EXTREME",
+      "score": 74.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 30,
+      "video_id": "Wc5OBu6PaKQ",
+      "channel_id": "UCK5CiYuAvpYh9qpf_ujlufg",
+      "classification": "EXTREME",
+      "score": 74.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 31,
+      "video_id": "g1XSdDiBPvE",
+      "channel_id": "UCoSvlWS5XcwaSzIcbuJ-Ysg",
+      "classification": "EXTREME",
+      "score": 74.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 32,
+      "video_id": "Dzidck96FGY",
+      "channel_id": "UCoSvlWS5XcwaSzIcbuJ-Ysg",
+      "classification": "EXTREME",
+      "score": 74.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 33,
+      "video_id": "ukwes5tUamI",
+      "channel_id": "UC80Q7vyU9ZMfePxogSdb8kA",
+      "classification": "EXTREME",
+      "score": 74.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 34,
+      "video_id": "Sn94E0VlYV0",
+      "channel_id": "UCI67Uoj5HTuKlgg-ba5afmQ",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 35,
+      "video_id": "kpXc3qERFE4",
+      "channel_id": "UCi3B3Vt_jyJUpN2TvCFzd-Q",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 36,
+      "video_id": "cmD2gn6s1Uo",
+      "channel_id": "UCS82DNnKOhXHcGKxGzQvNSQ",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 37,
+      "video_id": "dlWZA96p6rs",
+      "channel_id": "UCFKvMIkL20rlt9-u6evBA5g",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 38,
+      "video_id": "HK07Ennc6xs",
+      "channel_id": "UCVN2r0SLqo1s4hrgtByslKg",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 39,
+      "video_id": "Znr31-X37HA",
+      "channel_id": "UCuoeL-V1xTBItjoAoiUx3ew",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 40,
+      "video_id": "nLJ5YC6AuSo",
+      "channel_id": "UCdely-Uj3RwC0evg3YV1dEg",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 41,
+      "video_id": "kvS1Fx5231o",
+      "channel_id": "UCE77VqlsJLphQXTIwB55dGw",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 42,
+      "video_id": "umd_N8ms_ZE",
+      "channel_id": "UCrSa5uIBkMi9RnEY7oxO64A",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 43,
+      "video_id": "JTBsUlXtoC0",
+      "channel_id": "UCnUfd-mM5K1ep83T0kvCDCQ",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 44,
+      "video_id": "OL5mljIfgR8",
+      "channel_id": "UCsj2k2Gbdh_NJplppxmBg2Q",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 45,
+      "video_id": "tl7tSPEyV6w",
+      "channel_id": "UCgTk0fL_3s4MsxQLMXQAp1Q",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 46,
+      "video_id": "hVei86spwxE",
+      "channel_id": "UCSpJppxM2hbq-a9s0V60eWQ",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 47,
+      "video_id": "QfIH_hZgfUc",
+      "channel_id": "UC0elOLp4bML-qkuQI8M8YrA",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 48,
+      "video_id": "CyGGt24CTNg",
+      "channel_id": "UCe2oog2uPbw5cC_LC5wyTqw",
+      "classification": "EXTREME",
+      "score": 73.25,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 49,
+      "video_id": "9Vc5PcmqbVM",
+      "channel_id": "UCqKhQFIG1to_Xi0QWAAaxMQ",
+      "classification": "EXTREME",
+      "score": 73.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 50,
+      "video_id": "ewtDKmovou4",
+      "channel_id": "UC9ESQKs98jVWjjUEWkvTMvA",
+      "classification": "EXTREME",
+      "score": 73.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 51,
+      "video_id": "uyZQQ7mFaKs",
+      "channel_id": "UC9AvyyprUw-fQmlPw2RJGug",
+      "classification": "EXTREME",
+      "score": 72.5097,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 52,
+      "video_id": "ijbCCGnzJfw",
+      "channel_id": "UCpRD-THcWKcd7DMwAonniHQ",
+      "classification": "EXTREME",
+      "score": 72.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 53,
+      "video_id": "gUUr4QfuzwA",
+      "channel_id": "UCCXTjWAsalgZbw3aHOlpohw",
+      "classification": "EXTREME",
+      "score": 72.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 54,
+      "video_id": "7TKY-jksHRQ",
+      "channel_id": "UCz8QPKIj84JE091eK-lEImg",
+      "classification": "EXTREME",
+      "score": 72.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 55,
+      "video_id": "vgS7QSrpgMI",
+      "channel_id": "UCV31octs5hft6bZmokUgQlA",
+      "classification": "EXTREME",
+      "score": 72.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 56,
+      "video_id": "EScw2bGFGFU",
+      "channel_id": "UCoFeYPiw1B9dOsidl1JdGmg",
+      "classification": "EXTREME",
+      "score": 72.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 57,
+      "video_id": "qzjLq3y0wtg",
+      "channel_id": "UCol-q_NZdrzNJGxpoIP9DPg",
+      "classification": "EXTREME",
+      "score": 72.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 58,
+      "video_id": "9sCVcWD1Svs",
+      "channel_id": "UCZWDHbpDetLUj5SgOZFvWhw",
+      "classification": "EXTREME",
+      "score": 72.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 59,
+      "video_id": "cfkjNQLHsdg",
+      "channel_id": "UC2PZFeCnt1wBgtviBI-5iCw",
+      "classification": "EXTREME",
+      "score": 72.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 60,
+      "video_id": "SW6AE76Pi50",
+      "channel_id": "UCCktnahuRFYIBtNnKT5IYyg",
+      "classification": "EXTREME",
+      "score": 71.0683,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 61,
+      "video_id": "PVICHKHRB34",
+      "channel_id": "UCeeOzvMFfd2qcUFIGN_Nzyw",
+      "classification": "EXTREME",
+      "score": 71.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 62,
+      "video_id": "xxDdwqwVlqc",
+      "channel_id": "UCggXQcy57bwxUeZI1LB8DCw",
+      "classification": "EXTREME",
+      "score": 71.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 63,
+      "video_id": "3CiRs6WaWaU",
+      "channel_id": "UCbbBt23LHt4WhjiWh67NJ3w",
+      "classification": "EXTREME",
+      "score": 71.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 64,
+      "video_id": "HEQN8UHtnxM",
+      "channel_id": "UCoROlfvxd91EwBpaPGQ_phw",
+      "classification": "EXTREME",
+      "score": 71.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 65,
+      "video_id": "2KGWCID1rSw",
+      "channel_id": "UCH5kUshoNleZvMdypocgDNw",
+      "classification": "EXTREME",
+      "score": 71.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 66,
+      "video_id": "zegEZ3gMcO8",
+      "channel_id": "UCYS86n7jQW37C099xpuzEgg",
+      "classification": "EXTREME",
+      "score": 71.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 67,
+      "video_id": "smSzad5Cg_8",
+      "channel_id": "UCSMIektVHnmRSjQCGfKs-ZQ",
+      "classification": "EXTREME",
+      "score": 71.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 68,
+      "video_id": "QW79RdE9p5Q",
+      "channel_id": "UC_404HNxKaCYGARkJOenRRg",
+      "classification": "EXTREME",
+      "score": 71.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 69,
+      "video_id": "4yzQIFWNHSc",
+      "channel_id": "UCKYJf0gOXKcOATkXvZA1crA",
+      "classification": "EXTREME",
+      "score": 71.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 70,
+      "video_id": "Sk42ARzX9jw",
+      "channel_id": "UCWEfMFe4XenZCDm5UbLTZHg",
+      "classification": "EXTREME",
+      "score": 71.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 71,
+      "video_id": "okHkUIW46ks",
+      "channel_id": "UC2Zs9v2hL2qZZ7vsAENsg4w",
+      "classification": "EXTREME",
+      "score": 70.6764,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 72,
+      "video_id": "KeLbP-5eD7I",
+      "channel_id": "UCmuojuuzAOBVwno_3rlw6vQ",
+      "classification": "EXTREME",
+      "score": 70.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 73,
+      "video_id": "VKVu3_SLqwM",
+      "channel_id": "UCwNJAWrliq71ezamX1Vyb7A",
+      "classification": "EXTREME",
+      "score": 70.0,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 74,
+      "video_id": "7vIwRec0RLo",
+      "channel_id": "UCOWFKaCN-rzmYk502JFWnqg",
+      "classification": "EXTREME",
+      "score": 69.1351,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 75,
+      "video_id": "VOWK2TGkplM",
+      "channel_id": "UCU2WFXVS-erIfpLNJ_7OW7g",
+      "classification": "EXTREME",
+      "score": 68.9888,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 76,
+      "video_id": "KDibFTi_rHM",
+      "channel_id": "UCx6Ir85artqwBn5TQ3FvkWQ",
+      "classification": "EXTREME",
+      "score": 68.7856,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 77,
+      "video_id": "4OweikRF7bg",
+      "channel_id": "UCR0OxYKALt3zfm5S0Ow0SkA",
+      "classification": "EXTREME",
+      "score": 68.7543,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 78,
+      "video_id": "27sqgjgGeM4",
+      "channel_id": "UCCXTjWAsalgZbw3aHOlpohw",
+      "classification": "EXTREME",
+      "score": 68.1475,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 79,
+      "video_id": "Z26FeKCbn5s",
+      "channel_id": "UCCDDZ73SMXb3xp-hjMHngXg",
+      "classification": "EXTREME",
+      "score": 68.0016,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 80,
+      "video_id": "-lHQEZjWbLI",
+      "channel_id": "UCCktnahuRFYIBtNnKT5IYyg",
+      "classification": "EXTREME",
+      "score": 67.7014,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 81,
+      "video_id": "ADMaXqIWmww",
+      "channel_id": "UCyi0gqOIrw8nJZmP2dwDclw",
+      "classification": "EXTREME",
+      "score": 67.0727,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 82,
+      "video_id": "KtX1srhbC2k",
+      "channel_id": "UCDVt6xCSRx3dqr_SGgc1hng",
+      "classification": "EXTREME",
+      "score": 66.7593,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 83,
+      "video_id": "_HQ2H_0Ayy0",
+      "channel_id": "UCSWj8mqQCcrcBlXPi4ThRDQ",
+      "classification": "EXTREME",
+      "score": 66.0715,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 84,
+      "video_id": "6wQsj3ri2EM",
+      "channel_id": "UCVvYcNF3LCECUpnZQpbkYmQ",
+      "classification": "EXTREME",
+      "score": 65.643,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 85,
+      "video_id": "9JPnN1Z_iSY",
+      "channel_id": "UC__zoQSleSVci-tlhkCYaEg",
+      "classification": "EXTREME",
+      "score": 65.0601,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 86,
+      "video_id": "KXH9PZeFFG4",
+      "channel_id": "UCAcjP4HhrVIMXw6AUlTJo2g",
+      "classification": "EXTREME",
+      "score": 64.7682,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 87,
+      "video_id": "HIj8wU_rGIU",
+      "channel_id": "UCCktnahuRFYIBtNnKT5IYyg",
+      "classification": "EXTREME",
+      "score": 64.3187,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 88,
+      "video_id": "nUx2FMRuyGw",
+      "channel_id": "UCu8_JcixaA7KrPAJLsGj_dA",
+      "classification": "EXTREME",
+      "score": 64.0225,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 89,
+      "video_id": "h6sZQgS_w_s",
+      "channel_id": "UC6nVHOzgFSU1p-zQHfv7czw",
+      "classification": "EXTREME",
+      "score": 63.6133,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 90,
+      "video_id": "u8Z0wikOkq8",
+      "channel_id": "UCA8dgtU5dV3-2x74zoD0POA",
+      "classification": "EXTREME",
+      "score": 63.5572,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 91,
+      "video_id": "zoyCrTj8mL8",
+      "channel_id": "UCuuq3lB_aWH9-bUubni59Rg",
+      "classification": "EXTREME",
+      "score": 63.1492,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 92,
+      "video_id": "hGfwT3AJh30",
+      "channel_id": "UCH6gDteHtH4hg3o2343iObA",
+      "classification": "EXTREME",
+      "score": 61.3315,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 93,
+      "video_id": "0qANFAN2HPw",
+      "channel_id": "UCGUKXx5HYoEIiZ5Me2QDvTw",
+      "classification": "EXTREME",
+      "score": 60.6878,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 94,
+      "video_id": "U8Ylwt0iIx4",
+      "channel_id": "UCu9fxVjTz5AJO7FR1upY02w",
+      "classification": "EXTREME",
+      "score": 60.5055,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 95,
+      "video_id": "v3iUx2SNspY",
+      "channel_id": "UC9ESQKs98jVWjjUEWkvTMvA",
+      "classification": "EXTREME",
+      "score": 60.4163,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 96,
+      "video_id": "IAb2QHdNe1A",
+      "channel_id": "UCNhWSOlt_UoCzS2YSMhHYmA",
+      "classification": "EXTREME",
+      "score": 60.3127,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 97,
+      "video_id": "VFfdt2xHDxU",
+      "channel_id": "UCK3viG6DcbeiljVErVo5RwA",
+      "classification": "EXTREME",
+      "score": 59.9652,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 98,
+      "video_id": "Yzx7ihtCGBs",
+      "channel_id": "UC2D6eRvCeMtcF5OGHf1-trw",
+      "classification": "EXTREME",
+      "score": 59.7746,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 99,
+      "video_id": "ro7aP-bg2WI",
+      "channel_id": "UCVJTjV4Qh-Nd9TSd8yAeYvw",
+      "classification": "EXTREME",
+      "score": 58.8611,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    },
+    {
+      "rank": 100,
+      "video_id": "UcGaicwNKVA",
+      "channel_id": "UCNliuGyPizt7uNcdCrUoduQ",
+      "classification": "EXTREME",
+      "score": 57.644,
+      "source_run_id": "sprint12_gate7_reconciled_20260914_211554"
+    }
+  ]
+}
