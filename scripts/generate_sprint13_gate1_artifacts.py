@@ -65,7 +65,8 @@ for row in top20_defs:
         "market": "Global/English",
         "language": "en",
         "profitability_score": prof.get("profitability_score"),
-        "viral_score": sd.get("outlier_count"),
+        "viral_score": prof_m.get("outlier_score"),
+        "outlier_count": sd.get("outlier_count"),
         "revenue_score": prof_m.get("revenue_potential_score"),
         "competition_score": mkt.get("competition_score"),
         "evergreen_score": mkt.get("evergreen_score"),
@@ -107,14 +108,15 @@ md_path.parent.mkdir(parents=True, exist_ok=True)
 with open(md_path, "w", encoding="utf-8") as f:
     f.write("# SPRINT 13 — GATE 1: CANONICAL TOP 20 CANDIDATE REVIEW\n\n")
     f.write(f"**Authoritative Run ID:** `{run_id}`\n\n")
-    f.write("| Rank | Candidate ID | Subniche | Normalized Intent | Market | Profitability | Outliers | Revenue | Risk | Depth | Confidence |\n")
-    f.write("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n")
+    f.write("| Rank | Candidate ID | Subniche | Normalized Intent | Market | ProfitabilityScore | ViralScore | OutlierCount | RevenueScore | RiskScore | Depth | Confidence |\n")
+    f.write("| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n")
     for d in top20_data:
         prof_s = f"{d['profitability_score']:.1f}" if d['profitability_score'] is not None else "N/A"
+        viral_s = f"{d['viral_score']:.1f}" if d['viral_score'] is not None else "N/A"
         rev_s = f"{d['revenue_score']:.1f}" if d['revenue_score'] is not None else "N/A"
         risk_s = f"{d['risk_score']:.1f}" if d['risk_score'] is not None else "N/A"
         conf_s = f"{d['confidence']:.1f}%" if d['confidence'] is not None else "N/A"
-        f.write(f"| {d['rank']} | `{d['candidate_id']}` | {d['subniche']} | `{d['normalized_intent']}` | {d['market']} | {prof_s} | {d['viral_score']} | {rev_s} | {risk_s} ({d['risk_level']}) | {d['content_depth_status']} | {conf_s} |\n")
+        f.write(f"| {d['rank']} | `{d['candidate_id']}` | {d['subniche']} | `{d['normalized_intent']}` | {d['market']} | {prof_s} | {viral_s} | {d['outlier_count']} | {rev_s} | {risk_s} ({d['risk_level']}) | {d['content_depth_status']} | {conf_s} |\n")
     
     f.write("\n\n## Detailed Candidate Evidence Breakdown\n\n")
     for d in top20_data:
@@ -122,7 +124,7 @@ with open(md_path, "w", encoding="utf-8") as f:
         f.write(f"- **Niche:** {d['niche']}\n")
         f.write(f"- **Validation Status:** {d['recommendation']}\n")
         f.write(f"- **Confidence:** {d['confidence']:.2f}%\n")
-        f.write(f"- **Scores:** Profitability={d['profitability_score']:.2f}, Revenue={d['revenue_score']}, Risk={d['risk_score']} ({d['risk_level']}), Evergreen={d['evergreen_score']}, Competition={d['competition_score']}\n")
+        f.write(f"- **Scores:** Profitability={d['profitability_score']:.2f}, ViralScore={d['viral_score']:.2f} (Outliers={d['outlier_count']}), Revenue={d['revenue_score']}, Risk={d['risk_score']} ({d['risk_level']}), Evergreen={d['evergreen_score']}, Competition={d['competition_score']}\n")
         f.write(f"- **Content Depth:** {d['content_depth_status']} ({d['distinct_intents_count']} distinct intents)\n")
         f.write(f"- **Evidence Summary:** {', '.join(d['evidence_summary'])}\n")
         f.write(f"- **Counter-Evidence:** {', '.join(d['counter_evidence'])}\n\n")

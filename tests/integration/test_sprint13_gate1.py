@@ -124,8 +124,12 @@ def test_top20_score_ranges_and_evidence_linkage():
         prd = prods[eval_id]
         val = validations[eval_id]
 
-        # Valid score ranges
+        prof_m = prof["metrics"] if isinstance(prof["metrics"], dict) else json.loads(prof["metrics"] or "{}")
+
+        # Valid score ranges (0..100 contract)
         assert 0.0 <= float(prof["profitability_score"]) <= 100.0
+        assert 0.0 <= float(prof_m["outlier_score"]) <= 100.0  # True ViralScore
+        assert 0.0 <= float(prof_m["revenue_potential_score"]) <= 100.0
         assert 0.0 <= float(mkt["competition_score"]) <= 100.0
         assert 0.0 <= float(mkt["evergreen_score"]) <= 100.0
         assert 0.0 <= float(prd["overall_risk_score"]) <= 100.0
