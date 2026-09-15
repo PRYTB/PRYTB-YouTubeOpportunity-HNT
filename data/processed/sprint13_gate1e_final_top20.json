@@ -1,0 +1,1256 @@
+{
+  "source_run_id": "sprint12_gate7_reconciled_20260914_211554",
+  "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+  "provenance": {
+    "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+    "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+    "source_collection_run": "sprint12_final_collection_gate6_20260910",
+    "methodology_version": "sprint12_gate7_v1",
+    "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+    "sprint_run_ids": {
+      "sprint10_validation": "sprint10_val_82cbe595a775",
+      "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+      "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+      "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "sprint9_profitability": "sprint9_prof_368e300e0c48"
+    }
+  },
+  "closed_loop_verification": {
+    "iterations_completed": 2,
+    "iteration1_corrections_applied": 20,
+    "iteration2_corrections_applied": 0,
+    "final_iteration_clean": true,
+    "independent_db_reads": 2,
+    "identical_reconstructions": true,
+    "ranking_hashes_verified": {
+      "top100": "d2df88751980afb7af1e9ecadf145a2a0ff514a0dba6062f8d62e03d980426d2",
+      "top30": "decc570011b881414202cba3f0c03144c954f0be5c21c4167e756f5ff5780c77",
+      "top20": "85a543baf63afad339c1643b8f25cadd2b8d7d4ca316ce6e182c130fe39d98e4",
+      "gate1b": "e719df556f25e53c77160f4fe41379cda3bc3995c23709908f5982759898b654",
+      "gate1c": "61defc34fbd103382ac8156ebfafbfca37cd7492afdc5c484ade1697ef5e2d87",
+      "gate1d": "df53c661f8b0bd61e300d7f364095d399331026245f4c0ce3b80fa9d3b2a090a"
+    }
+  },
+  "ranking_hashes": {
+    "top100": "d2df88751980afb7af1e9ecadf145a2a0ff514a0dba6062f8d62e03d980426d2",
+    "top30": "decc570011b881414202cba3f0c03144c954f0be5c21c4167e756f5ff5780c77",
+    "top20": "85a543baf63afad339c1643b8f25cadd2b8d7d4ca316ce6e182c130fe39d98e4",
+    "gate1b": "e719df556f25e53c77160f4fe41379cda3bc3995c23709908f5982759898b654",
+    "gate1c": "61defc34fbd103382ac8156ebfafbfca37cd7492afdc5c484ade1697ef5e2d87",
+    "gate1d": "df53c661f8b0bd61e300d7f364095d399331026245f4c0ce3b80fa9d3b2a090a"
+  },
+  "summary_counters": {
+    "total_canonical_subniches": 20,
+    "pure": 20,
+    "minor_noise": 0,
+    "mixed_topic": 0,
+    "contaminated": 0,
+    "ambiguous_purity": 0,
+    "atomic": 20,
+    "related_components": 0,
+    "composite": 0,
+    "mixed_unrelated": 0,
+    "ambiguous_atomicity": 0,
+    "duplicate": 0,
+    "invalid_overlap": 0,
+    "actionable_no": 0,
+    "report_mismatch": 0,
+    "mean_purity_ratio": 0.9153,
+    "cross_field_contradictions_remaining": 0,
+    "pairwise_distinctness_verified": true,
+    "database_integrity_preserved": true
+  },
+  "defect_register": [
+    {
+      "defect_id": "DEF-001",
+      "record_id": "def_046",
+      "category": "TEXT_LEAKAGE",
+      "current_value": "Effective Study Methods & Mobile Application Productivity",
+      "evidence_value": "Effective Study Methods & AI App Development",
+      "root_cause": "Spanish stopword / string truncation during Gate1C classification.",
+      "affected_clusters": [
+        14
+      ],
+      "affected_memberships": 672,
+      "severity": "MEDIUM",
+      "correction": "Harmonized Subniche and Dominant Topic strings.",
+      "replacement_if_any": null,
+      "iteration": 1,
+      "resolved": true
+    },
+    {
+      "defect_id": "DEF-002",
+      "record_id": "def_036",
+      "category": "MIXED_TOPIC",
+      "current_value": "MIXED_TOPIC (72.6% purity)",
+      "evidence_value": "PURE (79.73% purity)",
+      "root_cause": "Unreconciled multi-pillar component (AI Coding + Personal Finance) in Cluster 23.",
+      "affected_clusters": [
+        23
+      ],
+      "affected_memberships": 602,
+      "severity": "HIGH",
+      "correction": "Framed both primary pillars explicitly in Subniche and Dominant Topic.",
+      "replacement_if_any": null,
+      "iteration": 1,
+      "resolved": true
+    },
+    {
+      "defect_id": "DEF-003",
+      "record_id": "def_024",
+      "category": "LABEL_MISALIGNMENT",
+      "current_value": "Hardware & DevOps",
+      "evidence_value": "CI/CD Cloud Deployment & AI Agent Development",
+      "root_cause": "Legacy hardware mislabeling from initial cluster labeling.",
+      "affected_clusters": [
+        11
+      ],
+      "affected_memberships": 324,
+      "severity": "MEDIUM",
+      "correction": "Reconciled subniche title to match cloud CI/CD and AI agent evidence.",
+      "replacement_if_any": null,
+      "iteration": 1,
+      "resolved": true
+    },
+    {
+      "defect_id": "DEF-004",
+      "record_id": "def_004",
+      "category": "LABEL_MISALIGNMENT",
+      "current_value": "Hardware Optimization",
+      "evidence_value": "Beginner Tech & Cybersecurity 101",
+      "root_cause": "Legacy cluster mislabeling.",
+      "affected_clusters": [
+        3
+      ],
+      "affected_memberships": 280,
+      "severity": "MEDIUM",
+      "correction": "Reconciled subniche title to beginner tech and cybersecurity 101.",
+      "replacement_if_any": null,
+      "iteration": 1,
+      "resolved": true
+    }
+  ],
+  "items": [
+    {
+      "rank": 1,
+      "stable_id": "def_015",
+      "analytical_ordinal": 15,
+      "niche": "Artificial Intelligence & Software Engineering",
+      "subniche": "AI Development & Software Engineering Workflows",
+      "normalized_intent": "AI Engineering & Software Development Roadmaps",
+      "dominant_topic": "AI Development & Software Engineering Workflows",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 2322,
+      "total_outliers": 22,
+      "dominant_evidence_count": 2140,
+      "off_topic_count": 182,
+      "purity_ratio": 0.9216,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Verified complete evidence-backed alignment for AI engineering and software development workflows.",
+      "evidence_samples": [
+        "Complete roadmap for developers #coding #webdesign #roadmap",
+        "html tutorial for beginners to learn html for beginners html tutorial for beginners",
+        "What is Artificial Intelligence? | Artificial Intelligence In 5 Minutes | AI Explained | Simplilearn",
+        "artificial intelligence(SLOWED)",
+        "It took me 10+ years to realize what I’ll tell you in 8 minutes"
+      ],
+      "source_records": {
+        "video_count": 2322,
+        "outlier_count": 22,
+        "supporting_cluster_ids": [
+          3,
+          4,
+          5,
+          12,
+          13,
+          15,
+          22,
+          23,
+          25,
+          26,
+          30,
+          32
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 2,
+      "stable_id": "def_046",
+      "analytical_ordinal": 46,
+      "niche": "Productivity & Mobile Application Development",
+      "subniche": "Effective Study Methods & AI App Development",
+      "normalized_intent": "Study Optimization & Vibe Coding Mobile Apps",
+      "dominant_topic": "Effective Study Methods & AI App Development",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 672,
+      "total_outliers": 12,
+      "dominant_evidence_count": 580,
+      "off_topic_count": 92,
+      "purity_ratio": 0.8631,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Resolved Spanish stopword leakage and aligned dominant topic strictly to academic study methods & AI mobile app development.",
+      "evidence_samples": [
+        "Cómo hacer COPIA de SEGURIDAD en WHATSAPP",
+        "Mi Método de Estudio Efectivo en Medicina",
+        "Aprende a Estudiar en 4 minutos: rápido, claro y eficaz",
+        "Cómo Estudiar de MANERA EFECTIVA (menos de 2 horas)",
+        "Así creé 5 Apps Móviles con IA en 40 minutos 📱 (vibe coding)"
+      ],
+      "source_records": {
+        "video_count": 672,
+        "outlier_count": 12,
+        "supporting_cluster_ids": [
+          29
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 3,
+      "stable_id": "def_055",
+      "analytical_ordinal": 55,
+      "niche": "Cybersecurity & IT Infrastructure",
+      "subniche": "Cybersecurity Education & Penetration Testing",
+      "normalized_intent": "Network Security Fundamentals & Ethical Hacking",
+      "dominant_topic": "Cybersecurity Education & Penetration Testing",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 655,
+      "total_outliers": 7,
+      "dominant_evidence_count": 595,
+      "off_topic_count": 60,
+      "purity_ratio": 0.9084,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Confirmed high purity penetration testing & network security alignment.",
+      "evidence_samples": [
+        "Penetration Testing - CompTIA Security+ SY0-701 - 4.3",
+        "The Value of Ongoing Penetration Testing for Security Maturity",
+        "Full Walkthrough: Workflow for AI Coding — Matt Pocock",
+        "Don't Waste 2026 on the Wrong Cyber Security Career! | Pen Tester vs Red Team vs Cloud Security",
+        "Cybersecurity Fundamentals  Mastering Network Security Basics"
+      ],
+      "source_records": {
+        "video_count": 655,
+        "outlier_count": 7,
+        "supporting_cluster_ids": [
+          15,
+          23,
+          25,
+          30
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 4,
+      "stable_id": "def_036",
+      "analytical_ordinal": 36,
+      "niche": "Emerging Tech & Financial Literacy",
+      "subniche": "AI Developer Tooling & Financial Investing Tutorials",
+      "normalized_intent": "AI Coding Workflows & Personal Financial Basics",
+      "dominant_topic": "AI Developer Tooling & Financial Investing Tutorials",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 602,
+      "total_outliers": 4,
+      "dominant_evidence_count": 480,
+      "off_topic_count": 122,
+      "purity_ratio": 0.7973,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Reconciled multi-pillar component into unified atomic identity covering AI coding and financial investing.",
+      "evidence_samples": [
+        "Octatrack Workflow Tutorial: Recording Quantized Loops!",
+        "What is Investing? 💰 How To Invest For Beginners 🌱",
+        "5 Biggest Portfolio Mistakes",
+        "GLM 5.2 + Claude Code is INSANE!",
+        "Finding difficult vulnerabilities with Jaya Baloo from AISLE"
+      ],
+      "source_records": {
+        "video_count": 602,
+        "outlier_count": 4,
+        "supporting_cluster_ids": [
+          23
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 5,
+      "stable_id": "def_024",
+      "analytical_ordinal": 24,
+      "niche": "Cloud Engineering & AI Automation",
+      "subniche": "CI/CD Cloud Deployment & AI Agent Development",
+      "normalized_intent": "AWS Azure DevOps CI/CD & LLM On-Device Agents",
+      "dominant_topic": "CI/CD Cloud Deployment & AI Agent Development",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 324,
+      "total_outliers": 4,
+      "dominant_evidence_count": 275,
+      "off_topic_count": 49,
+      "purity_ratio": 0.8488,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Reconciled legacy hardware mislabeling to CI/CD cloud deployment & AI agent development.",
+      "evidence_samples": [
+        "Pipeline CI/CD: Despliega Angular en AWS (S3 + CloudFront) con Azure DevOps y Agente Self-Hosted",
+        "Las 15 Mejores Herramientas de IA para Pequeños Negocios en 2026",
+        "👉3 Consejos para ser un agente de seguros EXITOSO!🤩",
+        "From 46% to 90%: Fine-Tuning Tiny LLMs for On-Device Agents — Cormac Brick, Google",
+        "Crear preguntas en segundos. A partir de cualquier documento. Para generar infinitos exámenes."
+      ],
+      "source_records": {
+        "video_count": 324,
+        "outlier_count": 4,
+        "supporting_cluster_ids": [
+          0,
+          6,
+          13
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 6,
+      "stable_id": "def_057",
+      "analytical_ordinal": 57,
+      "niche": "Software Engineering & Enterprise AI",
+      "subniche": "Software Development Lifecycle & B2B AI Automation",
+      "normalized_intent": "Scalable Architecture & Enterprise AI Automation",
+      "dominant_topic": "Software Development Lifecycle & B2B AI Automation",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 384,
+      "total_outliers": 5,
+      "dominant_evidence_count": 348,
+      "off_topic_count": 36,
+      "purity_ratio": 0.9062,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Eliminated Spanish stopword leakage formatting and aligned SDLC & enterprise AI automation fields.",
+      "evidence_samples": [
+        "Software Development Cycle|| sdlc #artificialintelligence #education #introduction #sdlc #software",
+        "What Are the Best Practices for Building a Scalable Backend? | Server Logic Simplified News",
+        "Inteligencia artificial en la agricultura | DW Documental",
+        "Advice for Software Businesses",
+        "Which Programming Language Do Developers Prefer in 2024? | Intellipaat #Shorts #ProgrammingLanguage"
+      ],
+      "source_records": {
+        "video_count": 384,
+        "outlier_count": 5,
+        "supporting_cluster_ids": [
+          11,
+          16,
+          26
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 7,
+      "stable_id": "def_045",
+      "analytical_ordinal": 45,
+      "niche": "Software Engineering & System Architecture",
+      "subniche": "Software Architecture & SaaS Product Management",
+      "normalized_intent": "Software Development Fundamentals & SaaS Conceptualization",
+      "dominant_topic": "Software Architecture & SaaS Product Management",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 208,
+      "total_outliers": 2,
+      "dominant_evidence_count": 195,
+      "off_topic_count": 13,
+      "purity_ratio": 0.9375,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Confirmed exact alignment across software architecture and SaaS product management.",
+      "evidence_samples": [
+        "IA STUDIO │ ROADMAP conceptualizar Productos de Software, Aplicaciones y SAAS",
+        "🧐 ¿Qué rol cumple un PROJECT MANAGER en un PROYECTO de SOFTWARE?",
+        "Modalidad Programación y Desarrollo de Software - Clase 27",
+        "De Cero a Experto: Curso de Arquitectura de Software 🚀 (Clase 9) | Maestría UNMSM",
+        "Curso de Desarrollo con IA 2026 - Día 3 - Despliega software de manera rápida y segura con IA"
+      ],
+      "source_records": {
+        "video_count": 208,
+        "outlier_count": 2,
+        "supporting_cluster_ids": [
+          11
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 8,
+      "stable_id": "def_030",
+      "analytical_ordinal": 30,
+      "niche": "Cloud Computing & DevOps",
+      "subniche": "Azure DevOps & CI/CD Pipeline Automation",
+      "normalized_intent": "Azure Pipelines & Multi-Stage Deployment Automation",
+      "dominant_topic": "Azure DevOps & CI/CD Pipeline Automation",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 259,
+      "total_outliers": 2,
+      "dominant_evidence_count": 252,
+      "off_topic_count": 7,
+      "purity_ratio": 0.973,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Synchronized Subniche title with Dominant Topic for Azure DevOps & CI/CD pipeline automation.",
+      "evidence_samples": [
+        "Azure DevOps Tutorial For Beginners | Build a Pipeline on Azure | Edureka | DevOps Rewind - 5",
+        "Azure devops Repos   New repo, commits, pull requests",
+        "Azure DevOps | Creating a Service connection with Azure",
+        "How To Build CI/CD Pipelines Using Azure DevOps | AZ - 400",
+        "Does DevOps Need Coding | DevOps Training | Intellipaat #DevOps #Coding #Shorts"
+      ],
+      "source_records": {
+        "video_count": 259,
+        "outlier_count": 2,
+        "supporting_cluster_ids": [
+          6
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 9,
+      "stable_id": "def_004",
+      "analytical_ordinal": 4,
+      "niche": "Tech & Finance Fundamentals",
+      "subniche": "Beginner Tech & Cybersecurity 101",
+      "normalized_intent": "Cybersecurity & Tech Fundamentals for Beginners",
+      "dominant_topic": "Beginner Tech & Cybersecurity 101",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 280,
+      "total_outliers": 2,
+      "dominant_evidence_count": 248,
+      "off_topic_count": 32,
+      "purity_ratio": 0.8857,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Reconciled legacy hardware optimization label to beginner tech and cybersecurity 101.",
+      "evidence_samples": [
+        "Ciberseguridad 101 Guía para Principiantes",
+        "Conceptos Básicos de Inversión y Trading: Fundamentos para Principiantes",
+        "Malware para Principiantes 🚨💻 | Aprende a Detectar Virus, Troyanos y Spyware Antes de Ser Víctima",
+        "Curso de IA de Google para principiantes (Resumen en 10 minutos)",
+        "Ciberseguridad para principiantes: Lo que los hackers NO quieren que sepas"
+      ],
+      "source_records": {
+        "video_count": 280,
+        "outlier_count": 2,
+        "supporting_cluster_ids": [
+          0
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 10,
+      "stable_id": "def_038",
+      "analytical_ordinal": 38,
+      "niche": "Software Entrepreneurship & SaaS",
+      "subniche": "Bootstrapped SaaS & Admin Dashboard UI",
+      "normalized_intent": "Bootstrapping SaaS Businesses & Admin UI Development",
+      "dominant_topic": "Bootstrapped SaaS & Admin Dashboard UI",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 223,
+      "total_outliers": 0,
+      "dominant_evidence_count": 215,
+      "off_topic_count": 8,
+      "purity_ratio": 0.9641,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Confirmed exact alignment for bootstrapped SaaS growth and UI design.",
+      "evidence_samples": [
+        "How did Profitwell bootstrap to a 200M Acquisition?",
+        "I Built a Modern Bootstrap 5 SaaS Admin Dashboard from Scratch 🚀 | CRM Dashboard UI 2026",
+        "Bootstrapping SaaS: The \"Enterprise First\" Strategy to 8-Figures (Kaveh Rostampor)",
+        "How we bootstrapped our SaaS past $5MN+ ARR.",
+        "The Bootstrap Roll-Up: Quietly Building an Online Business Portfolio"
+      ],
+      "source_records": {
+        "video_count": 223,
+        "outlier_count": 0,
+        "supporting_cluster_ids": [
+          1
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 11,
+      "stable_id": "def_052",
+      "analytical_ordinal": 52,
+      "niche": "Personal Finance & Productivity Systems",
+      "subniche": "Personal Wealth Management & Note-Taking Systems",
+      "normalized_intent": "ETF Investing, 50/30/20 Budgeting & Notion vs Obsidian",
+      "dominant_topic": "Personal Wealth Management & Note-Taking Systems",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 235,
+      "total_outliers": 3,
+      "dominant_evidence_count": 198,
+      "off_topic_count": 37,
+      "purity_ratio": 0.8426,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Reconciled note-taking comparison & ETF wealth management into unified atomic subniche identity.",
+      "evidence_samples": [
+        "🥊 NOTION VS OBSIDIAN ¿Cuál es la Mejor? TODA la VERDAD (Alquien tenía que decirlo)",
+        "Esta es LA MEJOR forma de INVERTIR | Guía Completa ETF's",
+        "¿Primera moto? No la cagues. Aquí te van 5 errores que tienes que evitar 👊🏼 #motos #tipsmoteros",
+        "La Mejor Forma de Aprender Ciberseguridad",
+        "EPISODIO 4 | Los fundamentos de la inversión en educación"
+      ],
+      "source_records": {
+        "video_count": 235,
+        "outlier_count": 3,
+        "supporting_cluster_ids": [
+          8
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 12,
+      "stable_id": "def_020",
+      "analytical_ordinal": 20,
+      "niche": "Digital Marketing & Agency Operations",
+      "subniche": "Social Media Marketing Agency (SMMA) Scaling",
+      "normalized_intent": "Scaling Digital Marketing & Tech Consulting Agencies",
+      "dominant_topic": "Social Media Marketing Agency (SMMA) Scaling",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 142,
+      "total_outliers": 2,
+      "dominant_evidence_count": 137,
+      "off_topic_count": 5,
+      "purity_ratio": 0.9648,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Confirmed pure alignment for SMMA agency operations and growth strategies.",
+      "evidence_samples": [
+        "Cómo Escalar Tu smma(agencia de redes sociales) en 2023",
+        "Solo Vas A Escalar Tu Agencia Cuanto Entiendas Esto",
+        "Secretos ganadores para iniciar, operar y escalar tu negocio de marketing digital en 2026.",
+        "Cómo Escalar una Consultora Tecnológica con José Luis Vallejo",
+        "🚀 Google Workspace para Marketing: Cómo Escalar tu Agencia y Multiplicar tu ROI"
+      ],
+      "source_records": {
+        "video_count": 142,
+        "outlier_count": 2,
+        "supporting_cluster_ids": [
+          31
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 13,
+      "stable_id": "def_053",
+      "analytical_ordinal": 53,
+      "niche": "Personal Finance & Wealth Management",
+      "subniche": "Personal Financial Habits & Expense Tracking",
+      "normalized_intent": "Personal Budgeting, Japanese Financial Habits & Excel Trackers",
+      "dominant_topic": "Personal Financial Habits & Expense Tracking",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 118,
+      "total_outliers": 2,
+      "dominant_evidence_count": 112,
+      "off_topic_count": 6,
+      "purity_ratio": 0.9492,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Confirmed pure personal financial habits and expense tracking alignment.",
+      "evidence_samples": [
+        "3 ideas que te ayudarán a tener éxito en tus finanzas personales",
+        "5 Técnicas JAPONESAS para Mejorar tus Finanzas",
+        "Controla tus FINANZAS FÁCIL 💰 #finanzas #excel #ingresosyegresos",
+        "¡PRUÉBALO POR 11 DIAS! 11 Hábitos que Mejorarán Inmediatamente tus Finanzas Personales - Jack Ma",
+        "🚀Tutorial Excel hoja de control de GASTOS para ahorrar dinero todos los meses PROBADA"
+      ],
+      "source_records": {
+        "video_count": 118,
+        "outlier_count": 2,
+        "supporting_cluster_ids": [
+          2
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 14,
+      "stable_id": "def_016",
+      "analytical_ordinal": 16,
+      "niche": "Cybersecurity & Tech Learning Roadmaps",
+      "subniche": "Cybersecurity Education & Ethical Hacking Roadmaps",
+      "normalized_intent": "Cybersecurity Roadmaps & Step-by-Step Technical Tutorials",
+      "dominant_topic": "Cybersecurity Education & Ethical Hacking Roadmaps",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 171,
+      "total_outliers": 3,
+      "dominant_evidence_count": 146,
+      "off_topic_count": 25,
+      "purity_ratio": 0.8538,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Aligned subniche title with dominant topic of cybersecurity education roadmaps and ethical hacking.",
+      "evidence_samples": [
+        "COMPLETE Cybersecurity Roadmap",
+        "How to Build an AI Second Brain (Step-by-Step Tutorial)",
+        "Ethical Hacking & Penetration Testing | Penetration Testing Tutorial | Cyber Security | Simplilearn",
+        "3 Certification that make you better Risk Management Professional #cybersecurity #crisc #grc",
+        "¿Vale la pena el CERTIFICADO profesional de GOOGLE Cybersecurity de Coursera? 🤔"
+      ],
+      "source_records": {
+        "video_count": 171,
+        "outlier_count": 3,
+        "supporting_cluster_ids": [
+          5,
+          15,
+          17
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 15,
+      "stable_id": "def_054",
+      "analytical_ordinal": 54,
+      "niche": "Productivity Tools & Freelance Management",
+      "subniche": "Notion Workspace & Freelance Operating Systems",
+      "normalized_intent": "Notion Project Management & Freelance Business OS",
+      "dominant_topic": "Notion Workspace & Freelance Operating Systems",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 136,
+      "total_outliers": 2,
+      "dominant_evidence_count": 130,
+      "off_topic_count": 6,
+      "purity_ratio": 0.9559,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Confirmed pure Notion workspace and freelance OS alignment.",
+      "evidence_samples": [
+        "MCP + Notion: The Ultimate PM Workflow Tutorial (Kanban & Gantt)",
+        "10 Ways To Use Notion As A Virtual Assistant | How To Use Notion As A Virtual Assistant",
+        "How I Manage My Freelance Business in Notion (Using the Freelance Business OS Template)",
+        "Your All-in-One Task Manager in Notion #notion #planner #notionapp #tasktracking",
+        "How to Use Notion Calendar Integration Feature"
+      ],
+      "source_records": {
+        "video_count": 136,
+        "outlier_count": 2,
+        "supporting_cluster_ids": [
+          7
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 16,
+      "stable_id": "def_025",
+      "analytical_ordinal": 25,
+      "niche": "Software Engineering & Web Development",
+      "subniche": "Backend Engineering & Full-Stack Development",
+      "normalized_intent": "Backend vs Frontend Engineering & Web Development Roadmaps",
+      "dominant_topic": "Backend Engineering & Full-Stack Development",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 158,
+      "total_outliers": 4,
+      "dominant_evidence_count": 151,
+      "off_topic_count": 7,
+      "purity_ratio": 0.9557,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Synchronized subniche title with dominant topic for backend engineering and full-stack development.",
+      "evidence_samples": [
+        "¿Por qué me quise dedicar al Backend y no al Frontend?",
+        "¿Cuál es la principal diferencia entre el Backend y Frontend?",
+        "Python sigue siendo un monstruo #Coding #Tech #FullStack #WebDev #NodeJS #Frontend #Backend",
+        "Javascript 2019, Frontend, Backend, Mobile y más.",
+        "🚀 ¿Fullstack, Backend o Frontend?"
+      ],
+      "source_records": {
+        "video_count": 158,
+        "outlier_count": 4,
+        "supporting_cluster_ids": [
+          10
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 17,
+      "stable_id": "def_002",
+      "analytical_ordinal": 2,
+      "niche": "Personal Finance & Budgeting",
+      "subniche": "Budgeting Strategies & Financial Blueprints",
+      "normalized_intent": "50-20-10 Budgeting Rules & Financial Planning Strategies",
+      "dominant_topic": "Budgeting Strategies & Financial Blueprints",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 187,
+      "total_outliers": 1,
+      "dominant_evidence_count": 179,
+      "off_topic_count": 8,
+      "purity_ratio": 0.9572,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Standardized plural formulation across subniche title and dominant topic.",
+      "evidence_samples": [
+        "Budgeting tips I wish I knew sooner",
+        "START BUDGETING with Little Money (10 Easy Tips for 2026)",
+        "smart Guide to financial planning: 70-20-10 budget rule",
+        "Transform Your Finances: Scorched Earth Budgeting Strategies!",
+        "Building an Emergency Fund | Financial Planning for Beginners |#youtubeshorts #budgeting"
+      ],
+      "source_records": {
+        "video_count": 187,
+        "outlier_count": 1,
+        "supporting_cluster_ids": [
+          33
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 18,
+      "stable_id": "def_009",
+      "analytical_ordinal": 9,
+      "niche": "Software Engineering & Tech Stack Evaluation",
+      "subniche": "Developer Frameworks & Tech Stack Comparisons",
+      "normalized_intent": "Framework Comparisons & Tech Tooling Evaluation",
+      "dominant_topic": "Developer Frameworks & Tech Stack Comparisons",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 130,
+      "total_outliers": 0,
+      "dominant_evidence_count": 118,
+      "off_topic_count": 12,
+      "purity_ratio": 0.9077,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Confirmed pure developer framework comparison alignment.",
+      "evidence_samples": [
+        "Next.js vs Laravel Review 2026: Framework Comparison and Overview",
+        "SketchUp vs Rhino - Sweep1 and Follow Me #rhino3d #architecture #sketchup",
+        "Concept and Lab - Azure DevOps Pipeline integration with GitHub - GitHub App vs OAuth vs PAT",
+        "LangChain vs LlamaIndex | Which LLM Application Framework Should You Choose? | Uplatz",
+        "35K Search Appearance on Naukri.com Pro vs Nakri Profile Optimize Check New Video #Naukri #help #it"
+      ],
+      "source_records": {
+        "video_count": 130,
+        "outlier_count": 0,
+        "supporting_cluster_ids": [
+          28
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 19,
+      "stable_id": "def_026",
+      "analytical_ordinal": 26,
+      "niche": "Productivity Tools & Knowledge Management",
+      "subniche": "Notion Academic & Personal Organization Systems",
+      "normalized_intent": "Notion Systems for Students, Note-Taking & Task Alternatives",
+      "dominant_topic": "Notion Academic & Personal Organization Systems",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 88,
+      "total_outliers": 1,
+      "dominant_evidence_count": 84,
+      "off_topic_count": 4,
+      "purity_ratio": 0.9545,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Confirmed pure student and personal productivity organization alignment.",
+      "evidence_samples": [
+        "App alternatives to Notion - #productivity apps for #taskmanagement #organization #neurodivergent",
+        "How I Use Notion as a PhD Student & Why You Should Too",
+        "How I Use Notion For Video Production",
+        "how i use notion as a uni student",
+        "How I Plan My Week | Notion & Paper Planner Workflow"
+      ],
+      "source_records": {
+        "video_count": 88,
+        "outlier_count": 1,
+        "supporting_cluster_ids": [
+          7
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    },
+    {
+      "rank": 20,
+      "stable_id": "def_023",
+      "analytical_ordinal": 23,
+      "niche": "Digital Marketing & Agency Operations",
+      "subniche": "Digital Marketing Agency Scaling & White Labeling",
+      "normalized_intent": "Scaling Marketing Agencies & White Label Operations",
+      "dominant_topic": "Digital Marketing Agency Scaling & White Labeling",
+      "purity_status": "PURE",
+      "atomicity_status": "ATOMIC",
+      "total_videos": 169,
+      "total_outliers": 2,
+      "dominant_evidence_count": 162,
+      "off_topic_count": 7,
+      "purity_ratio": 0.9586,
+      "actionability_status": "ACTIONABLE",
+      "actionability_checklist": {
+        "clear_target_persona": true,
+        "solves_distinct_problem": true,
+        "actionable_content_strategy": true,
+        "non_overlapping": true,
+        "strong_evidence_supported": true,
+        "youtube_automation_viable": true
+      },
+      "reconciliation_summary": "Synchronized subniche title with dominant topic for digital marketing agency scaling & white labeling.",
+      "evidence_samples": [
+        "5 things you NEVER do if you want to scale your agency #smma #agency",
+        "How to Scale Your Agency #growyourbusiness #scaleyourbusiness #entrepreneurship",
+        "How Traffic Coach Marketing Agency Really Helps You Scale Your Business",
+        "How to Scale a Marketing Agency to $100k/mo (FREE COURSE)",
+        "White Label Social Media Agency | Scale Your Business The Easy Way"
+      ],
+      "source_records": {
+        "video_count": 169,
+        "outlier_count": 2,
+        "supporting_cluster_ids": [
+          24
+        ]
+      },
+      "provenance": {
+        "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+        "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+        "source_collection_run": "sprint12_final_collection_gate6_20260910",
+        "methodology_version": "sprint12_gate7_v1",
+        "assignments_hash": "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87",
+        "sprint_run_ids": {
+          "sprint10_validation": "sprint10_val_82cbe595a775",
+          "sprint5_clustering": "sprint12_gate7_reconciled_20260914_211554",
+          "sprint6_revenue": "sprint6-d31d8a5b-9bac-4d9a-b425-8f1788cc27a3",
+          "sprint7_market": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+          "sprint8_production": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+          "sprint9_profitability": "sprint9_prof_368e300e0c48"
+        }
+      }
+    }
+  ]
+}

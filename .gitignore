@@ -18,6 +18,7 @@ data/raw/*
 data/processed/*
 !data/processed/.gitkeep
 !data/processed/sprint13_gate1b_top20_semantic.json
+!data/processed/sprint13_gate1e_final_top20.json
 
 data/exports/*
 !data/exports/.gitkeep
