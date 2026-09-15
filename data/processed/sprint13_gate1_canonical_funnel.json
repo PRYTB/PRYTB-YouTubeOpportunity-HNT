@@ -1,0 +1,1278 @@
+{
+  "run_id": "sprint12_gate7_reconciled_20260914_211554",
+  "dataset_hash": "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba",
+  "source_counts": {
+    "outlier_analyses": 10585,
+    "actual_outliers": 754,
+    "small_channel_outliers": 282,
+    "clusters": 35,
+    "cluster_memberships": 10585,
+    "semantic_definitions": 58,
+    "eligible_semantic_definitions": 58,
+    "semantic_memberships": 9603
+  },
+  "ordering_contracts": {
+    "top100": "Python stable score-desc sort over outlier-analysis insertion identity order",
+    "top30": "Python stable metric-desc sort over ascending cluster_id production order",
+    "top20": "Python stable metric-desc sort over ascending analytical_ordinal production order"
+  },
+  "top100": {
+    "ranking_hash": "d2df88751980afb7af1e9ecadf145a2a0ff514a0dba6062f8d62e03d980426d2",
+    "persisted_ranking_hash": "d2df88751980afb7af1e9ecadf145a2a0ff514a0dba6062f8d62e03d980426d2",
+    "matches_persisted": true,
+    "items": [
+      {
+        "rank": 1,
+        "video_id": "d3j5hsw6CeE",
+        "channel_id": "UCDWRqc3XNLolILyzfUT5MyA",
+        "outlier_rank_score": 76.25
+      },
+      {
+        "rank": 2,
+        "video_id": "o4mGdXRJ-dk",
+        "channel_id": "UCA8dgtU5dV3-2x74zoD0POA",
+        "outlier_rank_score": 76.25
+      },
+      {
+        "rank": 3,
+        "video_id": "FeFSRPxj6KI",
+        "channel_id": "UCDyLZlHJyX78w7ZGiO8ybsQ",
+        "outlier_rank_score": 75.25
+      },
+      {
+        "rank": 4,
+        "video_id": "qETg4cODLME",
+        "channel_id": "UCDyLZlHJyX78w7ZGiO8ybsQ",
+        "outlier_rank_score": 75.25
+      },
+      {
+        "rank": 5,
+        "video_id": "Z94DYoF5ufg",
+        "channel_id": "UC5qGMBH9m63HQ9unI_W2giQ",
+        "outlier_rank_score": 75.25
+      },
+      {
+        "rank": 6,
+        "video_id": "wgMz1KuBsZ0",
+        "channel_id": "UCoot38Fva88TcLNK3EP9R0w",
+        "outlier_rank_score": 75.25
+      },
+      {
+        "rank": 7,
+        "video_id": "IUU6OR8yHCc",
+        "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+        "outlier_rank_score": 75.0
+      },
+      {
+        "rank": 8,
+        "video_id": "T3q6QcCQZQg",
+        "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+        "outlier_rank_score": 75.0
+      },
+      {
+        "rank": 9,
+        "video_id": "k1RI5locZE4",
+        "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+        "outlier_rank_score": 75.0
+      },
+      {
+        "rank": 10,
+        "video_id": "WjwEh15M5Rw",
+        "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+        "outlier_rank_score": 75.0
+      },
+      {
+        "rank": 11,
+        "video_id": "hQcFE0RD0cQ",
+        "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+        "outlier_rank_score": 75.0
+      },
+      {
+        "rank": 12,
+        "video_id": "JMUxmLyrhSk",
+        "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+        "outlier_rank_score": 74.5
+      },
+      {
+        "rank": 13,
+        "video_id": "zuxzE7--RYM",
+        "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+        "outlier_rank_score": 74.305
+      },
+      {
+        "rank": 14,
+        "video_id": "rcGrRfWo65Y",
+        "channel_id": "UCMQtriZHwNgXl6eff5dNTHQ",
+        "outlier_rank_score": 74.25
+      },
+      {
+        "rank": 15,
+        "video_id": "rcKY-8Y0atY",
+        "channel_id": "UCfQ3jdXh-T3QzIj0cqLnAYA",
+        "outlier_rank_score": 74.25
+      },
+      {
+        "rank": 16,
+        "video_id": "icmJK-IWE6Q",
+        "channel_id": "UCNEvKccqG6xyTIUHPg7KmuQ",
+        "outlier_rank_score": 74.25
+      },
+      {
+        "rank": 17,
+        "video_id": "Eu2fWN8BZ6Y",
+        "channel_id": "UChUw-CvnPnC6ZuMX7-a2EAQ",
+        "outlier_rank_score": 74.25
+      },
+      {
+        "rank": 18,
+        "video_id": "BIlFTFrEFOI",
+        "channel_id": "UCc-m3P54YDVTjtMUJlmAuow",
+        "outlier_rank_score": 74.25
+      },
+      {
+        "rank": 19,
+        "video_id": "qSyh-30NqAs",
+        "channel_id": "UCSEdxq0M1N_NpoFvbdWOjkg",
+        "outlier_rank_score": 74.25
+      },
+      {
+        "rank": 20,
+        "video_id": "mXFV5FGb2NU",
+        "channel_id": "UCz8-ATjE16uOL_2IH_jvCrg",
+        "outlier_rank_score": 74.25
+      },
+      {
+        "rank": 21,
+        "video_id": "_bV7uLTxNSg",
+        "channel_id": "UC9V0QYsWKz_OD2uooCtEtRg",
+        "outlier_rank_score": 74.25
+      },
+      {
+        "rank": 22,
+        "video_id": "Yd7BX0u2Zvg",
+        "channel_id": "UCM9JliH-L__BKUAeX_ay-Jg",
+        "outlier_rank_score": 74.25
+      },
+      {
+        "rank": 23,
+        "video_id": "nCUwDeHw4rE",
+        "channel_id": "UCIBtfSoaygdAxdxogd3xKnw",
+        "outlier_rank_score": 74.25
+      },
+      {
+        "rank": 24,
+        "video_id": "fGg47c4q9cU",
+        "channel_id": "UCW8R1yxQusJ38bIORSEgMDg",
+        "outlier_rank_score": 74.25
+      },
+      {
+        "rank": 25,
+        "video_id": "olhCzhOyj_o",
+        "channel_id": "UCm6NjoQQrJbb8JfGfUIrLig",
+        "outlier_rank_score": 74.25
+      },
+      {
+        "rank": 26,
+        "video_id": "Vp6vCclHG8Q",
+        "channel_id": "UCo5Pu3KJpcR8NWmLLPszz6A",
+        "outlier_rank_score": 74.25
+      },
+      {
+        "rank": 27,
+        "video_id": "WQjCjukbut8",
+        "channel_id": "UC69j9m2aPMtXw7Gh4MfB9BA",
+        "outlier_rank_score": 74.25
+      },
+      {
+        "rank": 28,
+        "video_id": "MOZMw5_fBFA",
+        "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+        "outlier_rank_score": 74.1613
+      },
+      {
+        "rank": 29,
+        "video_id": "lpa8uy4DyMo",
+        "channel_id": "UCkw4JCwteGrDHIsyIIKo4tQ",
+        "outlier_rank_score": 74.0
+      },
+      {
+        "rank": 30,
+        "video_id": "Wc5OBu6PaKQ",
+        "channel_id": "UCK5CiYuAvpYh9qpf_ujlufg",
+        "outlier_rank_score": 74.0
+      },
+      {
+        "rank": 31,
+        "video_id": "g1XSdDiBPvE",
+        "channel_id": "UCoSvlWS5XcwaSzIcbuJ-Ysg",
+        "outlier_rank_score": 74.0
+      },
+      {
+        "rank": 32,
+        "video_id": "Dzidck96FGY",
+        "channel_id": "UCoSvlWS5XcwaSzIcbuJ-Ysg",
+        "outlier_rank_score": 74.0
+      },
+      {
+        "rank": 33,
+        "video_id": "ukwes5tUamI",
+        "channel_id": "UC80Q7vyU9ZMfePxogSdb8kA",
+        "outlier_rank_score": 74.0
+      },
+      {
+        "rank": 34,
+        "video_id": "Sn94E0VlYV0",
+        "channel_id": "UCI67Uoj5HTuKlgg-ba5afmQ",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 35,
+        "video_id": "kpXc3qERFE4",
+        "channel_id": "UCi3B3Vt_jyJUpN2TvCFzd-Q",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 36,
+        "video_id": "cmD2gn6s1Uo",
+        "channel_id": "UCS82DNnKOhXHcGKxGzQvNSQ",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 37,
+        "video_id": "dlWZA96p6rs",
+        "channel_id": "UCFKvMIkL20rlt9-u6evBA5g",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 38,
+        "video_id": "HK07Ennc6xs",
+        "channel_id": "UCVN2r0SLqo1s4hrgtByslKg",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 39,
+        "video_id": "Znr31-X37HA",
+        "channel_id": "UCuoeL-V1xTBItjoAoiUx3ew",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 40,
+        "video_id": "nLJ5YC6AuSo",
+        "channel_id": "UCdely-Uj3RwC0evg3YV1dEg",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 41,
+        "video_id": "kvS1Fx5231o",
+        "channel_id": "UCE77VqlsJLphQXTIwB55dGw",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 42,
+        "video_id": "umd_N8ms_ZE",
+        "channel_id": "UCrSa5uIBkMi9RnEY7oxO64A",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 43,
+        "video_id": "JTBsUlXtoC0",
+        "channel_id": "UCnUfd-mM5K1ep83T0kvCDCQ",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 44,
+        "video_id": "OL5mljIfgR8",
+        "channel_id": "UCsj2k2Gbdh_NJplppxmBg2Q",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 45,
+        "video_id": "tl7tSPEyV6w",
+        "channel_id": "UCgTk0fL_3s4MsxQLMXQAp1Q",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 46,
+        "video_id": "hVei86spwxE",
+        "channel_id": "UCSpJppxM2hbq-a9s0V60eWQ",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 47,
+        "video_id": "QfIH_hZgfUc",
+        "channel_id": "UC0elOLp4bML-qkuQI8M8YrA",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 48,
+        "video_id": "CyGGt24CTNg",
+        "channel_id": "UCe2oog2uPbw5cC_LC5wyTqw",
+        "outlier_rank_score": 73.25
+      },
+      {
+        "rank": 49,
+        "video_id": "9Vc5PcmqbVM",
+        "channel_id": "UCqKhQFIG1to_Xi0QWAAaxMQ",
+        "outlier_rank_score": 73.0
+      },
+      {
+        "rank": 50,
+        "video_id": "ewtDKmovou4",
+        "channel_id": "UC9ESQKs98jVWjjUEWkvTMvA",
+        "outlier_rank_score": 73.0
+      },
+      {
+        "rank": 51,
+        "video_id": "uyZQQ7mFaKs",
+        "channel_id": "UC9AvyyprUw-fQmlPw2RJGug",
+        "outlier_rank_score": 72.5097
+      },
+      {
+        "rank": 52,
+        "video_id": "ijbCCGnzJfw",
+        "channel_id": "UCpRD-THcWKcd7DMwAonniHQ",
+        "outlier_rank_score": 72.0
+      },
+      {
+        "rank": 53,
+        "video_id": "gUUr4QfuzwA",
+        "channel_id": "UCCXTjWAsalgZbw3aHOlpohw",
+        "outlier_rank_score": 72.0
+      },
+      {
+        "rank": 54,
+        "video_id": "7TKY-jksHRQ",
+        "channel_id": "UCz8QPKIj84JE091eK-lEImg",
+        "outlier_rank_score": 72.0
+      },
+      {
+        "rank": 55,
+        "video_id": "vgS7QSrpgMI",
+        "channel_id": "UCV31octs5hft6bZmokUgQlA",
+        "outlier_rank_score": 72.0
+      },
+      {
+        "rank": 56,
+        "video_id": "EScw2bGFGFU",
+        "channel_id": "UCoFeYPiw1B9dOsidl1JdGmg",
+        "outlier_rank_score": 72.0
+      },
+      {
+        "rank": 57,
+        "video_id": "qzjLq3y0wtg",
+        "channel_id": "UCol-q_NZdrzNJGxpoIP9DPg",
+        "outlier_rank_score": 72.0
+      },
+      {
+        "rank": 58,
+        "video_id": "9sCVcWD1Svs",
+        "channel_id": "UCZWDHbpDetLUj5SgOZFvWhw",
+        "outlier_rank_score": 72.0
+      },
+      {
+        "rank": 59,
+        "video_id": "cfkjNQLHsdg",
+        "channel_id": "UC2PZFeCnt1wBgtviBI-5iCw",
+        "outlier_rank_score": 72.0
+      },
+      {
+        "rank": 60,
+        "video_id": "SW6AE76Pi50",
+        "channel_id": "UCCktnahuRFYIBtNnKT5IYyg",
+        "outlier_rank_score": 71.0683
+      },
+      {
+        "rank": 61,
+        "video_id": "PVICHKHRB34",
+        "channel_id": "UCeeOzvMFfd2qcUFIGN_Nzyw",
+        "outlier_rank_score": 71.0
+      },
+      {
+        "rank": 62,
+        "video_id": "xxDdwqwVlqc",
+        "channel_id": "UCggXQcy57bwxUeZI1LB8DCw",
+        "outlier_rank_score": 71.0
+      },
+      {
+        "rank": 63,
+        "video_id": "3CiRs6WaWaU",
+        "channel_id": "UCbbBt23LHt4WhjiWh67NJ3w",
+        "outlier_rank_score": 71.0
+      },
+      {
+        "rank": 64,
+        "video_id": "HEQN8UHtnxM",
+        "channel_id": "UCoROlfvxd91EwBpaPGQ_phw",
+        "outlier_rank_score": 71.0
+      },
+      {
+        "rank": 65,
+        "video_id": "2KGWCID1rSw",
+        "channel_id": "UCH5kUshoNleZvMdypocgDNw",
+        "outlier_rank_score": 71.0
+      },
+      {
+        "rank": 66,
+        "video_id": "zegEZ3gMcO8",
+        "channel_id": "UCYS86n7jQW37C099xpuzEgg",
+        "outlier_rank_score": 71.0
+      },
+      {
+        "rank": 67,
+        "video_id": "smSzad5Cg_8",
+        "channel_id": "UCSMIektVHnmRSjQCGfKs-ZQ",
+        "outlier_rank_score": 71.0
+      },
+      {
+        "rank": 68,
+        "video_id": "QW79RdE9p5Q",
+        "channel_id": "UC_404HNxKaCYGARkJOenRRg",
+        "outlier_rank_score": 71.0
+      },
+      {
+        "rank": 69,
+        "video_id": "4yzQIFWNHSc",
+        "channel_id": "UCKYJf0gOXKcOATkXvZA1crA",
+        "outlier_rank_score": 71.0
+      },
+      {
+        "rank": 70,
+        "video_id": "Sk42ARzX9jw",
+        "channel_id": "UCWEfMFe4XenZCDm5UbLTZHg",
+        "outlier_rank_score": 71.0
+      },
+      {
+        "rank": 71,
+        "video_id": "okHkUIW46ks",
+        "channel_id": "UC2Zs9v2hL2qZZ7vsAENsg4w",
+        "outlier_rank_score": 70.6764
+      },
+      {
+        "rank": 72,
+        "video_id": "KeLbP-5eD7I",
+        "channel_id": "UCmuojuuzAOBVwno_3rlw6vQ",
+        "outlier_rank_score": 70.0
+      },
+      {
+        "rank": 73,
+        "video_id": "VKVu3_SLqwM",
+        "channel_id": "UCwNJAWrliq71ezamX1Vyb7A",
+        "outlier_rank_score": 70.0
+      },
+      {
+        "rank": 74,
+        "video_id": "7vIwRec0RLo",
+        "channel_id": "UCOWFKaCN-rzmYk502JFWnqg",
+        "outlier_rank_score": 69.1351
+      },
+      {
+        "rank": 75,
+        "video_id": "VOWK2TGkplM",
+        "channel_id": "UCU2WFXVS-erIfpLNJ_7OW7g",
+        "outlier_rank_score": 68.9888
+      },
+      {
+        "rank": 76,
+        "video_id": "KDibFTi_rHM",
+        "channel_id": "UCx6Ir85artqwBn5TQ3FvkWQ",
+        "outlier_rank_score": 68.7856
+      },
+      {
+        "rank": 77,
+        "video_id": "4OweikRF7bg",
+        "channel_id": "UCR0OxYKALt3zfm5S0Ow0SkA",
+        "outlier_rank_score": 68.7543
+      },
+      {
+        "rank": 78,
+        "video_id": "27sqgjgGeM4",
+        "channel_id": "UCCXTjWAsalgZbw3aHOlpohw",
+        "outlier_rank_score": 68.1475
+      },
+      {
+        "rank": 79,
+        "video_id": "Z26FeKCbn5s",
+        "channel_id": "UCCDDZ73SMXb3xp-hjMHngXg",
+        "outlier_rank_score": 68.0016
+      },
+      {
+        "rank": 80,
+        "video_id": "-lHQEZjWbLI",
+        "channel_id": "UCCktnahuRFYIBtNnKT5IYyg",
+        "outlier_rank_score": 67.7014
+      },
+      {
+        "rank": 81,
+        "video_id": "ADMaXqIWmww",
+        "channel_id": "UCyi0gqOIrw8nJZmP2dwDclw",
+        "outlier_rank_score": 67.0727
+      },
+      {
+        "rank": 82,
+        "video_id": "KtX1srhbC2k",
+        "channel_id": "UCDVt6xCSRx3dqr_SGgc1hng",
+        "outlier_rank_score": 66.7593
+      },
+      {
+        "rank": 83,
+        "video_id": "_HQ2H_0Ayy0",
+        "channel_id": "UCSWj8mqQCcrcBlXPi4ThRDQ",
+        "outlier_rank_score": 66.0715
+      },
+      {
+        "rank": 84,
+        "video_id": "6wQsj3ri2EM",
+        "channel_id": "UCVvYcNF3LCECUpnZQpbkYmQ",
+        "outlier_rank_score": 65.643
+      },
+      {
+        "rank": 85,
+        "video_id": "9JPnN1Z_iSY",
+        "channel_id": "UC__zoQSleSVci-tlhkCYaEg",
+        "outlier_rank_score": 65.0601
+      },
+      {
+        "rank": 86,
+        "video_id": "KXH9PZeFFG4",
+        "channel_id": "UCAcjP4HhrVIMXw6AUlTJo2g",
+        "outlier_rank_score": 64.7682
+      },
+      {
+        "rank": 87,
+        "video_id": "HIj8wU_rGIU",
+        "channel_id": "UCCktnahuRFYIBtNnKT5IYyg",
+        "outlier_rank_score": 64.3187
+      },
+      {
+        "rank": 88,
+        "video_id": "nUx2FMRuyGw",
+        "channel_id": "UCu8_JcixaA7KrPAJLsGj_dA",
+        "outlier_rank_score": 64.0225
+      },
+      {
+        "rank": 89,
+        "video_id": "h6sZQgS_w_s",
+        "channel_id": "UC6nVHOzgFSU1p-zQHfv7czw",
+        "outlier_rank_score": 63.6133
+      },
+      {
+        "rank": 90,
+        "video_id": "u8Z0wikOkq8",
+        "channel_id": "UCA8dgtU5dV3-2x74zoD0POA",
+        "outlier_rank_score": 63.5572
+      },
+      {
+        "rank": 91,
+        "video_id": "zoyCrTj8mL8",
+        "channel_id": "UCuuq3lB_aWH9-bUubni59Rg",
+        "outlier_rank_score": 63.1492
+      },
+      {
+        "rank": 92,
+        "video_id": "hGfwT3AJh30",
+        "channel_id": "UCH6gDteHtH4hg3o2343iObA",
+        "outlier_rank_score": 61.3315
+      },
+      {
+        "rank": 93,
+        "video_id": "0qANFAN2HPw",
+        "channel_id": "UCGUKXx5HYoEIiZ5Me2QDvTw",
+        "outlier_rank_score": 60.6878
+      },
+      {
+        "rank": 94,
+        "video_id": "U8Ylwt0iIx4",
+        "channel_id": "UCu9fxVjTz5AJO7FR1upY02w",
+        "outlier_rank_score": 60.5055
+      },
+      {
+        "rank": 95,
+        "video_id": "v3iUx2SNspY",
+        "channel_id": "UC9ESQKs98jVWjjUEWkvTMvA",
+        "outlier_rank_score": 60.4163
+      },
+      {
+        "rank": 96,
+        "video_id": "IAb2QHdNe1A",
+        "channel_id": "UCNhWSOlt_UoCzS2YSMhHYmA",
+        "outlier_rank_score": 60.3127
+      },
+      {
+        "rank": 97,
+        "video_id": "VFfdt2xHDxU",
+        "channel_id": "UCK3viG6DcbeiljVErVo5RwA",
+        "outlier_rank_score": 59.9652
+      },
+      {
+        "rank": 98,
+        "video_id": "Yzx7ihtCGBs",
+        "channel_id": "UC2D6eRvCeMtcF5OGHf1-trw",
+        "outlier_rank_score": 59.7746
+      },
+      {
+        "rank": 99,
+        "video_id": "ro7aP-bg2WI",
+        "channel_id": "UCVJTjV4Qh-Nd9TSd8yAeYvw",
+        "outlier_rank_score": 58.8611
+      },
+      {
+        "rank": 100,
+        "video_id": "UcGaicwNKVA",
+        "channel_id": "UCNliuGyPizt7uNcdCrUoduQ",
+        "outlier_rank_score": 57.644
+      }
+    ]
+  },
+  "top30": {
+    "ranking_hash": "decc570011b881414202cba3f0c03144c954f0be5c21c4167e756f5ff5780c77",
+    "items": [
+      {
+        "rank": 1,
+        "cluster_id": 23,
+        "video_count": 1895,
+        "outlier_count": 166,
+        "small_channel_outliers": 34,
+        "channel_count": 1397
+      },
+      {
+        "rank": 2,
+        "cluster_id": 29,
+        "video_count": 787,
+        "outlier_count": 71,
+        "small_channel_outliers": 23,
+        "channel_count": 586
+      },
+      {
+        "rank": 3,
+        "cluster_id": 0,
+        "video_count": 557,
+        "outlier_count": 40,
+        "small_channel_outliers": 8,
+        "channel_count": 422
+      },
+      {
+        "rank": 4,
+        "cluster_id": 6,
+        "video_count": 419,
+        "outlier_count": 28,
+        "small_channel_outliers": 19,
+        "channel_count": 242
+      },
+      {
+        "rank": 5,
+        "cluster_id": 2,
+        "video_count": 282,
+        "outlier_count": 28,
+        "small_channel_outliers": 6,
+        "channel_count": 160
+      },
+      {
+        "rank": 6,
+        "cluster_id": 7,
+        "video_count": 251,
+        "outlier_count": 25,
+        "small_channel_outliers": 9,
+        "channel_count": 161
+      },
+      {
+        "rank": 7,
+        "cluster_id": 12,
+        "video_count": 268,
+        "outlier_count": 24,
+        "small_channel_outliers": 18,
+        "channel_count": 155
+      },
+      {
+        "rank": 8,
+        "cluster_id": 11,
+        "video_count": 306,
+        "outlier_count": 24,
+        "small_channel_outliers": 16,
+        "channel_count": 210
+      },
+      {
+        "rank": 9,
+        "cluster_id": 31,
+        "video_count": 242,
+        "outlier_count": 22,
+        "small_channel_outliers": 16,
+        "channel_count": 148
+      },
+      {
+        "rank": 10,
+        "cluster_id": 1,
+        "video_count": 349,
+        "outlier_count": 21,
+        "small_channel_outliers": 15,
+        "channel_count": 232
+      },
+      {
+        "rank": 11,
+        "cluster_id": 8,
+        "video_count": 366,
+        "outlier_count": 21,
+        "small_channel_outliers": 7,
+        "channel_count": 322
+      },
+      {
+        "rank": 12,
+        "cluster_id": 15,
+        "video_count": 186,
+        "outlier_count": 19,
+        "small_channel_outliers": 2,
+        "channel_count": 128
+      },
+      {
+        "rank": 13,
+        "cluster_id": 28,
+        "video_count": 201,
+        "outlier_count": 17,
+        "small_channel_outliers": 5,
+        "channel_count": 172
+      },
+      {
+        "rank": 14,
+        "cluster_id": 30,
+        "video_count": 227,
+        "outlier_count": 17,
+        "small_channel_outliers": 4,
+        "channel_count": 194
+      },
+      {
+        "rank": 15,
+        "cluster_id": 25,
+        "video_count": 287,
+        "outlier_count": 16,
+        "small_channel_outliers": 6,
+        "channel_count": 218
+      },
+      {
+        "rank": 16,
+        "cluster_id": 4,
+        "video_count": 244,
+        "outlier_count": 16,
+        "small_channel_outliers": 6,
+        "channel_count": 185
+      },
+      {
+        "rank": 17,
+        "cluster_id": 10,
+        "video_count": 318,
+        "outlier_count": 15,
+        "small_channel_outliers": 10,
+        "channel_count": 202
+      },
+      {
+        "rank": 18,
+        "cluster_id": 24,
+        "video_count": 210,
+        "outlier_count": 14,
+        "small_channel_outliers": 11,
+        "channel_count": 157
+      },
+      {
+        "rank": 19,
+        "cluster_id": 3,
+        "video_count": 190,
+        "outlier_count": 14,
+        "small_channel_outliers": 2,
+        "channel_count": 158
+      },
+      {
+        "rank": 20,
+        "cluster_id": 32,
+        "video_count": 247,
+        "outlier_count": 14,
+        "small_channel_outliers": 1,
+        "channel_count": 187
+      },
+      {
+        "rank": 21,
+        "cluster_id": 19,
+        "video_count": 226,
+        "outlier_count": 13,
+        "small_channel_outliers": 6,
+        "channel_count": 162
+      },
+      {
+        "rank": 22,
+        "cluster_id": 26,
+        "video_count": 223,
+        "outlier_count": 13,
+        "small_channel_outliers": 5,
+        "channel_count": 202
+      },
+      {
+        "rank": 23,
+        "cluster_id": 18,
+        "video_count": 211,
+        "outlier_count": 13,
+        "small_channel_outliers": 4,
+        "channel_count": 139
+      },
+      {
+        "rank": 24,
+        "cluster_id": 16,
+        "video_count": 132,
+        "outlier_count": 13,
+        "small_channel_outliers": 3,
+        "channel_count": 96
+      },
+      {
+        "rank": 25,
+        "cluster_id": 22,
+        "video_count": 205,
+        "outlier_count": 12,
+        "small_channel_outliers": 8,
+        "channel_count": 168
+      },
+      {
+        "rank": 26,
+        "cluster_id": 34,
+        "video_count": 137,
+        "outlier_count": 12,
+        "small_channel_outliers": 5,
+        "channel_count": 122
+      },
+      {
+        "rank": 27,
+        "cluster_id": 33,
+        "video_count": 245,
+        "outlier_count": 12,
+        "small_channel_outliers": 4,
+        "channel_count": 205
+      },
+      {
+        "rank": 28,
+        "cluster_id": 17,
+        "video_count": 99,
+        "outlier_count": 11,
+        "small_channel_outliers": 3,
+        "channel_count": 79
+      },
+      {
+        "rank": 29,
+        "cluster_id": 13,
+        "video_count": 166,
+        "outlier_count": 9,
+        "small_channel_outliers": 5,
+        "channel_count": 129
+      },
+      {
+        "rank": 30,
+        "cluster_id": 5,
+        "video_count": 127,
+        "outlier_count": 8,
+        "small_channel_outliers": 6,
+        "channel_count": 112
+      }
+    ]
+  },
+  "top20": {
+    "ranking_hash": "85a543baf63afad339c1643b8f25cadd2b8d7d4ca316ce6e182c130fe39d98e4",
+    "persisted_ranking_hash": "85a543baf63afad339c1643b8f25cadd2b8d7d4ca316ce6e182c130fe39d98e4",
+    "matches_persisted": true,
+    "items": [
+      {
+        "rank": 1,
+        "definition_id": "def_015",
+        "analytical_ordinal": 15,
+        "parent_cluster_id": 3,
+        "parent_cluster_ids": [
+          3,
+          4,
+          5,
+          12,
+          13,
+          15,
+          22,
+          23,
+          25,
+          26,
+          30,
+          32
+        ],
+        "niche": "Computer Hardware & Operating Systems",
+        "subniche": "PC Hardware & System Optimization",
+        "microniche": "Artificial Intelligence fundamentals",
+        "normalized_intent": "Artificial Intelligence fundamentals",
+        "video_count": 2322,
+        "outlier_count": 184,
+        "small_channel_outliers": 53,
+        "channel_count": 1627,
+        "distinct_intents_count": 2298,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 2,
+        "definition_id": "def_046",
+        "analytical_ordinal": 46,
+        "parent_cluster_id": 29,
+        "parent_cluster_ids": [
+          29
+        ],
+        "niche": "Crear Overview",
+        "subniche": "Crear & Curso",
+        "microniche": "de en",
+        "normalized_intent": "de en",
+        "video_count": 672,
+        "outlier_count": 66,
+        "small_channel_outliers": 19,
+        "channel_count": 509,
+        "distinct_intents_count": 670,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 3,
+        "definition_id": "def_055",
+        "analytical_ordinal": 55,
+        "parent_cluster_id": 15,
+        "parent_cluster_ids": [
+          15,
+          23,
+          25,
+          30
+        ],
+        "niche": "Cybersecurity",
+        "subniche": "Cybersecurity Education",
+        "microniche": "information security fundamentals",
+        "normalized_intent": "information security fundamentals",
+        "video_count": 655,
+        "outlier_count": 53,
+        "small_channel_outliers": 9,
+        "channel_count": 545,
+        "distinct_intents_count": 650,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 4,
+        "definition_id": "def_036",
+        "analytical_ordinal": 36,
+        "parent_cluster_id": 23,
+        "parent_cluster_ids": [
+          23
+        ],
+        "niche": "Artificial Intelligence",
+        "subniche": "AI Safety & Risk Analysis",
+        "microniche": "beginners recording",
+        "normalized_intent": "beginners recording",
+        "video_count": 602,
+        "outlier_count": 50,
+        "small_channel_outliers": 15,
+        "channel_count": 469,
+        "distinct_intents_count": 597,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 5,
+        "definition_id": "def_024",
+        "analytical_ordinal": 24,
+        "parent_cluster_id": 0,
+        "parent_cluster_ids": [
+          0,
+          6,
+          13
+        ],
+        "niche": "Computer Hardware & Operating Systems",
+        "subniche": "PC Hardware & System Optimization",
+        "microniche": "ai automation autonomous agents",
+        "normalized_intent": "ai automation autonomous agents",
+        "video_count": 324,
+        "outlier_count": 26,
+        "small_channel_outliers": 12,
+        "channel_count": 264,
+        "distinct_intents_count": 319,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 6,
+        "definition_id": "def_057",
+        "analytical_ordinal": 57,
+        "parent_cluster_id": 11,
+        "parent_cluster_ids": [
+          11,
+          16,
+          26
+        ],
+        "niche": "De Overview",
+        "subniche": "De & De Software",
+        "microniche": "pc hardware system optimization",
+        "normalized_intent": "pc hardware system optimization",
+        "video_count": 384,
+        "outlier_count": 24,
+        "small_channel_outliers": 8,
+        "channel_count": 332,
+        "distinct_intents_count": 376,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 7,
+        "definition_id": "def_045",
+        "analytical_ordinal": 45,
+        "parent_cluster_id": 11,
+        "parent_cluster_ids": [
+          11
+        ],
+        "niche": "De Overview",
+        "subniche": "De & De Software",
+        "microniche": "de de software",
+        "normalized_intent": "de de software",
+        "video_count": 208,
+        "outlier_count": 23,
+        "small_channel_outliers": 16,
+        "channel_count": 143,
+        "distinct_intents_count": 204,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 8,
+        "definition_id": "def_030",
+        "analytical_ordinal": 30,
+        "parent_cluster_id": 6,
+        "parent_cluster_ids": [
+          6
+        ],
+        "niche": "Azure Overview",
+        "subniche": "Azure & Azure Devops",
+        "microniche": "azure azure devops",
+        "normalized_intent": "azure azure devops",
+        "video_count": 259,
+        "outlier_count": 20,
+        "small_channel_outliers": 12,
+        "channel_count": 152,
+        "distinct_intents_count": 254,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 9,
+        "definition_id": "def_004",
+        "analytical_ordinal": 4,
+        "parent_cluster_id": 0,
+        "parent_cluster_ids": [
+          0
+        ],
+        "niche": "Computer Hardware & Operating Systems",
+        "subniche": "PC Hardware & System Optimization",
+        "microniche": "101 de",
+        "normalized_intent": "101 de",
+        "video_count": 280,
+        "outlier_count": 20,
+        "small_channel_outliers": 3,
+        "channel_count": 227,
+        "distinct_intents_count": 267,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 10,
+        "definition_id": "def_038",
+        "analytical_ordinal": 38,
+        "parent_cluster_id": 1,
+        "parent_cluster_ids": [
+          1
+        ],
+        "niche": "Bootstrap Overview",
+        "subniche": "Bootstrap & Bootstrap Saas",
+        "microniche": "bootstrap dashboard",
+        "normalized_intent": "bootstrap dashboard",
+        "video_count": 223,
+        "outlier_count": 16,
+        "small_channel_outliers": 11,
+        "channel_count": 150,
+        "distinct_intents_count": 223,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 11,
+        "definition_id": "def_052",
+        "analytical_ordinal": 52,
+        "parent_cluster_id": 8,
+        "parent_cluster_ids": [
+          8
+        ],
+        "niche": "De Overview",
+        "subniche": "De & Hotmart",
+        "microniche": "es la",
+        "normalized_intent": "es la",
+        "video_count": 235,
+        "outlier_count": 16,
+        "small_channel_outliers": 4,
+        "channel_count": 206,
+        "distinct_intents_count": 234,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 12,
+        "definition_id": "def_020",
+        "analytical_ordinal": 20,
+        "parent_cluster_id": 31,
+        "parent_cluster_ids": [
+          31
+        ],
+        "niche": "Agencia Overview",
+        "subniche": "Agencia & Agencia De",
+        "microniche": "agencia de",
+        "normalized_intent": "agencia de",
+        "video_count": 142,
+        "outlier_count": 14,
+        "small_channel_outliers": 10,
+        "channel_count": 102,
+        "distinct_intents_count": 132,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 13,
+        "definition_id": "def_053",
+        "analytical_ordinal": 53,
+        "parent_cluster_id": 2,
+        "parent_cluster_ids": [
+          2
+        ],
+        "niche": "Computer Hardware & Operating Systems",
+        "subniche": "PC Hardware & System Optimization",
+        "microniche": "finanzas mejorar tus",
+        "normalized_intent": "finanzas mejorar tus",
+        "video_count": 118,
+        "outlier_count": 14,
+        "small_channel_outliers": 6,
+        "channel_count": 88,
+        "distinct_intents_count": 118,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 14,
+        "definition_id": "def_016",
+        "analytical_ordinal": 16,
+        "parent_cluster_id": 5,
+        "parent_cluster_ids": [
+          5,
+          15,
+          17
+        ],
+        "niche": "By Overview",
+        "subniche": "By & By Step",
+        "microniche": "Cybersecurity education",
+        "normalized_intent": "Cybersecurity education",
+        "video_count": 171,
+        "outlier_count": 14,
+        "small_channel_outliers": 3,
+        "channel_count": 130,
+        "distinct_intents_count": 170,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 15,
+        "definition_id": "def_054",
+        "analytical_ordinal": 54,
+        "parent_cluster_id": 7,
+        "parent_cluster_ids": [
+          7
+        ],
+        "niche": "2025 Overview",
+        "subniche": "2025 & In",
+        "microniche": "freelance business notion",
+        "normalized_intent": "freelance business notion",
+        "video_count": 136,
+        "outlier_count": 12,
+        "small_channel_outliers": 5,
+        "channel_count": 95,
+        "distinct_intents_count": 136,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 16,
+        "definition_id": "def_025",
+        "analytical_ordinal": 25,
+        "parent_cluster_id": 10,
+        "parent_cluster_ids": [
+          10
+        ],
+        "niche": "Backend Overview",
+        "subniche": "Backend & Backend Frontend",
+        "microniche": "al backend",
+        "normalized_intent": "al backend",
+        "video_count": 158,
+        "outlier_count": 10,
+        "small_channel_outliers": 7,
+        "channel_count": 94,
+        "distinct_intents_count": 155,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 17,
+        "definition_id": "def_002",
+        "analytical_ordinal": 2,
+        "parent_cluster_id": 33,
+        "parent_cluster_ids": [
+          33
+        ],
+        "niche": "20 Overview",
+        "subniche": "20 & Budget",
+        "microniche": "10 budgeting",
+        "normalized_intent": "10 budgeting",
+        "video_count": 187,
+        "outlier_count": 10,
+        "small_channel_outliers": 4,
+        "channel_count": 158,
+        "distinct_intents_count": 183,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 18,
+        "definition_id": "def_009",
+        "analytical_ordinal": 9,
+        "parent_cluster_id": 28,
+        "parent_cluster_ids": [
+          28
+        ],
+        "niche": "Artificial Intelligence",
+        "subniche": "AI Automation & Autonomous Agents",
+        "microniche": "2026 github",
+        "normalized_intent": "2026 github",
+        "video_count": 130,
+        "outlier_count": 10,
+        "small_channel_outliers": 4,
+        "channel_count": 115,
+        "distinct_intents_count": 130,
+        "content_depth": "100_PLUS"
+      },
+      {
+        "rank": 19,
+        "definition_id": "def_026",
+        "analytical_ordinal": 26,
+        "parent_cluster_id": 7,
+        "parent_cluster_ids": [
+          7
+        ],
+        "niche": "2025 Overview",
+        "subniche": "2025 & In",
+        "microniche": "alternatives notion",
+        "normalized_intent": "alternatives notion",
+        "video_count": 88,
+        "outlier_count": 10,
+        "small_channel_outliers": 3,
+        "channel_count": 59,
+        "distinct_intents_count": 88,
+        "content_depth": "50_TO_99"
+      },
+      {
+        "rank": 20,
+        "definition_id": "def_023",
+        "analytical_ordinal": 23,
+        "parent_cluster_id": 24,
+        "parent_cluster_ids": [
+          24
+        ],
+        "niche": "Agency Overview",
+        "subniche": "Agency & Marketing",
+        "microniche": "agency scale",
+        "normalized_intent": "agency scale",
+        "video_count": 169,
+        "outlier_count": 9,
+        "small_channel_outliers": 7,
+        "channel_count": 136,
+        "distinct_intents_count": 166,
+        "content_depth": "100_PLUS"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1862 @@
+[
+  {
+    "rank": 1,
+    "candidate_id": "def_015",
+    "evaluation_cluster_id": 1,
+    "parent_cluster_id": 3,
+    "parent_cluster_ids": [
+      3,
+      4,
+      5,
+      12,
+      13,
+      15,
+      22,
+      23,
+      25,
+      26,
+      30,
+      32
+    ],
+    "niche": "Computer Hardware & Operating Systems",
+    "subniche": "PC Hardware & System Optimization",
+    "normalized_intent": "Artificial Intelligence fundamentals",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 45.005050000000004,
+    "viral_score": 9.967,
+    "outlier_count": 184,
+    "small_channel_outliers": 53,
+    "video_count": 2322,
+    "channel_count": 1627,
+    "revenue_score": 75.0,
+    "competition_score": 53.5,
+    "evergreen_score": 73.4,
+    "production_score": 76.2,
+    "risk_score": 17.0,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 2298,
+    "confidence": 89.16614933333334,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 137 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 2,
+    "candidate_id": "def_046",
+    "evaluation_cluster_id": 2,
+    "parent_cluster_id": 29,
+    "parent_cluster_ids": [
+      29
+    ],
+    "niche": "Crear Overview",
+    "subniche": "Crear & Curso",
+    "normalized_intent": "de en",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 47.899675,
+    "viral_score": 10.8645,
+    "outlier_count": 66,
+    "small_channel_outliers": 19,
+    "video_count": 672,
+    "channel_count": 509,
+    "revenue_score": 60.0,
+    "competition_score": 54.5,
+    "evergreen_score": 76.9,
+    "production_score": 92.9,
+    "risk_score": 4.2,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 670,
+    "confidence": 87.78571600000001,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 62 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 3,
+    "candidate_id": "def_055",
+    "evaluation_cluster_id": 3,
+    "parent_cluster_id": 15,
+    "parent_cluster_ids": [
+      15,
+      23,
+      25,
+      30
+    ],
+    "niche": "Cybersecurity",
+    "subniche": "Cybersecurity Education",
+    "normalized_intent": "information security fundamentals",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 46.041095,
+    "viral_score": 10.2073,
+    "outlier_count": 53,
+    "small_channel_outliers": 9,
+    "video_count": 655,
+    "channel_count": 545,
+    "revenue_score": 75.0,
+    "competition_score": 53.5,
+    "evergreen_score": 73.6,
+    "production_score": 79.7,
+    "risk_score": 14.9,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 650,
+    "confidence": 88.27169333333333,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 49 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 4,
+    "candidate_id": "def_036",
+    "evaluation_cluster_id": 4,
+    "parent_cluster_id": 23,
+    "parent_cluster_ids": [
+      23
+    ],
+    "niche": "Artificial Intelligence",
+    "subniche": "AI Safety & Risk Analysis",
+    "normalized_intent": "beginners recording",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 39.81561,
+    "viral_score": 9.4374,
+    "outlier_count": 50,
+    "small_channel_outliers": 15,
+    "video_count": 602,
+    "channel_count": 469,
+    "revenue_score": 60.0,
+    "competition_score": 53.4,
+    "evergreen_score": 73.0,
+    "production_score": 76.1,
+    "risk_score": 23.9,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 597,
+    "confidence": 89.85528666666667,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 45 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 5,
+    "candidate_id": "def_024",
+    "evaluation_cluster_id": 5,
+    "parent_cluster_id": 0,
+    "parent_cluster_ids": [
+      0,
+      6,
+      13
+    ],
+    "niche": "Computer Hardware & Operating Systems",
+    "subniche": "PC Hardware & System Optimization",
+    "normalized_intent": "ai automation autonomous agents",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 48.76859,
+    "viral_score": 9.9906,
+    "outlier_count": 26,
+    "small_channel_outliers": 12,
+    "video_count": 324,
+    "channel_count": 264,
+    "revenue_score": 75.0,
+    "competition_score": 54.0,
+    "evergreen_score": 77.4,
+    "production_score": 86.0,
+    "risk_score": 8.9,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 319,
+    "confidence": 87.75925733333332,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 23 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 6,
+    "candidate_id": "def_057",
+    "evaluation_cluster_id": 6,
+    "parent_cluster_id": 11,
+    "parent_cluster_ids": [
+      11,
+      16,
+      26
+    ],
+    "niche": "De Overview",
+    "subniche": "De & De Software",
+    "normalized_intent": "pc hardware system optimization",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 48.28955,
+    "viral_score": 9.797,
+    "outlier_count": 24,
+    "small_channel_outliers": 8,
+    "video_count": 384,
+    "channel_count": 332,
+    "revenue_score": 75.0,
+    "competition_score": 54.4,
+    "evergreen_score": 75.0,
+    "production_score": 87.9,
+    "risk_score": 10.1,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 376,
+    "confidence": 88.26458266666667,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 22 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 7,
+    "candidate_id": "def_045",
+    "evaluation_cluster_id": 7,
+    "parent_cluster_id": 11,
+    "parent_cluster_ids": [
+      11
+    ],
+    "niche": "De Overview",
+    "subniche": "De & De Software",
+    "normalized_intent": "de de software",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 50.05638,
+    "viral_score": 11.7092,
+    "outlier_count": 23,
+    "small_channel_outliers": 16,
+    "video_count": 208,
+    "channel_count": 143,
+    "revenue_score": 75.0,
+    "competition_score": 55.5,
+    "evergreen_score": 74.9,
+    "production_score": 91.0,
+    "risk_score": 5.8,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 204,
+    "confidence": 96.305768,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 19 creators",
+      "Evergreen demand stability",
+      "High faceless feasibility confirmed"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 8,
+    "candidate_id": "def_030",
+    "evaluation_cluster_id": 8,
+    "parent_cluster_id": 6,
+    "parent_cluster_ids": [
+      6
+    ],
+    "niche": "Azure Overview",
+    "subniche": "Azure & Azure Devops",
+    "normalized_intent": "azure azure devops",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 44.891605000000006,
+    "viral_score": 11.2107,
+    "outlier_count": 20,
+    "small_channel_outliers": 12,
+    "video_count": 259,
+    "channel_count": 152,
+    "revenue_score": 75.0,
+    "competition_score": 55.9,
+    "evergreen_score": 85.9,
+    "production_score": 66.7,
+    "risk_score": 18.2,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 254,
+    "confidence": 90.85067599999999,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 16 creators",
+      "Evergreen demand stability",
+      "High faceless feasibility confirmed"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 9,
+    "candidate_id": "def_004",
+    "evaluation_cluster_id": 9,
+    "parent_cluster_id": 0,
+    "parent_cluster_ids": [
+      0
+    ],
+    "niche": "Computer Hardware & Operating Systems",
+    "subniche": "PC Hardware & System Optimization",
+    "normalized_intent": "101 de",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 49.437265000000004,
+    "viral_score": 9.3151,
+    "outlier_count": 20,
+    "small_channel_outliers": 3,
+    "video_count": 280,
+    "channel_count": 227,
+    "revenue_score": 75.0,
+    "competition_score": 53.6,
+    "evergreen_score": 71.5,
+    "production_score": 89.0,
+    "risk_score": 5.5,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 267,
+    "confidence": 86.232144,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 17 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 10,
+    "candidate_id": "def_038",
+    "evaluation_cluster_id": 10,
+    "parent_cluster_id": 1,
+    "parent_cluster_ids": [
+      1
+    ],
+    "niche": "Bootstrap Overview",
+    "subniche": "Bootstrap & Bootstrap Saas",
+    "normalized_intent": "bootstrap dashboard",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 45.83283,
+    "viral_score": 9.9522,
+    "outlier_count": 16,
+    "small_channel_outliers": 11,
+    "video_count": 223,
+    "channel_count": 150,
+    "revenue_score": 75.0,
+    "competition_score": 54.0,
+    "evergreen_score": 78.7,
+    "production_score": 81.2,
+    "risk_score": 17.5,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 223,
+    "confidence": 89.627692,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 11 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 11,
+    "candidate_id": "def_052",
+    "evaluation_cluster_id": 11,
+    "parent_cluster_id": 8,
+    "parent_cluster_ids": [
+      8
+    ],
+    "niche": "De Overview",
+    "subniche": "De & Hotmart",
+    "normalized_intent": "es la",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 50.064135,
+    "viral_score": 9.7609,
+    "outlier_count": 16,
+    "small_channel_outliers": 4,
+    "video_count": 235,
+    "channel_count": 206,
+    "revenue_score": 75.0,
+    "competition_score": 54.4,
+    "evergreen_score": 75.7,
+    "production_score": 86.7,
+    "risk_score": 4.0,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 234,
+    "confidence": 85.56489200000001,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 15 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 12,
+    "candidate_id": "def_020",
+    "evaluation_cluster_id": 12,
+    "parent_cluster_id": 31,
+    "parent_cluster_ids": [
+      31
+    ],
+    "niche": "Agencia Overview",
+    "subniche": "Agencia & Agencia De",
+    "normalized_intent": "agencia de",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 47.853585,
+    "viral_score": 11.6239,
+    "outlier_count": 14,
+    "small_channel_outliers": 10,
+    "video_count": 142,
+    "channel_count": 102,
+    "revenue_score": 75.0,
+    "competition_score": 53.3,
+    "evergreen_score": 64.1,
+    "production_score": 79.0,
+    "risk_score": 5.4,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 132,
+    "confidence": 82.437324,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 12 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 13,
+    "candidate_id": "def_053",
+    "evaluation_cluster_id": 13,
+    "parent_cluster_id": 2,
+    "parent_cluster_ids": [
+      2
+    ],
+    "niche": "Computer Hardware & Operating Systems",
+    "subniche": "PC Hardware & System Optimization",
+    "normalized_intent": "finanzas mejorar tus",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 49.68482000000001,
+    "viral_score": 10.8988,
+    "outlier_count": 14,
+    "small_channel_outliers": 6,
+    "video_count": 118,
+    "channel_count": 88,
+    "revenue_score": 75.0,
+    "competition_score": 55.3,
+    "evergreen_score": 80.2,
+    "production_score": 79.7,
+    "risk_score": 4.7,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 118,
+    "confidence": 83.58771200000001,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 12 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 14,
+    "candidate_id": "def_016",
+    "evaluation_cluster_id": 14,
+    "parent_cluster_id": 5,
+    "parent_cluster_ids": [
+      5,
+      15,
+      17
+    ],
+    "niche": "By Overview",
+    "subniche": "By & By Step",
+    "normalized_intent": "Cybersecurity education",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 42.099059999999994,
+    "viral_score": 10.2604,
+    "outlier_count": 14,
+    "small_channel_outliers": 3,
+    "video_count": 171,
+    "channel_count": 130,
+    "revenue_score": 75.0,
+    "competition_score": 54.8,
+    "evergreen_score": 64.9,
+    "production_score": 71.5,
+    "risk_score": 22.0,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 170,
+    "confidence": 88.85234,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 12 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 15,
+    "candidate_id": "def_054",
+    "evaluation_cluster_id": 15,
+    "parent_cluster_id": 7,
+    "parent_cluster_ids": [
+      7
+    ],
+    "niche": "2025 Overview",
+    "subniche": "2025 & In",
+    "normalized_intent": "freelance business notion",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 44.16286,
+    "viral_score": 10.3524,
+    "outlier_count": 12,
+    "small_channel_outliers": 5,
+    "video_count": 136,
+    "channel_count": 95,
+    "revenue_score": 75.0,
+    "competition_score": 54.6,
+    "evergreen_score": 65.1,
+    "production_score": 76.9,
+    "risk_score": 17.1,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 136,
+    "confidence": 90.98480533333334,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 12 creators",
+      "Evergreen demand stability",
+      "High faceless feasibility confirmed"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 16,
+    "candidate_id": "def_025",
+    "evaluation_cluster_id": 16,
+    "parent_cluster_id": 10,
+    "parent_cluster_ids": [
+      10
+    ],
+    "niche": "Backend Overview",
+    "subniche": "Backend & Backend Frontend",
+    "normalized_intent": "al backend",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 48.29105500000001,
+    "viral_score": 11.6737,
+    "outlier_count": 10,
+    "small_channel_outliers": 7,
+    "video_count": 158,
+    "channel_count": 94,
+    "revenue_score": 60.0,
+    "competition_score": 59.5,
+    "evergreen_score": 82.2,
+    "production_score": 97.1,
+    "risk_score": 4.8,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 155,
+    "confidence": 87.85685466666666,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 9 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 17,
+    "candidate_id": "def_002",
+    "evaluation_cluster_id": 17,
+    "parent_cluster_id": 33,
+    "parent_cluster_ids": [
+      33
+    ],
+    "niche": "20 Overview",
+    "subniche": "20 & Budget",
+    "normalized_intent": "10 budgeting",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 39.884980000000006,
+    "viral_score": 8.6332,
+    "outlier_count": 10,
+    "small_channel_outliers": 4,
+    "video_count": 187,
+    "channel_count": 158,
+    "revenue_score": 60.0,
+    "competition_score": 52.6,
+    "evergreen_score": 72.4,
+    "production_score": 86.5,
+    "risk_score": 26.8,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 183,
+    "confidence": 87.296656,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 9 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 18,
+    "candidate_id": "def_009",
+    "evaluation_cluster_id": 18,
+    "parent_cluster_id": 28,
+    "parent_cluster_ids": [
+      28
+    ],
+    "niche": "Artificial Intelligence",
+    "subniche": "AI Automation & Autonomous Agents",
+    "normalized_intent": "2026 github",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 40.21248,
+    "viral_score": 9.6832,
+    "outlier_count": 10,
+    "small_channel_outliers": 4,
+    "video_count": 130,
+    "channel_count": 115,
+    "revenue_score": 60.0,
+    "competition_score": 54.6,
+    "evergreen_score": 66.3,
+    "production_score": 75.9,
+    "risk_score": 20.0,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 130,
+    "confidence": 90.234616,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 9 creators",
+      "Evergreen demand stability",
+      "High faceless feasibility confirmed"
+    ],
+    "counter_evidence": [
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 19,
+    "candidate_id": "def_026",
+    "evaluation_cluster_id": 19,
+    "parent_cluster_id": 7,
+    "parent_cluster_ids": [
+      7
+    ],
+    "niche": "2025 Overview",
+    "subniche": "2025 & In",
+    "normalized_intent": "alternatives notion",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 41.30699,
+    "viral_score": 10.8466,
+    "outlier_count": 10,
+    "small_channel_outliers": 3,
+    "video_count": 88,
+    "channel_count": 59,
+    "revenue_score": 75.0,
+    "competition_score": 57.6,
+    "evergreen_score": 74.1,
+    "production_score": 68.8,
+    "risk_score": 21.5,
+    "risk_level": "LOW",
+    "content_depth_status": "50_TO_99",
+    "distinct_intents_count": 88,
+    "confidence": 87.83712266666667,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 9 creators",
+      "Evergreen demand stability"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS_WITH_WARNINGS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  },
+  {
+    "rank": 20,
+    "candidate_id": "def_023",
+    "evaluation_cluster_id": 20,
+    "parent_cluster_id": 24,
+    "parent_cluster_ids": [
+      24
+    ],
+    "niche": "Agency Overview",
+    "subniche": "Agency & Marketing",
+    "normalized_intent": "agency scale",
+    "market": "Global/English",
+    "language": "en",
+    "profitability_score": 45.414325000000005,
+    "viral_score": 9.4955,
+    "outlier_count": 9,
+    "small_channel_outliers": 7,
+    "video_count": 169,
+    "channel_count": 136,
+    "revenue_score": 75.0,
+    "competition_score": 55.3,
+    "evergreen_score": 81.5,
+    "production_score": 78.9,
+    "risk_score": 18.4,
+    "risk_level": "LOW",
+    "content_depth_status": "100_PLUS",
+    "distinct_intents_count": 166,
+    "confidence": 90.46898533333334,
+    "expected_views_range": {
+      "low": 0.0,
+      "base": 0.0,
+      "high": 0.0,
+      "method": "insufficient_views_data",
+      "evidence": [],
+      "warnings": [
+        "No valid view count metrics in cluster videos"
+      ],
+      "confidence": 0.0
+    },
+    "rpm_range": {
+      "low": null,
+      "mid": null,
+      "high": null,
+      "market": null,
+      "source": "UNKNOWN",
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "confidence": 0.0,
+      "content_type": null,
+      "benchmark_type": null
+    },
+    "expected_revenue_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "expected_cost_range": {
+      "low": null,
+      "base": null,
+      "high": null,
+      "currency": "USD",
+      "warnings": [],
+      "available": false,
+      "evidence_type": "UNKNOWN"
+    },
+    "expected_profit_range": {
+      "base": null,
+      "warnings": [],
+      "available": false,
+      "optimistic": null,
+      "pessimistic": null
+    },
+    "evidence_summary": [
+      "Repeatable outliers across 8 creators",
+      "Evergreen demand stability",
+      "High faceless feasibility confirmed"
+    ],
+    "counter_evidence": [
+      "High economic revenue potential asserted with zero RPM benchmark",
+      "No explicit monetary RPM benchmark available"
+    ],
+    "recommendation": "PASS",
+    "source_run_linkage": {
+      "root_run_id": "sprint12_gate7_reconciled_20260914_211554",
+      "profitability_run_id": "sprint9_prof_368e300e0c48",
+      "market_run_id": "sprint7-3925d9bd-76e1-41f3-8723-646f20111966",
+      "production_run_id": "sprint8-a8b26ec6-8760-4ea5-8799-1b228ba308cf",
+      "validation_run_id": "sprint10_val_82cbe595a775"
+    }
+  }
+]

@@ -1,210 +1,37 @@
-# SPRINT 13 — GATE 1: CANONICAL TOP 20 CANDIDATE REVIEW
+# SPRINT 13 — GATE 1: CANONICAL FUNNEL RECONSTRUCTION
 
 **Authoritative Run ID:** `sprint12_gate7_reconciled_20260914_211554`
 
-| Rank | Candidate ID | Subniche | Normalized Intent | Market | ProfitabilityScore | ViralScore | OutlierCount | RevenueScore | RiskScore | Depth | Confidence |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | `def_015` | PC Hardware & System Optimization | `Artificial Intelligence fundamentals` | Global/English | 45.0 | 10.0 | 184 | 75.0 | 17.0 (LOW) | 100_PLUS | 89.2% |
-| 2 | `def_046` | Crear & Curso | `de en` | Global/English | 47.9 | 10.9 | 66 | 60.0 | 4.2 (LOW) | 100_PLUS | 87.8% |
-| 3 | `def_055` | Cybersecurity Education | `information security fundamentals` | Global/English | 46.0 | 10.2 | 53 | 75.0 | 14.9 (LOW) | 100_PLUS | 88.3% |
-| 4 | `def_036` | AI Safety & Risk Analysis | `beginners recording` | Global/English | 39.8 | 9.4 | 50 | 60.0 | 23.9 (LOW) | 100_PLUS | 89.9% |
-| 5 | `def_024` | PC Hardware & System Optimization | `ai automation autonomous agents` | Global/English | 48.8 | 10.0 | 26 | 75.0 | 8.9 (LOW) | 100_PLUS | 87.8% |
-| 6 | `def_057` | De & De Software | `pc hardware system optimization` | Global/English | 48.3 | 9.8 | 24 | 75.0 | 10.1 (LOW) | 100_PLUS | 88.3% |
-| 7 | `def_045` | De & De Software | `de de software` | Global/English | 50.1 | 11.7 | 23 | 75.0 | 5.8 (LOW) | 100_PLUS | 96.3% |
-| 8 | `def_030` | Azure & Azure Devops | `azure azure devops` | Global/English | 44.9 | 11.2 | 20 | 75.0 | 18.2 (LOW) | 100_PLUS | 90.9% |
-| 9 | `def_004` | PC Hardware & System Optimization | `101 de` | Global/English | 49.4 | 9.3 | 20 | 75.0 | 5.5 (LOW) | 100_PLUS | 86.2% |
-| 10 | `def_038` | Bootstrap & Bootstrap Saas | `bootstrap dashboard` | Global/English | 45.8 | 10.0 | 16 | 75.0 | 17.5 (LOW) | 100_PLUS | 89.6% |
-| 11 | `def_052` | De & Hotmart | `es la` | Global/English | 50.1 | 9.8 | 16 | 75.0 | 4.0 (LOW) | 100_PLUS | 85.6% |
-| 12 | `def_020` | Agencia & Agencia De | `agencia de` | Global/English | 47.9 | 11.6 | 14 | 75.0 | 5.4 (LOW) | 100_PLUS | 82.4% |
-| 13 | `def_053` | PC Hardware & System Optimization | `finanzas mejorar tus` | Global/English | 49.7 | 10.9 | 14 | 75.0 | 4.7 (LOW) | 100_PLUS | 83.6% |
-| 14 | `def_016` | By & By Step | `Cybersecurity education` | Global/English | 42.1 | 10.3 | 14 | 75.0 | 22.0 (LOW) | 100_PLUS | 88.9% |
-| 15 | `def_054` | 2025 & In | `freelance business notion` | Global/English | 44.2 | 10.4 | 12 | 75.0 | 17.1 (LOW) | 100_PLUS | 91.0% |
-| 16 | `def_025` | Backend & Backend Frontend | `al backend` | Global/English | 48.3 | 11.7 | 10 | 60.0 | 4.8 (LOW) | 100_PLUS | 87.9% |
-| 17 | `def_002` | 20 & Budget | `10 budgeting` | Global/English | 39.9 | 8.6 | 10 | 60.0 | 26.8 (LOW) | 100_PLUS | 87.3% |
-| 18 | `def_009` | AI Automation & Autonomous Agents | `2026 github` | Global/English | 40.2 | 9.7 | 10 | 60.0 | 20.0 (LOW) | 100_PLUS | 90.2% |
-| 19 | `def_026` | 2025 & In | `alternatives notion` | Global/English | 41.3 | 10.8 | 10 | 75.0 | 21.5 (LOW) | 50_TO_99 | 87.8% |
-| 20 | `def_023` | Agency & Marketing | `agency scale` | Global/English | 45.4 | 9.5 | 9 | 75.0 | 18.4 (LOW) | 100_PLUS | 90.5% |
+## Reconstruction validation
 
+- Source outlier analyses: 10585 (754 actual; 282 small-channel)
+- Source clusters/memberships: 35/10585
+- Source semantic definitions/memberships: 58/9603
+- Top100 SHA-256: `d2df88751980afb7af1e9ecadf145a2a0ff514a0dba6062f8d62e03d980426d2` (persisted match: True)
+- Top30 SHA-256: `decc570011b881414202cba3f0c03144c954f0be5c21c4167e756f5ff5780c77`
+- Top20 SHA-256: `85a543baf63afad339c1643b8f25cadd2b8d7d4ca316ce6e182c130fe39d98e4` (persisted match: True)
 
-## Detailed Candidate Evidence Breakdown
+## Canonical Top 20 semantic candidates
 
-### Rank 1: def_015 — PC Hardware & System Optimization (`Artificial Intelligence fundamentals`)
-- **Niche:** Computer Hardware & Operating Systems
-- **Validation Status:** PASS
-- **Confidence:** 89.17%
-- **Scores:** Profitability=45.01, ViralScore=9.97 (Outliers=184), Revenue=75.0, Risk=17.0 (LOW), Evergreen=73.4, Competition=53.5
-- **Content Depth:** 100_PLUS (2298 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 137 creators, Evergreen demand stability
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
-### Rank 2: def_046 — Crear & Curso (`de en`)
-- **Niche:** Crear Overview
-- **Validation Status:** PASS
-- **Confidence:** 87.79%
-- **Scores:** Profitability=47.90, ViralScore=10.86 (Outliers=66), Revenue=60.0, Risk=4.2 (LOW), Evergreen=76.9, Competition=54.5
-- **Content Depth:** 100_PLUS (670 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 62 creators, Evergreen demand stability
-- **Counter-Evidence:** No explicit monetary RPM benchmark available
-
-### Rank 3: def_055 — Cybersecurity Education (`information security fundamentals`)
-- **Niche:** Cybersecurity
-- **Validation Status:** PASS
-- **Confidence:** 88.27%
-- **Scores:** Profitability=46.04, ViralScore=10.21 (Outliers=53), Revenue=75.0, Risk=14.9 (LOW), Evergreen=73.6, Competition=53.5
-- **Content Depth:** 100_PLUS (650 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 49 creators, Evergreen demand stability
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
-### Rank 4: def_036 — AI Safety & Risk Analysis (`beginners recording`)
-- **Niche:** Artificial Intelligence
-- **Validation Status:** PASS
-- **Confidence:** 89.86%
-- **Scores:** Profitability=39.82, ViralScore=9.44 (Outliers=50), Revenue=60.0, Risk=23.9 (LOW), Evergreen=73.0, Competition=53.4
-- **Content Depth:** 100_PLUS (597 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 45 creators, Evergreen demand stability
-- **Counter-Evidence:** No explicit monetary RPM benchmark available
-
-### Rank 5: def_024 — PC Hardware & System Optimization (`ai automation autonomous agents`)
-- **Niche:** Computer Hardware & Operating Systems
-- **Validation Status:** PASS
-- **Confidence:** 87.76%
-- **Scores:** Profitability=48.77, ViralScore=9.99 (Outliers=26), Revenue=75.0, Risk=8.9 (LOW), Evergreen=77.4, Competition=54.0
-- **Content Depth:** 100_PLUS (319 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 23 creators, Evergreen demand stability
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
-### Rank 6: def_057 — De & De Software (`pc hardware system optimization`)
-- **Niche:** De Overview
-- **Validation Status:** PASS
-- **Confidence:** 88.26%
-- **Scores:** Profitability=48.29, ViralScore=9.80 (Outliers=24), Revenue=75.0, Risk=10.1 (LOW), Evergreen=75.0, Competition=54.4
-- **Content Depth:** 100_PLUS (376 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 22 creators, Evergreen demand stability
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
-### Rank 7: def_045 — De & De Software (`de de software`)
-- **Niche:** De Overview
-- **Validation Status:** PASS
-- **Confidence:** 96.31%
-- **Scores:** Profitability=50.06, ViralScore=11.71 (Outliers=23), Revenue=75.0, Risk=5.8 (LOW), Evergreen=74.9, Competition=55.5
-- **Content Depth:** 100_PLUS (204 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 19 creators, Evergreen demand stability, High faceless feasibility confirmed
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
-### Rank 8: def_030 — Azure & Azure Devops (`azure azure devops`)
-- **Niche:** Azure Overview
-- **Validation Status:** PASS
-- **Confidence:** 90.85%
-- **Scores:** Profitability=44.89, ViralScore=11.21 (Outliers=20), Revenue=75.0, Risk=18.2 (LOW), Evergreen=85.9, Competition=55.9
-- **Content Depth:** 100_PLUS (254 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 16 creators, Evergreen demand stability, High faceless feasibility confirmed
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
-### Rank 9: def_004 — PC Hardware & System Optimization (`101 de`)
-- **Niche:** Computer Hardware & Operating Systems
-- **Validation Status:** PASS
-- **Confidence:** 86.23%
-- **Scores:** Profitability=49.44, ViralScore=9.32 (Outliers=20), Revenue=75.0, Risk=5.5 (LOW), Evergreen=71.5, Competition=53.6
-- **Content Depth:** 100_PLUS (267 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 17 creators, Evergreen demand stability
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
-### Rank 10: def_038 — Bootstrap & Bootstrap Saas (`bootstrap dashboard`)
-- **Niche:** Bootstrap Overview
-- **Validation Status:** PASS
-- **Confidence:** 89.63%
-- **Scores:** Profitability=45.83, ViralScore=9.95 (Outliers=16), Revenue=75.0, Risk=17.5 (LOW), Evergreen=78.7, Competition=54.0
-- **Content Depth:** 100_PLUS (223 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 11 creators, Evergreen demand stability
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
-### Rank 11: def_052 — De & Hotmart (`es la`)
-- **Niche:** De Overview
-- **Validation Status:** PASS
-- **Confidence:** 85.56%
-- **Scores:** Profitability=50.06, ViralScore=9.76 (Outliers=16), Revenue=75.0, Risk=4.0 (LOW), Evergreen=75.7, Competition=54.4
-- **Content Depth:** 100_PLUS (234 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 15 creators, Evergreen demand stability
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
-### Rank 12: def_020 — Agencia & Agencia De (`agencia de`)
-- **Niche:** Agencia Overview
-- **Validation Status:** PASS
-- **Confidence:** 82.44%
-- **Scores:** Profitability=47.85, ViralScore=11.62 (Outliers=14), Revenue=75.0, Risk=5.4 (LOW), Evergreen=64.1, Competition=53.3
-- **Content Depth:** 100_PLUS (132 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 12 creators, Evergreen demand stability
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
-### Rank 13: def_053 — PC Hardware & System Optimization (`finanzas mejorar tus`)
-- **Niche:** Computer Hardware & Operating Systems
-- **Validation Status:** PASS
-- **Confidence:** 83.59%
-- **Scores:** Profitability=49.68, ViralScore=10.90 (Outliers=14), Revenue=75.0, Risk=4.7 (LOW), Evergreen=80.2, Competition=55.3
-- **Content Depth:** 100_PLUS (118 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 12 creators, Evergreen demand stability
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
-### Rank 14: def_016 — By & By Step (`Cybersecurity education`)
-- **Niche:** By Overview
-- **Validation Status:** PASS
-- **Confidence:** 88.85%
-- **Scores:** Profitability=42.10, ViralScore=10.26 (Outliers=14), Revenue=75.0, Risk=22.0 (LOW), Evergreen=64.9, Competition=54.8
-- **Content Depth:** 100_PLUS (170 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 12 creators, Evergreen demand stability
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
-### Rank 15: def_054 — 2025 & In (`freelance business notion`)
-- **Niche:** 2025 Overview
-- **Validation Status:** PASS
-- **Confidence:** 90.98%
-- **Scores:** Profitability=44.16, ViralScore=10.35 (Outliers=12), Revenue=75.0, Risk=17.1 (LOW), Evergreen=65.1, Competition=54.6
-- **Content Depth:** 100_PLUS (136 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 12 creators, Evergreen demand stability, High faceless feasibility confirmed
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
-### Rank 16: def_025 — Backend & Backend Frontend (`al backend`)
-- **Niche:** Backend Overview
-- **Validation Status:** PASS
-- **Confidence:** 87.86%
-- **Scores:** Profitability=48.29, ViralScore=11.67 (Outliers=10), Revenue=60.0, Risk=4.8 (LOW), Evergreen=82.2, Competition=59.5
-- **Content Depth:** 100_PLUS (155 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 9 creators, Evergreen demand stability
-- **Counter-Evidence:** No explicit monetary RPM benchmark available
-
-### Rank 17: def_002 — 20 & Budget (`10 budgeting`)
-- **Niche:** 20 Overview
-- **Validation Status:** PASS
-- **Confidence:** 87.30%
-- **Scores:** Profitability=39.88, ViralScore=8.63 (Outliers=10), Revenue=60.0, Risk=26.8 (LOW), Evergreen=72.4, Competition=52.6
-- **Content Depth:** 100_PLUS (183 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 9 creators, Evergreen demand stability
-- **Counter-Evidence:** No explicit monetary RPM benchmark available
-
-### Rank 18: def_009 — AI Automation & Autonomous Agents (`2026 github`)
-- **Niche:** Artificial Intelligence
-- **Validation Status:** PASS
-- **Confidence:** 90.23%
-- **Scores:** Profitability=40.21, ViralScore=9.68 (Outliers=10), Revenue=60.0, Risk=20.0 (LOW), Evergreen=66.3, Competition=54.6
-- **Content Depth:** 100_PLUS (130 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 9 creators, Evergreen demand stability, High faceless feasibility confirmed
-- **Counter-Evidence:** No explicit monetary RPM benchmark available
-
-### Rank 19: def_026 — 2025 & In (`alternatives notion`)
-- **Niche:** 2025 Overview
-- **Validation Status:** PASS_WITH_WARNINGS
-- **Confidence:** 87.84%
-- **Scores:** Profitability=41.31, ViralScore=10.85 (Outliers=10), Revenue=75.0, Risk=21.5 (LOW), Evergreen=74.1, Competition=57.6
-- **Content Depth:** 50_TO_99 (88 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 9 creators, Evergreen demand stability
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
-### Rank 20: def_023 — Agency & Marketing (`agency scale`)
-- **Niche:** Agency Overview
-- **Validation Status:** PASS
-- **Confidence:** 90.47%
-- **Scores:** Profitability=45.41, ViralScore=9.50 (Outliers=9), Revenue=75.0, Risk=18.4 (LOW), Evergreen=81.5, Competition=55.3
-- **Content Depth:** 100_PLUS (166 distinct intents)
-- **Evidence Summary:** Repeatable outliers across 8 creators, Evergreen demand stability, High faceless feasibility confirmed
-- **Counter-Evidence:** High economic revenue potential asserted with zero RPM benchmark, No explicit monetary RPM benchmark available
-
+| Rank | Candidate | Subniche | Outliers | Small-channel | Intents | Videos | Channels | Parents |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 1 | `def_015` | PC Hardware & System Optimization | 184 | 53 | 2298 | 2322 | 1627 | 3, 4, 5, 12, 13, 15, 22, 23, 25, 26, 30, 32 |
+| 2 | `def_046` | Crear & Curso | 66 | 19 | 670 | 672 | 509 | 29 |
+| 3 | `def_055` | Cybersecurity Education | 53 | 9 | 650 | 655 | 545 | 15, 23, 25, 30 |
+| 4 | `def_036` | AI Safety & Risk Analysis | 50 | 15 | 597 | 602 | 469 | 23 |
+| 5 | `def_024` | PC Hardware & System Optimization | 26 | 12 | 319 | 324 | 264 | 0, 6, 13 |
+| 6 | `def_057` | De & De Software | 24 | 8 | 376 | 384 | 332 | 11, 16, 26 |
+| 7 | `def_045` | De & De Software | 23 | 16 | 204 | 208 | 143 | 11 |
+| 8 | `def_030` | Azure & Azure Devops | 20 | 12 | 254 | 259 | 152 | 6 |
+| 9 | `def_004` | PC Hardware & System Optimization | 20 | 3 | 267 | 280 | 227 | 0 |
+| 10 | `def_038` | Bootstrap & Bootstrap Saas | 16 | 11 | 223 | 223 | 150 | 1 |
+| 11 | `def_052` | De & Hotmart | 16 | 4 | 234 | 235 | 206 | 8 |
+| 12 | `def_020` | Agencia & Agencia De | 14 | 10 | 132 | 142 | 102 | 31 |
+| 13 | `def_053` | PC Hardware & System Optimization | 14 | 6 | 118 | 118 | 88 | 2 |
+| 14 | `def_016` | By & By Step | 14 | 3 | 170 | 171 | 130 | 5, 15, 17 |
+| 15 | `def_054` | 2025 & In | 12 | 5 | 136 | 136 | 95 | 7 |
+| 16 | `def_025` | Backend & Backend Frontend | 10 | 7 | 155 | 158 | 94 | 10 |
+| 17 | `def_002` | 20 & Budget | 10 | 4 | 183 | 187 | 158 | 33 |
+| 18 | `def_009` | AI Automation & Autonomous Agents | 10 | 4 | 130 | 130 | 115 | 28 |
+| 19 | `def_026` | 2025 & In | 10 | 3 | 88 | 88 | 59 | 7 |
+| 20 | `def_023` | Agency & Marketing | 9 | 7 | 166 | 169 | 136 | 24 |
