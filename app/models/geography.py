@@ -7,7 +7,7 @@ market tiers, and benchmark records.
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, Field, model_validator
 
 
 class LanguageCode(str, Enum):
@@ -35,6 +35,7 @@ class ContentType(str, Enum):
     SHORT = "SHORT"
     LONG_FORM = "LONG_FORM"
     UNKNOWN = "UNKNOWN"
+    WILDCARD = "*"
 
 
 class MarketTier(str, Enum):
@@ -50,9 +51,13 @@ class MarketTier(str, Enum):
 
 class BenchmarkSourceType(str, Enum):
     """Source type for revenue benchmarks."""
+    EMPIRICAL = "EMPIRICAL"
+    INDUSTRY_BENCHMARK = "INDUSTRY_BENCHMARK"
+    DERIVED = "DERIVED"
     OBSERVED_BENCHMARK = "observed_benchmark"
     EXTERNAL_BENCHMARK = "external_benchmark"
     MANUAL_BENCHMARK = "manual_benchmark"
+    UNAVAILABLE = "UNAVAILABLE"
     UNKNOWN = "unknown"
 
 
@@ -99,19 +104,53 @@ class RevenueBenchmark(BaseModel):
     If no benchmark exists, revenue estimate = unavailable.
     Never fabricate values.
     """
-    source_type: BenchmarkSourceType
-    source_name: str
-    market: str  # country code or region group
-    content_type: ContentType
-    value_low: float = Field(ge=0.0)
-    value_mid: float = Field(ge=0.0)
-    value_high: float = Field(ge=0.0)
+    id: Optional[str] = None
+    market: str  # country code, region group, or tier name
+    language: str = "en"
+    content_category: str = "general"
+    content_type: ContentType = ContentType.LONG_FORM
+    rpm_low: float = Field(
+        ge=0.0,
+        validation_alias=AliasChoices("rpm_low", "value_low"),
+    )
+    rpm_base: float = Field(
+        ge=0.0,
+        validation_alias=AliasChoices("rpm_base", "value_mid"),
+    )
+    rpm_high: float = Field(
+        ge=0.0,
+        validation_alias=AliasChoices("rpm_high", "value_high"),
+    )
     currency: str = "USD"
+    source_name: str
+    source_type: BenchmarkSourceType
+    source_version: str = "1.0"
+    source_date: Optional[str] = None
     retrieved_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
     confidence: float = Field(default=0.0, ge=0.0, le=100.0)
+    fallback_level: Optional[str] = None
     notes: str = ""
+
+    # Backwards compatibility properties for legacy code:
+    @property
+    def value_low(self) -> float:
+        return self.rpm_low
+
+    @property
+    def value_mid(self) -> float:
+        return self.rpm_base
+
+    @property
+    def value_high(self) -> float:
+        return self.rpm_high
+
+    @model_validator(mode="after")
+    def validate_bounds(self) -> "RevenueBenchmark":
+        if not (0.0 <= self.rpm_low <= self.rpm_base <= self.rpm_high):
+            raise ValueError(f"RPM invariant violated: 0 <= low ({self.rpm_low}) <= base ({self.rpm_base}) <= high ({self.rpm_high})")
+        return self
 
 
 class RevenueEstimate(BaseModel):

@@ -50,11 +50,35 @@ class RPMRange(BaseModel):
     high: Optional[float] = Field(default=None, ge=0.0)
     currency: str = "USD"
     market: Optional[str] = None
+    language: Optional[str] = None
+    content_category: Optional[str] = None
     content_type: Optional[str] = None
     source: EvidenceType = EvidenceType.UNKNOWN
+    source_name: Optional[str] = None
+    source_version: Optional[str] = None
+    source_date: Optional[str] = None
+    benchmark_id: Optional[str] = None
     benchmark_type: Optional[str] = None
+    fallback_level: Optional[str] = None
     confidence: float = Field(default=0.0, ge=0.0, le=100.0)
+    notes: str = ""
     warnings: List[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_availability(self) -> "RPMRange":
+        values = (self.low, self.mid, self.high)
+        if self.available:
+            if any(value is None for value in values):
+                raise ValueError("Available RPM requires low, mid and high values.")
+            if not (self.low <= self.mid <= self.high):
+                raise ValueError("RPM bounds must be ordered.")
+            if self.currency != "USD":
+                raise ValueError("Canonical RPM currency must be USD.")
+            if self.source == EvidenceType.UNKNOWN or not self.source_name:
+                raise ValueError("Available RPM requires known source provenance.")
+        elif any(value is not None for value in values):
+            raise ValueError("Unavailable RPM must not contain monetary values.")
+        return self
 
 
 class MonetaryScenario(BaseModel):
@@ -74,14 +98,72 @@ class RevenueScenarios(BaseModel):
     warnings: List[str] = Field(default_factory=list)
 
 
+class ProductionCostBenchmark(BaseModel):
+    hourly_rate_low: float = Field(ge=0.0)
+    hourly_rate_base: float = Field(ge=0.0)
+    hourly_rate_high: float = Field(ge=0.0)
+    currency: str = "USD"
+    evidence_type: EvidenceType
+    source_name: str = Field(min_length=1)
+    source_version: Optional[str] = None
+    source_date: Optional[str] = None
+    benchmark_id: Optional[str] = None
+    assumptions: List[str] = Field(default_factory=list)
+    cost_components: Dict[str, Any] = Field(default_factory=dict)
+    confidence: float = Field(default=0.0, ge=0.0, le=100.0)
+
+    @model_validator(mode="after")
+    def validate_benchmark(self) -> "ProductionCostBenchmark":
+        if not (self.hourly_rate_low <= self.hourly_rate_base <= self.hourly_rate_high):
+            raise ValueError("Production cost hourly-rate bounds must be ordered.")
+        if self.currency != "USD":
+            raise ValueError("Canonical production cost benchmark currency must be USD.")
+        if self.evidence_type != EvidenceType.EXTERNAL_BENCHMARK:
+            raise ValueError(
+                "Canonical production cost benchmark must use external benchmark evidence."
+            )
+        return self
+
+
 class ProductionCostMonetary(BaseModel):
     available: bool = False
     low: Optional[float] = Field(default=None, ge=0.0)
     base: Optional[float] = Field(default=None, ge=0.0)
     high: Optional[float] = Field(default=None, ge=0.0)
     currency: str = "USD"
+    estimated_hours_low: Optional[float] = Field(default=None, ge=0.0)
+    estimated_hours_base: Optional[float] = Field(default=None, ge=0.0)
+    estimated_hours_high: Optional[float] = Field(default=None, ge=0.0)
+    cost_components: Dict[str, Any] = Field(default_factory=dict)
     evidence_type: EvidenceType = EvidenceType.UNKNOWN
+    source_name: Optional[str] = None
+    source_version: Optional[str] = None
+    source_date: Optional[str] = None
+    benchmark_id: Optional[str] = None
+    assumptions: List[str] = Field(default_factory=list)
+    confidence: float = Field(default=0.0, ge=0.0, le=100.0)
     warnings: List[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_availability(self) -> "ProductionCostMonetary":
+        costs = (self.low, self.base, self.high)
+        hours = (self.estimated_hours_low, self.estimated_hours_base, self.estimated_hours_high)
+        if self.available:
+            if any(value is None for value in costs):
+                raise ValueError("Available monetary cost requires low, base and high values.")
+            if not (self.low <= self.base <= self.high):
+                raise ValueError("Monetary cost bounds must be ordered.")
+            if all(value is not None for value in hours) and not (
+                self.estimated_hours_low <= self.estimated_hours_base <= self.estimated_hours_high
+            ):
+                raise ValueError("Estimated hour bounds must be ordered.")
+            if self.currency != "USD":
+                raise ValueError("Canonical monetary cost currency must be USD.")
+            if self.evidence_type == EvidenceType.UNKNOWN or not self.source_name:
+                raise ValueError("Available monetary cost requires known source provenance.")
+        elif any(value is not None for value in costs):
+            raise ValueError("Unavailable monetary cost must not contain monetary values.")
+        return self
 
 
 class ProfitScenarios(BaseModel):

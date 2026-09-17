@@ -299,16 +299,31 @@ class ProfitabilityEngine:
 
         # 7. Monetary Policy & Scenario Mode
         rpm_range = explicit_rpm or RPMRange(available=False)
-        production_cost = explicit_cost_money or ProductionCostMonetary(available=False)
+        if explicit_cost_money is not None:
+            production_cost = explicit_cost_money
+        elif production_risk is not None:
+            production_cost = production_risk.production_cost_monetary
+        else:
+            production_cost = ProductionCostMonetary(available=False)
 
         revenue_scenarios = RevenueScenarios(available=False)
         profit_scenarios = ProfitScenarios(available=False)
 
         if rpm_range.available and rpm_range.mid is not None:
             # Calculate revenue scenarios
-            low_rev = (expected_views_range.low * (rpm_range.low or rpm_range.mid)) / 1000.0
+            rpm_low = (
+                rpm_range.low
+                if rpm_range.low is not None
+                else rpm_range.mid
+            )
+            rpm_high = (
+                rpm_range.high
+                if rpm_range.high is not None
+                else rpm_range.mid
+            )
+            low_rev = (expected_views_range.low * rpm_low) / 1000.0
             base_rev = (expected_views_range.base * rpm_range.mid) / 1000.0
-            high_rev = (expected_views_range.high * (rpm_range.high or rpm_range.mid)) / 1000.0
+            high_rev = (expected_views_range.high * rpm_high) / 1000.0
 
             rev_currency = rpm_range.currency
             ev_type = rpm_range.source
@@ -325,9 +340,17 @@ class ProfitabilityEngine:
                 if production_cost.currency != rev_currency:
                     warnings.append(f"Currency mismatch: Revenue ({rev_currency}) vs Cost ({production_cost.currency})")
                 else:
-                    cost_low = production_cost.low or production_cost.base
+                    cost_low = (
+                        production_cost.low
+                        if production_cost.low is not None
+                        else production_cost.base
+                    )
                     cost_base = production_cost.base
-                    cost_high = production_cost.high or production_cost.base
+                    cost_high = (
+                        production_cost.high
+                        if production_cost.high is not None
+                        else production_cost.base
+                    )
 
                     profit_pess = low_rev - cost_high
                     profit_base = base_rev - cost_base

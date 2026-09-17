@@ -8,6 +8,10 @@ from datetime import datetime, timezone
 from statistics import mean, median
 from typing import Any, Dict, List, Mapping, Optional, Sequence
 
+from app.analytics.benchmark_provider import (
+    EmptyProductionCostBenchmarkProvider,
+    ProductionCostBenchmarkProvider,
+)
 from app.config.production_risk_config import ProductionRiskConfig, production_risk_config
 from app.models.production_risk import (
     ClusterProductionRisk,
@@ -309,8 +313,18 @@ def _matches(text: str, terms: set[str]) -> List[str]:
 class ProductionRiskEngine:
     """Estimate production effort and policy risk from observable cluster metadata."""
 
-    def __init__(self, config: Optional[ProductionRiskConfig] = None):
+    def __init__(
+        self,
+        config: Optional[ProductionRiskConfig] = None,
+        production_cost_benchmark_provider: Optional[
+            ProductionCostBenchmarkProvider
+        ] = None,
+    ):
         self.config = config or production_risk_config
+        self.production_cost_benchmark_provider = (
+            production_cost_benchmark_provider
+            or EmptyProductionCostBenchmarkProvider()
+        )
 
     def analyze(
         self,
@@ -538,6 +552,12 @@ class ProductionRiskEngine:
         effort_factor = 0.5 + production_cost / 100.0
         hours_low = round(max(self.config.minimum_hours_low, output_minutes * self.config.hours_per_output_minute_low * effort_factor), 1)
         hours_high = round(max(self.config.minimum_hours_high, output_minutes * self.config.hours_per_output_minute_high * effort_factor), 1)
+        production_cost_monetary = (
+            self.production_cost_benchmark_provider.estimate_cost(
+                hours_low,
+                hours_high,
+            )
+        )
 
         # New Sprint 8 Risk Components
         # Platform Policy Risk
@@ -819,6 +839,7 @@ class ProductionRiskEngine:
             production_cost_score=production_cost,
             estimated_hours_low=hours_low,
             estimated_hours_high=hours_high,
+            production_cost_monetary=production_cost_monetary,
             research_complexity_score=research,
             footage_complexity_score=footage,
             editing_complexity_score=editing,

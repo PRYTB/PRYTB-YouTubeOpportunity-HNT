@@ -124,8 +124,24 @@ def test_rpm_unavailable_monetary_policy():
 
 def test_monetary_scenarios_when_rpm_and_cost_available():
     engine = ProfitabilityEngine()
-    rpm = RPMRange(available=True, low=2.0, mid=5.0, high=10.0, currency="USD", source=EvidenceType.EXTERNAL_BENCHMARK)
-    cost = ProductionCostMonetary(available=True, low=20.0, base=50.0, high=100.0, currency="USD", evidence_type=EvidenceType.MANUAL_ASSUMPTION)
+    rpm = RPMRange(
+        available=True,
+        low=2.0,
+        mid=5.0,
+        high=10.0,
+        currency="USD",
+        source=EvidenceType.EXTERNAL_BENCHMARK,
+        source_name="Test RPM benchmark",
+    )
+    cost = ProductionCostMonetary(
+        available=True,
+        low=20.0,
+        base=50.0,
+        high=100.0,
+        currency="USD",
+        evidence_type=EvidenceType.MANUAL_ASSUMPTION,
+        source_name="Test cost assumption",
+    )
 
     videos = [{"view_count": 20000, "duration_seconds": 600}] # base views = 20,000
 
@@ -149,6 +165,83 @@ def test_monetary_scenarios_when_rpm_and_cost_available():
     assert res.profit_scenarios.available
     # Base profit = 100.0 - 50.0 = 50.0 USD
     assert res.profit_scenarios.base.expected_profit == 50.0
+
+
+def test_zero_monetary_bounds_are_preserved():
+    engine = ProfitabilityEngine()
+    rpm = RPMRange(
+        available=True,
+        low=0.0,
+        mid=5.0,
+        high=10.0,
+        source=EvidenceType.EXTERNAL_BENCHMARK,
+        source_name="Test zero-bound RPM benchmark",
+    )
+    cost = ProductionCostMonetary(
+        available=True,
+        low=0.0,
+        base=50.0,
+        high=100.0,
+        evidence_type=EvidenceType.MANUAL_ASSUMPTION,
+        source_name="Test zero-bound cost assumption",
+    )
+
+    result = engine.analyze_cluster(
+        run_id="test_run",
+        cluster_id=1,
+        niche="test",
+        subniche="test",
+        microniche="test",
+        cluster_videos=[{"view_count": 20000, "duration_seconds": 600}],
+        explicit_rpm=rpm,
+        explicit_cost_money=cost,
+        dataset_hash="hash1",
+        assignments_hash="hash2",
+    )
+
+    assert result.revenue_scenarios.pessimistic.expected_revenue == 0.0
+    assert result.profit_scenarios.optimistic.expected_cost == 0.0
+    assert result.profit_scenarios.optimistic.expected_profit == 200.0
+
+
+def test_uses_production_risk_monetary_cost_without_explicit_override():
+    engine = ProfitabilityEngine()
+    production_risk = ClusterProductionRisk(
+        cluster_id=1,
+        production_cost_monetary=ProductionCostMonetary(
+            available=True,
+            low=10.0,
+            base=20.0,
+            high=30.0,
+            evidence_type=EvidenceType.EXTERNAL_BENCHMARK,
+            source_name="Production risk cost benchmark",
+        ),
+    )
+    rpm = RPMRange(
+        available=True,
+        low=5.0,
+        mid=5.0,
+        high=5.0,
+        source=EvidenceType.EXTERNAL_BENCHMARK,
+        source_name="Test RPM benchmark",
+    )
+
+    result = engine.analyze_cluster(
+        run_id="test_run",
+        cluster_id=1,
+        niche="test",
+        subniche="test",
+        microniche="test",
+        cluster_videos=[{"view_count": 20000, "duration_seconds": 600}],
+        production_risk=production_risk,
+        explicit_rpm=rpm,
+        dataset_hash="hash1",
+        assignments_hash="hash2",
+    )
+
+    assert result.production_cost == production_risk.production_cost_monetary
+    assert result.profit_scenarios.available
+    assert result.profit_scenarios.base.expected_profit == 80.0
 
 
 def test_synthetic_lower_views_higher_profitability_ranking_sanity():

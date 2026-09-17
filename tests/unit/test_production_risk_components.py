@@ -2,7 +2,12 @@
 
 import pytest
 
+from app.analytics.benchmark_provider import (
+    ConfiguredProductionCostBenchmarkProvider,
+    EmptyProductionCostBenchmarkProvider,
+)
 from app.analytics.production_risk_engine import ProductionRiskEngine
+from app.models.profitability import EvidenceType, ProductionCostBenchmark
 from app.models.production_risk import (
     AIAssistancePotential,
     ExpertiseRequirement,
@@ -408,6 +413,148 @@ class TestCluster9HoursCalculation:
         # Verify hours are positive and reasonable
         assert result.estimated_hours_low > 0
         assert result.estimated_hours_high > result.estimated_hours_low
+
+
+class TestProductionCostBenchmark:
+    def test_empty_provider_returns_unavailable_without_amounts(self):
+        cost = EmptyProductionCostBenchmarkProvider().estimate_cost(4.0, 8.0)
+
+        assert not cost.available
+        assert cost.low is None
+        assert cost.base is None
+        assert cost.high is None
+        assert cost.estimated_hours_low == 4.0
+        assert cost.estimated_hours_high == 8.0
+        assert cost.warnings
+
+    def test_configured_provider_preserves_sourced_benchmark_metadata(self):
+        benchmark = ProductionCostBenchmark(
+            hourly_rate_low=10.0,
+            hourly_rate_base=20.0,
+            hourly_rate_high=30.0,
+            evidence_type=EvidenceType.EXTERNAL_BENCHMARK,
+            source_name="Published production labor survey",
+            source_version="2026 edition",
+            source_date="2026-01-15",
+            benchmark_id="cost-benchmark-1",
+            assumptions=["Labor-only estimate"],
+            cost_components={"overhead": {"included": False}},
+            confidence=82.0,
+        )
+        provider = ConfiguredProductionCostBenchmarkProvider(benchmark)
+
+        cost = provider.estimate_cost(4.0, 8.0)
+
+        assert cost.available
+        assert (cost.low, cost.base, cost.high) == (40.0, 120.0, 240.0)
+        assert (
+            cost.estimated_hours_low,
+            cost.estimated_hours_base,
+            cost.estimated_hours_high,
+        ) == (4.0, 6.0, 8.0)
+        assert cost.currency == "USD"
+        assert cost.source_name == benchmark.source_name
+        assert cost.source_version == benchmark.source_version
+        assert cost.source_date == benchmark.source_date
+        assert cost.benchmark_id == benchmark.benchmark_id
+        assert cost.assumptions == benchmark.assumptions
+        assert cost.confidence == benchmark.confidence
+        assert cost.cost_components["overhead"] == {"included": False}
+        assert cost.cost_components["labor"]["hourly_rate_usd"]["base"] == 20.0
+
+    def test_configured_provider_requires_complete_ordered_hours(self):
+        benchmark = ProductionCostBenchmark(
+            hourly_rate_low=10.0,
+            hourly_rate_base=20.0,
+            hourly_rate_high=30.0,
+            evidence_type=EvidenceType.EXTERNAL_BENCHMARK,
+            source_name="Published production labor survey",
+        )
+        provider = ConfiguredProductionCostBenchmarkProvider(benchmark)
+
+        unavailable = provider.estimate_cost(None, 8.0)
+        assert not unavailable.available
+        assert unavailable.low is None
+        with pytest.raises(ValueError, match="ordered"):
+            provider.estimate_cost(8.0, 4.0)
+
+    @pytest.mark.parametrize(
+        "overrides",
+        [
+            {"hourly_rate_low": 30.0, "hourly_rate_base": 20.0},
+            {"currency": "EUR"},
+            {"evidence_type": EvidenceType.UNKNOWN},
+            {"evidence_type": EvidenceType.INFERRED},
+            {"evidence_type": EvidenceType.MANUAL_ASSUMPTION},
+            {"evidence_type": EvidenceType.OBSERVED},
+        ],
+    )
+    def test_benchmark_rejects_invalid_or_unsourced_values(self, overrides):
+        values = {
+            "hourly_rate_low": 10.0,
+            "hourly_rate_base": 20.0,
+            "hourly_rate_high": 30.0,
+            "evidence_type": EvidenceType.EXTERNAL_BENCHMARK,
+            "source_name": "Published production labor survey",
+        }
+        values.update(overrides)
+
+        with pytest.raises(ValueError):
+            ProductionCostBenchmark(**values)
+
+    def test_engine_default_and_configured_cost_do_not_change_relative_score(self):
+        cluster = {
+            "cluster_id": 10,
+            "microniche": "Test",
+            "niche": "Test",
+            "subniche": "Test",
+            "video_ids": ["v1"],
+        }
+        video = {
+            "video_id": "v1",
+            "title": "Research documentary tutorial",
+            "description": "Cinematic animation and source footage",
+            "duration_seconds": 600,
+        }
+        default_result = ProductionRiskEngine()._analyze_cluster(
+            cluster, {"v1": video}
+        )
+        benchmark = ProductionCostBenchmark(
+            hourly_rate_low=10.0,
+            hourly_rate_base=20.0,
+            hourly_rate_high=30.0,
+            evidence_type=EvidenceType.EXTERNAL_BENCHMARK,
+            source_name="Published production labor survey",
+        )
+        configured_result = ProductionRiskEngine(
+            production_cost_benchmark_provider=(
+                ConfiguredProductionCostBenchmarkProvider(benchmark)
+            )
+        )._analyze_cluster(cluster, {"v1": video})
+
+        assert not default_result.production_cost_monetary.available
+        assert default_result.production_cost_monetary.low is None
+        assert (
+            configured_result.production_cost_score
+            == default_result.production_cost_score
+        )
+        assert (
+            configured_result.estimated_hours_low
+            == default_result.estimated_hours_low
+        )
+        assert (
+            configured_result.estimated_hours_high
+            == default_result.estimated_hours_high
+        )
+        assert configured_result.production_cost_monetary.available
+        assert (
+            configured_result.production_cost_monetary.estimated_hours_low
+            == configured_result.estimated_hours_low
+        )
+        assert (
+            configured_result.production_cost_monetary.estimated_hours_high
+            == configured_result.estimated_hours_high
+        )
 
 
 if __name__ == "__main__":

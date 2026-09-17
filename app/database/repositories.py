@@ -1565,6 +1565,145 @@ class YouTubeRepository:
             [run_id]
         )
 
+    def upsert_rpm_benchmarks(self, records: List[Dict[str, Any]]) -> int:
+        if not records:
+            return 0
+        query = """
+        INSERT INTO public.rpm_benchmarks (
+            benchmark_id, content_category, market, language, content_type,
+            rpm_low, rpm_base, rpm_high, currency, source_name, source_type,
+            source_version, source_date, retrieved_at, confidence, notes
+        ) VALUES (
+            %(benchmark_id)s, %(content_category)s, %(market)s, %(language)s, %(content_type)s,
+            %(rpm_low)s, %(rpm_base)s, %(rpm_high)s, %(currency)s, %(source_name)s, %(source_type)s,
+            %(source_version)s, %(source_date)s, %(retrieved_at)s, %(confidence)s, %(notes)s
+        ) ON CONFLICT (benchmark_id) DO UPDATE SET
+            content_category = EXCLUDED.content_category,
+            market = EXCLUDED.market,
+            language = EXCLUDED.language,
+            content_type = EXCLUDED.content_type,
+            rpm_low = EXCLUDED.rpm_low,
+            rpm_base = EXCLUDED.rpm_base,
+            rpm_high = EXCLUDED.rpm_high,
+            currency = EXCLUDED.currency,
+            source_name = EXCLUDED.source_name,
+            source_type = EXCLUDED.source_type,
+            source_version = EXCLUDED.source_version,
+            source_date = EXCLUDED.source_date,
+            retrieved_at = EXCLUDED.retrieved_at,
+            confidence = EXCLUDED.confidence,
+            notes = EXCLUDED.notes,
+            updated_at = NOW();
+        """
+        with self.client.get_cursor() as cur:
+            for record in records:
+                cur.execute(query, dict(record))
+        return len(records)
+
+    def get_rpm_benchmarks(self) -> List[Dict[str, Any]]:
+        return self.client.execute(
+            "SELECT * FROM public.rpm_benchmarks "
+            "ORDER BY content_category ASC, market ASC, language ASC, content_type ASC, "
+            "confidence DESC, benchmark_id ASC"
+        )
+
+    def upsert_production_cost_benchmarks(
+        self, records: List[Dict[str, Any]]
+    ) -> int:
+        if not records:
+            return 0
+        query = """
+        INSERT INTO public.production_cost_benchmarks (
+            benchmark_id, hourly_rate_low, hourly_rate_base, hourly_rate_high,
+            currency, evidence_type, source_name, source_version, source_date,
+            retrieved_at, assumptions, cost_components, confidence, notes
+        ) VALUES (
+            %(benchmark_id)s, %(hourly_rate_low)s, %(hourly_rate_base)s, %(hourly_rate_high)s,
+            %(currency)s, %(evidence_type)s, %(source_name)s, %(source_version)s, %(source_date)s,
+            %(retrieved_at)s, %(assumptions)s, %(cost_components)s, %(confidence)s, %(notes)s
+        ) ON CONFLICT (benchmark_id) DO UPDATE SET
+            hourly_rate_low = EXCLUDED.hourly_rate_low,
+            hourly_rate_base = EXCLUDED.hourly_rate_base,
+            hourly_rate_high = EXCLUDED.hourly_rate_high,
+            currency = EXCLUDED.currency,
+            evidence_type = EXCLUDED.evidence_type,
+            source_name = EXCLUDED.source_name,
+            source_version = EXCLUDED.source_version,
+            source_date = EXCLUDED.source_date,
+            retrieved_at = EXCLUDED.retrieved_at,
+            assumptions = EXCLUDED.assumptions,
+            cost_components = EXCLUDED.cost_components,
+            confidence = EXCLUDED.confidence,
+            notes = EXCLUDED.notes,
+            updated_at = NOW();
+        """
+        with self.client.get_cursor() as cur:
+            for record in records:
+                normalized = dict(record)
+                normalized["source_version"] = normalized.get("source_version") or ""
+                normalized["source_date"] = normalized.get("source_date") or ""
+                normalized.setdefault("notes", "")
+                for field in ("assumptions", "cost_components"):
+                    if isinstance(normalized.get(field), (list, dict)):
+                        normalized[field] = json.dumps(
+                            normalized[field], sort_keys=True, separators=(",", ":")
+                        )
+                cur.execute(query, normalized)
+        return len(records)
+
+    def get_production_cost_benchmarks(self) -> List[Dict[str, Any]]:
+        return self.client.execute(
+            "SELECT * FROM public.production_cost_benchmarks "
+            "ORDER BY confidence DESC, source_name ASC, source_version ASC, "
+            "source_date ASC, benchmark_id ASC"
+        )
+
+    def upsert_candidate_economics(self, records: List[Dict[str, Any]]) -> int:
+        if not records:
+            return 0
+        query = """
+        INSERT INTO public.candidate_economics (
+            run_id, candidate_id, candidate_rank, benchmark_id, rpm_available,
+            cost_benchmark_id, cost_available, fallback_level, economics_payload,
+            provenance_payload, methodology_version, source_dataset_hash, calculated_at
+        ) VALUES (
+            %(run_id)s, %(candidate_id)s, %(candidate_rank)s, %(benchmark_id)s, %(rpm_available)s,
+            %(cost_benchmark_id)s, %(cost_available)s, %(fallback_level)s, %(economics_payload)s,
+            %(provenance_payload)s, %(methodology_version)s, %(source_dataset_hash)s, %(calculated_at)s
+        ) ON CONFLICT (run_id, candidate_id) DO UPDATE SET
+            candidate_rank = EXCLUDED.candidate_rank,
+            benchmark_id = EXCLUDED.benchmark_id,
+            rpm_available = EXCLUDED.rpm_available,
+            cost_benchmark_id = EXCLUDED.cost_benchmark_id,
+            cost_available = EXCLUDED.cost_available,
+            fallback_level = EXCLUDED.fallback_level,
+            economics_payload = EXCLUDED.economics_payload,
+            provenance_payload = EXCLUDED.provenance_payload,
+            methodology_version = EXCLUDED.methodology_version,
+            source_dataset_hash = EXCLUDED.source_dataset_hash,
+            calculated_at = EXCLUDED.calculated_at,
+            updated_at = NOW();
+        """
+        with self.client.get_cursor() as cur:
+            for record in records:
+                normalized = dict(record)
+                normalized.setdefault("cost_benchmark_id", None)
+                normalized.setdefault("cost_available", False)
+                for field in ("economics_payload", "provenance_payload"):
+                    if isinstance(normalized.get(field), (list, dict)):
+                        normalized[field] = json.dumps(
+                            normalized[field], sort_keys=True, separators=(",", ":")
+                        )
+                cur.execute(query, normalized)
+        return len(records)
+
+    def get_candidate_economics(self, run_id: str) -> List[Dict[str, Any]]:
+        return self.client.execute(
+            "SELECT * FROM public.candidate_economics WHERE run_id = %s "
+            "ORDER BY candidate_rank ASC, candidate_id ASC",
+            [run_id],
+        )
+
     def upsert_channels(self, channels: List[YouTubeChannel]) -> int:
         if not channels:
             return 0

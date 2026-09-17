@@ -4,6 +4,8 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, model_validator
 
+from app.models.profitability import ProductionCostMonetary
+
 
 class RiskLevel(str, Enum):
     LOW = "LOW"
@@ -57,6 +59,9 @@ class ClusterProductionRisk(BaseModel):
     production_cost_score: float = Field(default=0.0, ge=0.0, le=100.0)
     estimated_hours_low: Optional[float] = Field(default=None, ge=0.0)
     estimated_hours_high: Optional[float] = Field(default=None, ge=0.0)
+    production_cost_monetary: ProductionCostMonetary = Field(
+        default_factory=ProductionCostMonetary
+    )
     research_complexity_score: Optional[float] = Field(default=None, ge=0.0, le=100.0)
     footage_complexity_score: Optional[float] = Field(default=None, ge=0.0, le=100.0)
     editing_complexity_score: Optional[float] = Field(default=None, ge=0.0, le=100.0)
