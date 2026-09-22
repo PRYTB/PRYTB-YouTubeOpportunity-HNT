@@ -41,7 +41,7 @@ from app.database.postgres_client import PostgresClient
 from app.database.repositories import YouTubeRepository
 from app.analytics.outlier_engine import OutlierEngine, is_test_video
 from app.analytics.semantic_provider import TFIDFLocalSemanticProvider
-from app.analytics.text_normalizer import clean_text_for_embedding
+from app.analytics.text_normalizer import clean_text_for_embedding, normalize_intent_string, validate_intent_semantic_quality
 from app.analytics.cluster_analyzer import (
     analyze_channel_diversity,
     select_representative_titles,
@@ -81,12 +81,6 @@ EXPECTED_EXCLUDED_FIXTURES = 28
 
 def print_flush(*args, **kwargs):
     print(*args, **kwargs, flush=True)
-
-
-def normalize_intent_string(text: str) -> str:
-    cleaned = clean_text_for_embedding(text)
-    words = [w for w in cleaned.split() if len(w) > 1]
-    return " ".join(words)
 
 
 def compute_assignments_hash(assignments: List[Tuple[str, int]]) -> str:

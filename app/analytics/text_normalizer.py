@@ -1,6 +1,6 @@
 import re
 import unicodedata
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Tuple
 
 # List of key tech/entity terms to explicitly protect or preserve case sensitivity/formatting
 PRESERVED_TERMS = [
@@ -10,11 +10,79 @@ PRESERVED_TERMS = [
     "Windows 11", "Windows 10", "RTX 5090", "RTX 4090", "YouTube"
 ]
 
+# Common Spanish and English stopwords for intent validation and filtering
+SPANISH_STOPWORDS = {
+    'de', 'la', 'el', 'en', 'y', 'a', 'los', 'del', 'las', 'un', 'por', 'con', 'no',
+    'una', 'su', 'para', 'es', 'al', 'lo', 'como', 'más', 'o', 'pero', 'sus', 'le',
+    'ha', 'me', 'si', 'sin', 'sobre', 'este', 'ya', 'entre', 'cuando', 'todo', 'esta',
+    'ser', 'son', 'dos', 'también', 'fue', 'había', 'era', 'muy', 'años', 'hasta',
+    'desde', 'está', 'mi', 'porque', 'qué', 'solo', 'han', 'yo', 'hay', 'como', 'cómo', 'c¾mo'
+}
+
+ENGLISH_STOPWORDS = {
+    'the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'i', 'it', 'for',
+    'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at', 'this', 'but', 'his',
+    'by', 'from', 'they', 'we', 'say', 'her', 'she', 'or', 'an', 'will', 'my',
+    'one', 'all', 'would', 'there', 'their', 'what', 'so', 'up', 'out', 'if',
+    'about', 'who', 'get', 'which', 'go', 'me', 'how', 'why'
+}
+
+COMMON_STOPWORDS = SPANISH_STOPWORDS.union(ENGLISH_STOPWORDS)
+
 # Terms that are generic noise in titles/descriptions when building semantic vectors
 GENERIC_STOP_WORDS = {
     "what", "how", "why", "video", "explained", "full", "guide", "tutorial",
     "watch", "channel", "subscribe", "link", "description", "video", "videos"
 }
+
+def normalize_intent_string(text: str) -> str:
+    """
+    Normalizes a raw subniche intent string:
+    - Cleans via normalize_single_text
+    - Deduplicates adjacent identical tokens (e.g. 'de de software' -> 'de software')
+    - Removes trailing/leading duplicate tokens
+    - Filters out single-character tokens unless preserved
+    """
+    if not text or not isinstance(text, str):
+        return ""
+    
+    cleaned = normalize_single_text(text)
+    tokens = [w for w in cleaned.split() if len(w) > 1 or w in PRESERVED_TERMS]
+    
+    # Deduplicate adjacent tokens (e.g., "de de" -> "de")
+    deduped = []
+    for token in tokens:
+        if not deduped or deduped[-1] != token:
+            deduped.append(token)
+            
+    return " ".join(deduped)
+
+def validate_intent_semantic_quality(intent: str) -> Tuple[bool, str]:
+    """
+    Validates whether a normalized intent represents a meaningful semantic topic.
+    Rejects:
+    - Empty or whitespace-only intents
+    - Stopword-only intents (e.g., 'es la', 'de en', 'es es la')
+    - Connective-word-only intents
+    - Intents with zero non-stopword / meaningful tokens
+    Returns (is_valid: bool, rejection_reason: str).
+    """
+    if not intent or not isinstance(intent, str) or not intent.strip():
+        return False, "EMPTY_INTENT"
+        
+    cleaned_intent = normalize_intent_string(intent)
+    tokens = cleaned_intent.lower().split()
+    
+    if not tokens:
+        return False, "NO_VALID_TOKENS"
+        
+    # 1. Stopword-only check
+    meaningful_tokens = [t for t in tokens if t not in COMMON_STOPWORDS and t not in GENERIC_STOP_WORDS]
+    
+    if not meaningful_tokens:
+        return False, "STOPWORD_ONLY_ARTIFACT"
+        
+    return True, "VALID"
 
 def clean_text_for_embedding(title: Optional[str], description: Optional[str] = None, max_desc_len: int = 300) -> str:
     """
