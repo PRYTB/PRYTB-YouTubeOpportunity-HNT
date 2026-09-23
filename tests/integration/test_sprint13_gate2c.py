@@ -124,8 +124,15 @@ def _build_test_state():
     }
 
 
-def test_gate2c_pipeline_and_dual_read_hash_match():
+def test_gate2c_pipeline_and_dual_read_hash_match(tmp_path, monkeypatch):
     """Verify end-to-end Gate 2C pipeline, zero UNKNOWN sources, 20 candidate completion, dual DB read hash match."""
+    artifact_names = (
+        "SOURCE_REGISTRY_PATH", "SOURCE_AUDIT_PATH", "RPM_ARTIFACT_PATH",
+        "COST_ARTIFACT_PATH", "ECONOMICS_ARTIFACT_PATH", "REPORT_PATH",
+        "INTEGRITY_DOC_PATH",
+    )
+    for name in artifact_names:
+        monkeypatch.setattr(gate2c, name, tmp_path / getattr(gate2c, name).name)
     state = _build_test_state()
     instances = []
 
@@ -174,6 +181,7 @@ def test_gate2c_pipeline_and_dual_read_hash_match():
 
     assert hash1 == hash2
     assert len(hash1) == 64
+    assert all(getattr(gate2c, name).is_file() for name in artifact_names)
 
 
 def test_generated_artifacts_exist_and_consistent():

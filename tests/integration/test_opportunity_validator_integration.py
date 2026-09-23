@@ -13,8 +13,21 @@ from scripts.sprint12_reproducibility_constants import (
 
 
 @pytest.mark.integration
-def test_opportunity_validator_pipeline_and_persistence():
+def test_opportunity_validator_pipeline_and_persistence(request, monkeypatch):
     repo = YouTubeRepository()
+    insert = repo.insert_validation_analysis
+
+    def insert_with_cleanup(result):
+        params = [result.run_id]
+        assert not repo.client.execute(
+            "SELECT 1 FROM cluster_validation_analyses WHERE run_id = %s", params
+        )
+        request.addfinalizer(lambda: repo.client.execute(
+            "DELETE FROM cluster_validation_analyses WHERE run_id = %s", params
+        ))
+        return insert(result)
+
+    monkeypatch.setattr(repo, "insert_validation_analysis", insert_with_cleanup)
 
     # Run full validation pipeline with PostgreSQL persistence
     output = run_validation(repository=repo, persist=True)

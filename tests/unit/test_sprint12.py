@@ -10,6 +10,21 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 PROCESSED_DIR = ROOT_DIR / "data" / "processed"
 
 
+@pytest.mark.parametrize("module", [
+    "scripts.execute_sprint12_gate3",
+    "scripts.execute_sprint12_gate4",
+    "scripts.execute_sprint12_gate7",
+])
+def test_sprint12_import_preserves_stdout(module):
+    import importlib
+    import sys
+
+    original = sys.stdout
+    importlib.reload(importlib.import_module(module))
+    assert sys.stdout is original
+    assert not original.closed
+
+
 def test_sprint12_dataset_contract_exists_and_valid():
     contract_file = PROCESSED_DIR / "sprint12_dataset_contract.json"
     assert contract_file.exists(), "Sprint 12 dataset contract file missing"

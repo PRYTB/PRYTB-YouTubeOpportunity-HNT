@@ -8,7 +8,7 @@ from scripts import sprint5_reproducibility_runner as runner
 
 
 def make_rows():
-    """Create test rows matching the approved 83-video production dataset."""
+    """Create synthetic rows matching the approved cluster structure."""
     # Use the approved assignments hash to derive deterministic test data
     rows = []
     # We'll create minimal test rows that match the approved structure
@@ -72,14 +72,14 @@ def test_approved_configuration_constants_are_exact():
         "sublinear_tf": False,
     }
     assert runner.APPROVED_ALGORITHM == "kmeans"
-    assert runner.APPROVED_K == 10
+    assert runner.APPROVED_K == 35
     assert runner.APPROVED_RANDOM_STATE == 42
     # These are the approved production values from the final preflight
-    assert abs(runner.APPROVED_SILHOUETTE - 0.06862934221732106) < 1e-12
-    assert runner.APPROVED_DATASET_HASH == "5b284b89e17d11aca86661bd8a53715b43b212f6f5aaf99ca4210884b5925091"
-    assert runner.APPROVED_ASSIGNMENTS_HASH == "d03cb6bd13b72e8f6859ec0f6c2ea1104f59799f6480d81d95b3df5bca751340"
-    assert runner.APPROVED_PRODUCTION_VIDEOS == 7611
-    assert runner.APPROVED_CLUSTERS == 10
+    assert abs(runner.APPROVED_SILHOUETTE - 0.1398150471459134) < 1e-12
+    assert runner.APPROVED_DATASET_HASH == "ecc6ad6d164e586bd718ff8c17be3801b5e3c0bbfa4e39cfc555b26f5c82c4ba"
+    assert runner.APPROVED_ASSIGNMENTS_HASH == "7ffe657d79913d1e5693ac9d99cb6da8645e9bd1842e9c1515094f37ea3b5a87"
+    assert runner.APPROVED_PRODUCTION_VIDEOS == 10585
+    assert runner.APPROVED_CLUSTERS == 35
 
 
 def test_canonical_dataset_rows_are_sorted_before_hashing():
@@ -93,9 +93,12 @@ def test_canonical_dataset_rows_are_sorted_before_hashing():
     assert [row["video_id"] for row in rows] == ["A", "B"]
     assert rows[0]["semantic_text_title"] == "first"
     assert "text" in rows[0]["semantic_text"]
-    assert runner.compute_dataset_hash(rows) != runner.compute_dataset_hash(
+    assert runner.compute_dataset_hash(rows) == runner.compute_dataset_hash(
         list(reversed(rows))
     )
+    changed = [dict(row) for row in rows]
+    changed[0]["semantic_text"] = "changed evidence"
+    assert runner.compute_dataset_hash(rows) != runner.compute_dataset_hash(changed)
 
 
 def test_validate_production_dataset_rejects_invalid_input():
@@ -201,15 +204,15 @@ def test_build_preflight_result_produces_valid_structure():
         rows, dataset_hash, 12, audit, labels, silhouette, assignments_hash
     )
     
-    assert result.total_clusters == 10
-    assert len(result.clusters) == 10
+    assert result.total_clusters == 35
+    assert len(result.clusters) == 35
     assert sum(cluster.video_count for cluster in result.clusters) == len(rows)
     assert result.parameters["assignment_source"] == "recomputed_kmeans"
     assert result.parameters["dataset_hash"] == dataset_hash
     assert result.parameters["silhouette"] == silhouette
     assert result.parameters["assignments_hash"] == assignments_hash
     assert result.algorithm == "kmeans"
-    assert result.parameters["K"] == 10
+    assert result.parameters["K"] == 35
     assert result.parameters["random_state"] == 42
     assert result.unassigned_count == 0
     
@@ -218,7 +221,7 @@ def test_build_preflight_result_produces_valid_structure():
         assert cluster.video_count > 0
         assert len(cluster.video_ids) == cluster.video_count
         assert cluster.cluster_id >= 0
-        assert cluster.cluster_id < 10
+        assert cluster.cluster_id < 35
 
 
 def test_preflight_does_not_persist_or_call_outliers():
@@ -284,6 +287,6 @@ def test_result_report_has_correct_structure():
     assert report["random_state"] == runner.APPROVED_RANDOM_STATE
     assert report["silhouette"] == result.parameters["silhouette"]
     assert report["assignments_hash"] == result.parameters["assignments_hash"]
-    assert report["clusters"] == 10
+    assert report["clusters"] == 35
     assert report["sum_video_count"] == sum(c.video_count for c in result.clusters)
     assert "cluster_sizes" in report

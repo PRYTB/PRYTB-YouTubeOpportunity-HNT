@@ -74,6 +74,12 @@ class TFIDFLocalSemanticProvider(SemanticProvider):
                 raise ValueError(f"Text at index {i} is empty or blank")
             clean_texts.append(stripped)
 
+        # Reject empty semantic input before vocabulary pruning. Legitimate
+        # titles can still lose all features under min_df/max_features.
+        analyzer = self._vectorizer.build_analyzer()
+        if any(not analyzer(text) for text in clean_texts):
+            raise ValueError("TF-IDF matrix contains zero norm rows: no analyzable tokens")
+
         # Fit or transform
         if not self._fitted:
             matrix = self._vectorizer.fit_transform(clean_texts).toarray()
@@ -89,8 +95,8 @@ class TFIDFLocalSemanticProvider(SemanticProvider):
         norms = np.linalg.norm(matrix, axis=1, keepdims=True)
         zero_norm_mask = (norms == 0)
         if np.any(zero_norm_mask):
-            # Fallback for texts that contain only stop words or tokens filtered out by vectorizer
-            # Replace zero-norm rows with uniform weights so cosine calculations do not fail or raise ValueError
+            # Preserve the approved representation for vocabulary-pruned titles;
+            # this numerical fallback does not establish semantic eligibility.
             matrix[zero_norm_mask.squeeze(), :] = 1.0 / np.sqrt(matrix.shape[1])
             norms[zero_norm_mask] = 1.0
 

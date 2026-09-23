@@ -4,8 +4,10 @@ Hard invariant tests for Sprint 12 Gate 2 reconciliation.
 
 import json
 import pytest
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Dict, Any, List
+from psycopg.rows import dict_row
 
 from app.database.postgres_client import PostgresClient
 from app.database.repositories import YouTubeRepository
@@ -164,7 +166,7 @@ def test_invariant_j_readback_provenance_matches_run(gate2_data):
         assert r.get("dataset_hash") == expected_dataset_hash, "Read-back record dataset_hash mismatch"
 
 
-def test_analytical_runs_canonical_lookup():
+def test_analytical_runs_canonical_lookup(monkeypatch):
     repo = YouTubeRepository()
     canonical = repo.get_canonical_run()
     assert canonical is not None
@@ -178,20 +180,29 @@ def test_analytical_runs_canonical_lookup():
     assert by_id is not None
     assert by_id.run_id == canonical.run_id
 
-    # Test idempotency
-    repo.upsert_analytical_run(
-        run_id=canonical.run_id,
-        run_type=canonical.run_type,
-        dataset_hash=canonical.dataset_hash,
-        video_count=canonical.video_count,
-        channel_count=canonical.channel_count,
-        status=canonical.status,
-        source_collection_run=canonical.source_collection_run,
-        methodology_version=canonical.methodology_version,
-        notes=canonical.notes,
-    )
-    rec2 = repo.get_canonical_run()
-    assert rec2.run_id == canonical.run_id
+    # Exercise real SQL without committing timestamp changes to historical runs.
+    with repo.client.get_connection() as conn:
+        @contextmanager
+        def transaction_cursor(row_factory=None):
+            with conn.cursor(row_factory=row_factory or dict_row) as cur:
+                yield cur
+
+        with conn.transaction(force_rollback=True), monkeypatch.context() as patch:
+            patch.setattr(repo.client, "get_cursor", transaction_cursor)
+            repo.upsert_analytical_run(
+                run_id=canonical.run_id,
+                run_type=canonical.run_type,
+                dataset_hash=canonical.dataset_hash,
+                video_count=canonical.video_count,
+                channel_count=canonical.channel_count,
+                status=canonical.status,
+                source_collection_run=canonical.source_collection_run,
+                methodology_version=canonical.methodology_version,
+                notes=canonical.notes,
+            )
+            rec2 = repo.get_canonical_run()
+            assert rec2.run_id == canonical.run_id
+    assert repo.get_canonical_run().model_dump() == canonical.model_dump()
 
 
 def test_stale_metadata_cannot_become_canonical():

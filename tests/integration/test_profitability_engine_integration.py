@@ -13,8 +13,21 @@ from scripts.analyze_profitability import run_analysis
 
 
 @pytest.mark.integration
-def test_profitability_pipeline_and_persistence():
+def test_profitability_pipeline_and_persistence(request, monkeypatch):
     repo = YouTubeRepository()
+    insert = repo.insert_profitability_analysis
+
+    def insert_with_cleanup(result):
+        params = [result.run_id]
+        assert not repo.client.execute(
+            "SELECT 1 FROM cluster_profitability_analyses WHERE run_id = %s", params
+        )
+        request.addfinalizer(lambda: repo.client.execute(
+            "DELETE FROM cluster_profitability_analyses WHERE run_id = %s", params
+        ))
+        return insert(result)
+
+    monkeypatch.setattr(repo, "insert_profitability_analysis", insert_with_cleanup)
 
     # Run full analysis pipeline with PostgreSQL persistence
     output = run_analysis(repository=repo, persist=True)
