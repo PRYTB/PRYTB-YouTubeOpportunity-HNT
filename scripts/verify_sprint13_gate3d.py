@@ -41,6 +41,7 @@ def main():
         "lineage_integrity": False,
         "qualification_integrity": False,
         "near_miss_integrity": False,
+        "repeated_score_provenance": False,
         "persistence": False,
         "hash_reproducibility": False,
         "database_integrity": False,
@@ -50,6 +51,7 @@ def main():
     hash2 = None
     row_3d = None
     qualified_count = 0
+    near_miss_count = 0
     top3_readiness = "NO"
 
     # 1. Gate3C precondition
@@ -189,20 +191,34 @@ def main():
                 if lineage_ok:
                     checks["lineage_integrity"] = True
 
-                # Qualification integrity & pool rebuild
-                qual_ok = True
-                qualified_items = [i for i in ledger if i["combined_qualified"] is True]
-                qualified_count = len(qualified_items)
+                # Independent reconstruction of qualified pool & near misses
+                reconstructed_qualified = [
+                    item for item in ledger
+                    if item["semantic_valid"] is True
+                    and item["structural_eligible"] is True
+                    and item["score_status"] == "VERIFIED"
+                    and item["economic_score"] is not None
+                    and item["economic_score"] >= THRESHOLD
+                ]
+                qualified_count = len(reconstructed_qualified)
 
-                for item in qualified_items:
+                # Qualification integrity check
+                qual_ok = True
+                persisted_qualified = [i for i in ledger if i["combined_qualified"] is True]
+                if len(persisted_qualified) != qualified_count:
+                    qual_ok = False
+                    failed_checks.append(f"Persisted vs reconstructed qualified count mismatch: {len(persisted_qualified)} vs {qualified_count}")
+
+                for item in persisted_qualified:
                     if not (
-                        item["semantic_valid"]
-                        and item["structural_eligible"]
+                        item["semantic_valid"] is True
+                        and item["structural_eligible"] is True
                         and item["score_status"] == "VERIFIED"
+                        and item["economic_score"] is not None
                         and item["economic_score"] >= THRESHOLD
                     ):
                         qual_ok = False
-                        failed_checks.append(f"Candidate {item['candidate_id']} falsely qualified")
+                        failed_checks.append(f"Candidate {item['candidate_id']} falsely qualified in ledger")
 
                 if qual_ok and payload_3d["summary"]["combined_qualified_count"] == qualified_count:
                     checks["qualification_integrity"] = True
@@ -211,25 +227,85 @@ def main():
 
                 top3_readiness = "YES" if qualified_count >= 3 else "NO"
 
-                # Near Miss integrity
-                near_misses = payload_3d["near_misses"]
+                # Independent reconstruction of Near Misses
+                reconstructed_near_misses_raw = [
+                    item for item in ledger
+                    if item["semantic_valid"] is True
+                    and item["structural_eligible"] is True
+                    and item["score_status"] == "VERIFIED"
+                    and item["economic_score"] is not None
+                    and item["economic_score"] < THRESHOLD
+                ]
+                reconstructed_near_misses_sorted = sorted(
+                    reconstructed_near_misses_raw,
+                    key=lambda x: (THRESHOLD - x["economic_score"], x["candidate_id"]),
+                )[:10]
+
+                near_miss_count = len(reconstructed_near_misses_sorted)
+
                 near_miss_ok = True
-                for nm in near_misses:
+
+                # Explicit regression assertions
+                for forbidden_id in ("def_021", "def_034", "def_051"):
+                    if any(nm["candidate_id"] == forbidden_id for nm in reconstructed_near_misses_sorted):
+                        near_miss_ok = False
+                        failed_checks.append(f"Explicit regression assertion failed: {forbidden_id} present in reconstructed Near Misses")
+                    if any(nm["candidate_id"] == forbidden_id for nm in payload_3d["near_misses"]):
+                        near_miss_ok = False
+                        failed_checks.append(f"Explicit regression assertion failed: {forbidden_id} present in persisted payload Near Misses")
+
+                # Validate every element of reconstructed and persisted Near Misses
+                for nm in payload_3d["near_misses"]:
                     cid = nm["candidate_id"]
-                    item = ledger_by_id[cid]
+                    item = ledger_by_id.get(cid)
+                    if not item:
+                        near_miss_ok = False
+                        failed_checks.append(f"Persisted Near Miss candidate {cid} not found in ledger")
+                        continue
                     if not (
-                        item["semantic_valid"]
-                        and item["structural_eligible"]
+                        item["semantic_valid"] is True
+                        and item["structural_eligible"] is True
                         and item["score_status"] == "VERIFIED"
+                        and item["economic_score"] is not None
                         and item["economic_score"] < THRESHOLD
                     ):
                         near_miss_ok = False
-                        failed_checks.append(f"Near miss candidate {cid} violates criteria")
+                        failed_checks.append(f"Persisted Near Miss candidate {cid} violates validity/eligibility criteria")
 
-                if near_miss_ok and len(near_misses) <= 10:
+                for nm in reconstructed_near_misses_sorted:
+                    if not (
+                        nm["semantic_valid"] is True
+                        and nm["structural_eligible"] is True
+                        and nm["score_status"] == "VERIFIED"
+                        and nm["economic_score"] is not None
+                        and nm["economic_score"] < THRESHOLD
+                    ):
+                        near_miss_ok = False
+                        failed_checks.append(f"Reconstructed Near Miss candidate {nm['candidate_id']} violates criteria")
+
+                if near_miss_ok and len(payload_3d["near_misses"]) == near_miss_count:
                     checks["near_miss_integrity"] = True
                 else:
-                    failed_checks.append("Near miss integrity failure")
+                    failed_checks.append(f"Near miss integrity failure: reconstructed count {near_miss_count} vs payload count {len(payload_3d['near_misses'])}")
+
+                # Audit repeated score provenance
+                scores_map = {}
+                for item in ledger:
+                    sc = item["economic_score"]
+                    if sc is not None and item["score_status"] == "VERIFIED":
+                        scores_map.setdefault(sc, []).append(item)
+
+                repeated_ok = True
+                for sc, items in scores_map.items():
+                    if len(items) > 1:
+                        # Check if items share cluster without candidate-scoped evidence
+                        eval_clusters = set(i["evaluation_cluster_id"] for i in items)
+                        if len(eval_clusters) < len(items):
+                            repeated_ok = False
+                            failed_checks.append(f"Score {sc} shared across candidates with duplicate evaluation clusters: {[i['candidate_id'] for i in items]}")
+
+                if repeated_ok:
+                    checks["repeated_score_provenance"] = True
 
                 # Persistence
                 if len(ledger) == 58 and len(set(ledger_by_id.keys())) == 58:
@@ -288,11 +364,13 @@ def main():
     print(f"lineage_integrity: {'PASS' if checks['lineage_integrity'] else 'FAIL'}")
     print(f"qualification_integrity: {'PASS' if checks['qualification_integrity'] else 'FAIL'}")
     print(f"near_miss_integrity: {'PASS' if checks['near_miss_integrity'] else 'FAIL'}")
+    print(f"repeated_score_provenance: {'PASS' if checks['repeated_score_provenance'] else 'FAIL'}")
     print(f"persistence: {'PASS' if checks['persistence'] else 'FAIL'}")
     print(f"hash_reproducibility: {'PASS' if checks['hash_reproducibility'] else 'FAIL'}")
     print(f"database_integrity: {'PASS' if checks['database_integrity'] else 'FAIL'}\n")
 
     print(f"qualified_count: {qualified_count}")
+    print(f"near_miss_count: {near_miss_count}")
     print(f"top3_readiness: {top3_readiness}\n")
 
     print("failed_checks:")
