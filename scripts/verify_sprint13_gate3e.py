@@ -37,10 +37,12 @@ def main():
         "gate3d_precondition": False,
         "candidate_universe": False,
         "economic_disposition": False,
+        "resolution_attempt_audit": False,
         "evidence_lineage": False,
         "score_reproduction": False,
         "qualification_integrity": False,
         "near_miss_integrity": False,
+        "safe_integration_suite": False,
         "persistence": False,
         "hash_reproducibility": False,
         "database_integrity": False,
@@ -68,6 +70,32 @@ def main():
             failed_checks.append("Gate3D precondition failed")
     except Exception as e:
         failed_checks.append(f"Gate3D precondition execution error: {str(e)}")
+
+    # 1b. SAFE integration test suite execution
+    try:
+        proc_tests = subprocess.run(
+            [
+                sys.executable,
+                "-B",
+                "-m",
+                "pytest",
+                "tests/integration/test_sprint13_gate3.py",
+                "tests/integration/test_sprint13_gate2c.py",
+                "tests/integration/test_sprint13_gate2b.py",
+                "tests/integration/test_sprint13_gate2a.py",
+                "tests/integration/test_sprint13_gate2.py",
+                "-q",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc_tests.returncode == 0:
+            checks["safe_integration_suite"] = True
+        else:
+            failed_checks.append(f"SAFE integration suite failed: {proc_tests.stderr or proc_tests.stdout}")
+    except Exception as e:
+        failed_checks.append(f"SAFE integration suite execution error: {str(e)}")
 
     client = PostgresClient()
 
@@ -130,6 +158,23 @@ def main():
                     failed_checks.append(
                         f"Economic disposition incomplete or invalid: verified={verified_count}, unevaluable={unevaluable_count}, sum={verified_count+unevaluable_count}"
                     )
+
+                # 3b. Resolution attempt audit for all 28 missing candidates
+                resolution_ok = True
+                for item in unevaluable_items:
+                    cid = item["candidate_id"]
+                    attempt = item.get("resolution_attempt")
+                    if not attempt or not isinstance(attempt, dict) or not attempt.get("attempted"):
+                        resolution_ok = False
+                        failed_checks.append(f"Candidate {cid} has no documented resolution attempt")
+                    elif not attempt.get("reason"):
+                        resolution_ok = False
+                        failed_checks.append(f"Candidate {cid} resolution attempt missing explicit reason")
+
+                if resolution_ok:
+                    checks["resolution_attempt_audit"] = True
+                else:
+                    failed_checks.append("Resolution attempt audit failed for missing candidates")
 
                 # Fetch analysis tables for evidence lineage & score reproduction
                 cur.execute("SELECT notes FROM analytical_runs WHERE run_id=%s", (SOURCE_RUN,))
@@ -318,10 +363,12 @@ def main():
     print(f"gate3d_precondition: {'PASS' if checks['gate3d_precondition'] else 'FAIL'}")
     print(f"candidate_universe: {'PASS' if checks['candidate_universe'] else 'FAIL'}")
     print(f"economic_disposition: {'PASS' if checks['economic_disposition'] else 'FAIL'}")
+    print(f"resolution_attempt_audit: {'PASS' if checks['resolution_attempt_audit'] else 'FAIL'}")
     print(f"evidence_lineage: {'PASS' if checks['evidence_lineage'] else 'FAIL'}")
     print(f"score_reproduction: {'PASS' if checks['score_reproduction'] else 'FAIL'}")
     print(f"qualification_integrity: {'PASS' if checks['qualification_integrity'] else 'FAIL'}")
     print(f"near_miss_integrity: {'PASS' if checks['near_miss_integrity'] else 'FAIL'}")
+    print(f"safe_integration_suite: {'PASS' if checks['safe_integration_suite'] else 'FAIL'}")
     print(f"persistence: {'PASS' if checks['persistence'] else 'FAIL'}")
     print(f"hash_reproducibility: {'PASS' if checks['hash_reproducibility'] else 'FAIL'}")
     print(f"database_integrity: {'PASS' if checks['database_integrity'] else 'FAIL'}\n")

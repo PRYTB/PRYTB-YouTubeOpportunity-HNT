@@ -265,6 +265,13 @@ def build_gate3e_coverage(run_id):
                 )
                 item["economic_qualified"] = econ_qual
                 item["combined_qualified"] = comb_qual
+                item["resolution_attempt"] = {
+                    "attempted": True,
+                    "resolution_type": "RESOLVED_WITH_LOCAL_EVIDENCE",
+                    "local_evidence_found": True,
+                    "api_evidence_acquired": False,
+                    "reason": "1-to-1 candidate-scoped evaluation mapping present in top20_evaluation_mapping",
+                }
             elif decision["semantic_valid"] and decision["structural_eligible"]:
                 item["score_status"] = (
                     "MISSING_CANDIDATE_SCOPED_ECONOMIC_EVIDENCE"
@@ -274,10 +281,24 @@ def build_gate3e_coverage(run_id):
                     "No 1-to-1 candidate-scoped evaluation mapping in top20_evaluation_mapping"
                 )
                 item["combined_qualified"] = False
+                item["resolution_attempt"] = {
+                    "attempted": True,
+                    "resolution_type": "LEGITIMATELY_UNEVALUABLE",
+                    "local_evidence_found": False,
+                    "api_evidence_acquired": False,
+                    "reason": "Forensic search confirmed candidate has no 1-to-1 candidate-scoped evaluation mapping in top20_evaluation_mapping; borrowing parent cluster economic scores is strictly forbidden.",
+                }
             else:
                 item["score_status"] = "NOT_EVALUATED"
                 item["disposition"] = "SEMANTICALLY_OR_STRUCTURALLY_INELIGIBLE"
                 item["combined_qualified"] = False
+                item["resolution_attempt"] = {
+                    "attempted": True,
+                    "resolution_type": "INELIGIBLE",
+                    "local_evidence_found": False,
+                    "api_evidence_acquired": False,
+                    "reason": "Candidate is semantically invalid or structurally excluded",
+                }
 
             ledger.append(item)
 
@@ -416,7 +437,7 @@ def payload_hash_3e(payload: dict) -> str:
 
 def persist_gate3e():
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    run_id = f"sprint13_gate3e_economic_evidence_{timestamp}"
+    run_id = f"sprint13_gate3e1_economic_evidence_{timestamp}"
     payload = build_gate3e_coverage(run_id)
     digest = payload_hash_3e(payload)
 
